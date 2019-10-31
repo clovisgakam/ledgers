@@ -2,6 +2,7 @@ package de.adorsys.ledgers.middleware.rest.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.adorsys.ledgers.middleware.impl.service.CurrencyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.IBANValidator;
@@ -22,6 +23,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ValidationFilter extends GenericFilterBean {
+    private final CurrencyServiceImpl currencyService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -36,6 +38,15 @@ public class ValidationFilter extends GenericFilterBean {
                     if (!valid) {
                         log.error("Invalid IBAN: {}", node.asText());
                         ((HttpServletResponse) response).sendError(400, String.format("Invalid IBAN %s", node.asText()));
+                        return;
+                    }
+                }
+                List<JsonNode> currencies = objectMapper.readTree(servletRequest.getInputStream())
+                                                    .findValues("currency");
+                for (JsonNode node : currencies) {
+                    if (!currencyService.getSupportedCurrencies().toString().contains(node.asText())) {
+                        log.error("Invalid currency: {}", node.asText());
+                        ((HttpServletResponse) response).sendError(400, String.format("Invalid currency %s", node.asText()));
                         return;
                     }
                 }
