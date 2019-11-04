@@ -2,7 +2,7 @@ package de.adorsys.ledgers.middleware.rest.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.adorsys.ledgers.middleware.impl.service.CurrencyServiceImpl;
+import de.adorsys.ledgers.middleware.api.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CurrencyValidationFilter extends GenericFilterBean {
-    private final CurrencyServiceImpl currencyService;
+    private final CurrencyService currencyService;
     private final ObjectMapper objectMapper;
 
     @Override

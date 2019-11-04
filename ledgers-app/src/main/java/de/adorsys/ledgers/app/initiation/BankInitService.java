@@ -18,9 +18,9 @@ import de.adorsys.ledgers.middleware.api.domain.payment.SinglePaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.um.AccountAccessTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
+import de.adorsys.ledgers.middleware.api.service.CurrencyService;
 import de.adorsys.ledgers.middleware.impl.converter.AccountDetailsMapper;
 import de.adorsys.ledgers.middleware.impl.converter.UserMapper;
-import de.adorsys.ledgers.middleware.impl.service.CurrencyServiceImpl;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
@@ -48,7 +48,7 @@ public class BankInitService {
     private final DepositAccountService depositAccountService;
     private final AccountDetailsMapper accountDetailsMapper;
     private final PaymentRestInitiationService restInitiationService;
-    private final CurrencyServiceImpl currencyService;
+    private final CurrencyService currencyService;
 
     private static final String ACCOUNT_NOT_FOUND_MSG = "Account not Found! Should never happen while initiating mock data!";
     private static final String NO_USER_BY_IBAN = "Could not get User By Iban {}";
@@ -58,7 +58,7 @@ public class BankInitService {
     public BankInitService(MockbankInitData mockbankInitData, UserService userService, UserMapper userMapper,
                            DepositAccountInitService depositAccountInitService, DepositAccountService depositAccountService,
                            AccountDetailsMapper accountDetailsMapper, PaymentRestInitiationService restInitiationService,
-                           CurrencyServiceImpl currencyService) {
+                           CurrencyService currencyService) {
         this.mockbankInitData = mockbankInitData;
         this.userService = userService;
         this.userMapper = userMapper;
