@@ -163,19 +163,13 @@ public class BankInitService {
 
     private void createAccounts() {
         for (AccountDetailsTO details : mockbankInitData.getAccounts()) {
-            checkCurrencies(details.getCurrency());
+            currencyService.checkCurrencies(details.getCurrency());
             try {
                 depositAccountService.getDepositAccountByIban(details.getIban(), LocalDateTime.now(), false);
             } catch (DepositModuleException e) {
                 createAccount(details)      //TODO Matter of refactoring
                         .ifPresent(a -> updateBalanceIfRequired(details, a));
             }
-        }
-    }
-
-    private void checkCurrencies(Currency currency) {
-        if (!currencyService.getSupportedCurrencies().contains(currency)) {
-            throw new IllegalArgumentException("Currency is not supported: " + currency);
         }
     }
 

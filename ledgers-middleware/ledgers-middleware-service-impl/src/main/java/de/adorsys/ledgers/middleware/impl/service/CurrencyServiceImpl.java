@@ -17,4 +17,11 @@ public class CurrencyServiceImpl implements CurrencyService {
     public List<Currency> getSupportedCurrencies() {
         return currencyConfigProp.getCurrencies();
     }
+
+    @Override
+    public void checkCurrencies(Currency currency) {
+        if (!getSupportedCurrencies().contains(currency)) {
+            throw new IllegalArgumentException("Currency is not supported: " + currency);
+        }
+    }
 }
