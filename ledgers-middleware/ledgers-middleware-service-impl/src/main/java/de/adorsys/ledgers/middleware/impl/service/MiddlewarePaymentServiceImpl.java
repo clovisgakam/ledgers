@@ -122,6 +122,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         }
         UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
         accountService.getDepositAccountByIbanAndCheckStatus(paymentBO.getDebtorAccount().getIban(), LocalDateTime.now(), false);
+        accountService.getDepositAccountByIbanAndCheckStatus(paymentBO.getTargets().stream().map(t -> t.getCreditorAccount().getIban()).findFirst().get(), LocalDateTime.now(), false);
 
         TransactionStatusBO status = scaUtils.hasSCA(userBO)
                                              ? TransactionStatusBO.ACCP
@@ -234,7 +235,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         String opData = paymentKeyData.template();
         String userMessage = opData;
         AuthCodeDataBO authCodeDataBO = new AuthCodeDataBO(userBO.getLogin(), scaInfoTO.getScaMethodId(), paymentId, opData, userMessage,
-                defaultLoginTokenExpireInSeconds, OpTypeBO.PAYMENT, scaInfoTO.getAuthorisationId(), scaWeight);
+                                                           defaultLoginTokenExpireInSeconds, OpTypeBO.PAYMENT, scaInfoTO.getAuthorisationId(), scaWeight);
 
         SCAOperationBO scaOperationBO = scaOperationService.generateAuthCode(authCodeDataBO, userBO, ScaStatusBO.SCAMETHODSELECTED);
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment, userTO.getLogin());
@@ -263,9 +264,9 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         String opData = template;
         String userMessage = template;
         AuthCodeDataBO authCodeDataBO = new AuthCodeDataBO(userBO.getLogin(), scaInfoTO.getScaMethodId(),
-                paymentId, opData, userMessage,
-                defaultLoginTokenExpireInSeconds,
-                OpTypeBO.CANCEL_PAYMENT, cancellationId, scaWeight);
+                                                           paymentId, opData, userMessage,
+                                                           defaultLoginTokenExpireInSeconds,
+                                                           OpTypeBO.CANCEL_PAYMENT, cancellationId, scaWeight);
 
         SCAOperationBO scaOperationBO = scaOperationService.generateAuthCode(authCodeDataBO, userBO, ScaStatusBO.SCAMETHODSELECTED);
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment, userTO.getLogin());
@@ -286,7 +287,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         UserTO user = scaUtils.user(scaInfoTO.getUserId());
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment, user.getLogin());
         return toScaPaymentResponse(user, paymentId, tx,
-                paymentKeyData, scaUtils.loadAuthCode(cancellationId), bearerToken);
+                                    paymentKeyData, scaUtils.loadAuthCode(cancellationId), bearerToken);
     }
 
     private void validateAuthCode(String userId, PaymentBO payment, String authorisationId, String authCode, String template) {
@@ -338,8 +339,8 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         } else {
             int scaWeight = accessService.resolveScaWeightByDebtorAccount(user.getAccountAccesses(), payment.getDebtorAccount().getIban());
             AuthCodeDataBO authCodeData = new AuthCodeDataBO(user.getLogin(), null,
-                    payment.getPaymentId(), opData, userMessage,
-                    defaultLoginTokenExpireInSeconds, opType, authorisationId, scaWeight);
+                                                             payment.getPaymentId(), opData, userMessage,
+                                                             defaultLoginTokenExpireInSeconds, opType, authorisationId, scaWeight);
             // start SCA
             TokenUsageTO tokenUsage = scaInfoTO.getTokenUsage();
             ScaStatusBO scaStatus = ScaStatusBO.PSUIDENTIFIED;
