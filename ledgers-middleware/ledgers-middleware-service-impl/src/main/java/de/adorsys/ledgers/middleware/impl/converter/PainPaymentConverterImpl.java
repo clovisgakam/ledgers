@@ -57,7 +57,7 @@ public class PainPaymentConverterImpl implements PainPaymentConverter {
                                                                .build());
         PaymentBO paymentBO = new PaymentBO();
         paymentBO.setPaymentType(PaymentTypeBO.valueOf(paymentType.name()));
-        paymentBO.setTargets(buildPaymentsTarget(document));
+        paymentBO.setTargets(buildPaymentTargets(document));
         paymentBO.setDebtorAccount(buildAccountReferenceBO(getDebtorAccount(document)));
         paymentBO.setRequestedExecutionDate(buildRequestedExecutionDate(document));
         return paymentBO;
@@ -70,7 +70,7 @@ public class PainPaymentConverterImpl implements PainPaymentConverter {
         return LocalDate.of(reqdExctnDt.getYear(), reqdExctnDt.getMonth(), reqdExctnDt.getDay());
     }
 
-    private List<PaymentTargetBO> buildPaymentsTarget(Document painPayment) {
+    private List<PaymentTargetBO> buildPaymentTargets(Document painPayment) {
         return painPayment.getCstmrCdtTrfInitn()
                        .getPmtInves().stream()
                        .map(this::buildPaymentTargetBO)

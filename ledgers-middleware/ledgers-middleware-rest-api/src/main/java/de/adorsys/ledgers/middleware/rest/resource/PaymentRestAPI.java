@@ -50,7 +50,7 @@ public interface PaymentRestAPI {
     @PostMapping(value = "/pain", params = "paymentType")
     @ApiOperation(value = "Initiates a pain Payment", notes = "Initiates a pain payment", authorizations = @Authorization(value = "apiKey"))
     @ApiResponses(value = {
-            @ApiResponse(code = 200, response = SCAPaymentResponseTO.class, message = "Success. ScaToken contained in the returned response object."),
+            @ApiResponse(code = 200, response = String.class, message = "Success"),
             @ApiResponse(code = 404, message = "Specified account not found."),
             @ApiResponse(code = 403, message = "Not authorized to execute payment on this account"),
             @ApiResponse(code = 409, message = "Payment with specified paymentId exists. Either leaved it blank or generate a new one.")
