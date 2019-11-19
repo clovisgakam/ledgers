@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.ledgers.middleware.api.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_XML;
@@ -43,36 +46,45 @@ public class ValidationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            Optional<String> invalidIban = validate(readValuesByField(servletRequest, IBAN), v -> IBANValidator.getInstance().isValid(v));
-            if (invalidIban.isPresent()) {
-                buildError(response, invalidIban.get());
-                return;
-            }
-            Optional<String> invalidCurrency = validate(readValuesByField(servletRequest, CURRENCY),
-                                                        v -> currencyService.getSupportedCurrencies().stream().anyMatch(c -> StringUtils.equals(c.getCurrencyCode(), v)));
-            if (invalidCurrency.isPresent()) {
-                buildError(response, invalidCurrency.get());
+            Supplier<Optional<String>> supplierIban = () -> validate(readValuesByField(servletRequest, IBAN), v -> IBANValidator.getInstance().isValid(v));
+            Supplier<Optional<String>> supplierCurrency = () -> validate(readValuesByField(servletRequest, CURRENCY), this::isSupportedCurrency);
+            Optional<String> combined = findFirstPresent(supplierIban, supplierCurrency);
+            if (combined.isPresent()) {
+                buildError(response, combined.get());
                 return;
             }
         } catch (IOException e) {
-            String msg = String.format("Could not parse request body, msg: %s", e.getMessage());
-            log.error(msg);
-            response.sendError(400, msg);
+            response.sendError(400, String.format("Could not parse request body, msg: %s", e.getMessage()));
             return;
         }
         chain.doFilter(servletRequest, response);
     }
 
-    private Collection<String> readValuesByField(MultiReadHttpServletRequest servletRequest, String fieldName) throws IOException {
+    private Optional<String> validate(Collection<String> values, Predicate<String> predicate) {
+        return values.stream().filter(predicate.negate())
+                       .findFirst();
+    }
+
+    @SneakyThrows
+    private Collection<String> readValuesByField(MultiReadHttpServletRequest servletRequest, String fieldName) {
         JsonNode jsonNode = mapper.readTree(servletRequest.getInputStream());
         return jsonNode != null
                        ? jsonNode.findValuesAsText(fieldName)
                        : CollectionUtils.emptyCollection();
     }
 
-    private Optional<String> validate(Collection<String> values, Predicate<String> predicate) {
-        return values.stream().filter(predicate.negate())
-                       .findFirst();
+    private boolean isSupportedCurrency(String currency) {
+        return currencyService.getSupportedCurrencies().stream()
+                       .anyMatch(c -> StringUtils.equals(c.getCurrencyCode(), currency));
+    }
+
+    @SafeVarargs
+    private static Optional<String> findFirstPresent(Supplier<Optional<String>>... suppliers) {
+        return Stream.of(suppliers)
+                       .map(Supplier::get)
+                       .filter(Optional::isPresent)
+                       .findFirst()
+                       .orElseGet(Optional::empty);
     }
 
     private void buildError(HttpServletResponse response, String value) throws IOException {
