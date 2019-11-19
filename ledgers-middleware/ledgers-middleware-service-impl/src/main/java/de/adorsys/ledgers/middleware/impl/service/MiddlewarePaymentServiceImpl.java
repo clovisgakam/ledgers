@@ -35,6 +35,7 @@ import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.MiddlewarePaymentService;
 import de.adorsys.ledgers.middleware.api.service.ScaChallengeDataResolver;
 import de.adorsys.ledgers.middleware.impl.converter.BearerTokenMapper;
+import de.adorsys.ledgers.middleware.impl.converter.PainPaymentConverter;
 import de.adorsys.ledgers.middleware.impl.converter.PaymentConverter;
 import de.adorsys.ledgers.middleware.impl.converter.ScaInfoMapper;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCancelPolicy;
@@ -80,6 +81,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     private final ScaInfoMapper scaInfoMapper;
     private final AuthorizationService authorizationService;
     private final ScaChallengeDataResolver scaChallengeDataResolver;
+    private final PainPaymentConverter painPaymentConverter;
     private int defaultLoginTokenExpireInSeconds = 600; // 600 seconds.
 
     @Value("${sca.multilevel.enabled:false}")
@@ -110,9 +112,17 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     }
 
     @Override
+    public String initiatePainPayment(ScaInfoTO scaInfoTO, String payment, PaymentTypeTO paymentType) {
+        return painPaymentConverter.toPayload(buildScaPaymentResponseTO(scaInfoTO, painPaymentConverter.toPaymentBO(payment, paymentType)));
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public <T> SCAPaymentResponseTO initiatePayment(ScaInfoTO scaInfoTO, T payment, PaymentTypeTO paymentType) {
-        PaymentBO paymentBO = paymentConverter.toPaymentBO(payment, paymentType.getPaymentClass());
+    public SCAPaymentResponseTO initiatePayment(ScaInfoTO scaInfoTO, Object payment, PaymentTypeTO paymentType) {
+        return buildScaPaymentResponseTO(scaInfoTO, paymentConverter.toPaymentBO(payment, paymentType.getPaymentClass()));
+    }
+
+    private SCAPaymentResponseTO buildScaPaymentResponseTO(ScaInfoTO scaInfoTO, PaymentBO paymentBO) { //NOPMD
         if (!paymentBO.isValidAmount()) {
             throw MiddlewareModuleException.builder()
                           .devMsg("Payment validation failed! Instructed amount is invalid.")
