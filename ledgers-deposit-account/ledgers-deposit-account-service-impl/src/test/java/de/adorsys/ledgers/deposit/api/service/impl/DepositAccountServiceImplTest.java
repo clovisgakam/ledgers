@@ -41,7 +41,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static de.adorsys.ledgers.deposit.db.domain.AccountStatus.*;
+import static de.adorsys.ledgers.util.exception.DepositErrorCode.PAYMENT_PROCESSING_FAILURE;
 import static de.adorsys.ledgers.util.exception.PostingErrorCode.POSTING_NOT_FOUND;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
