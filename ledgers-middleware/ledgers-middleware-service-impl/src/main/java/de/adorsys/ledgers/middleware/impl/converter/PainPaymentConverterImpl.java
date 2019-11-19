@@ -11,6 +11,7 @@ import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -24,7 +25,8 @@ import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.PA
 @Component
 @RequiredArgsConstructor
 public class PainPaymentConverterImpl implements PainPaymentConverter {
-    private static final Currency DEFAULT_CURRENCY = Currency.getInstance("EUR");
+    @Value("${currency.default:EUR}")
+    private Currency defaultCurrency;
 
     private final JaxbConverter jaxbConverter;
 
@@ -98,19 +100,22 @@ public class PainPaymentConverterImpl implements PainPaymentConverter {
         return target;
     }
 
-    private AmountBO buildAmountBO(AmountType3Choice amt) {
-        ActiveOrHistoricCurrencyAndAmount instdAmt = amt.getInstdAmt();
-        return new AmountBO(Currency.getInstance(instdAmt.getCcy()), instdAmt.getValue());
+    private AmountBO buildAmountBO(AmountType3Choice amount) {
+        ActiveOrHistoricCurrencyAndAmount instdAmt = amount.getInstdAmt();
+        return new AmountBO(buildCurrency(instdAmt.getCcy()), instdAmt.getValue());
     }
 
     private AccountReferenceBO buildAccountReferenceBO(CashAccount16 cashAccount) {
         AccountReferenceBO account = new AccountReferenceBO();
         account.setIban(cashAccount.getId().getIBAN());
-        Currency currency = StringUtils.isNoneBlank(cashAccount.getCcy())
-                                    ? Currency.getInstance(cashAccount.getCcy())
-                                    : DEFAULT_CURRENCY;
-        account.setCurrency(currency);
+        account.setCurrency(buildCurrency(cashAccount.getCcy()));
         return account;
+    }
+
+    private Currency buildCurrency(String currency) {
+        return StringUtils.isNoneBlank(currency)
+                       ? Currency.getInstance(currency)
+                       : defaultCurrency;
     }
 
     private CreditTransferTransactionInformation10 getCreditTransferTransactionInformation(PaymentInstructionInformation3 paymentInfo) {
