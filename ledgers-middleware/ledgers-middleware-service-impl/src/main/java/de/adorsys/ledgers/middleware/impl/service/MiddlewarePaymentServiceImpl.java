@@ -16,9 +16,7 @@
 
 package de.adorsys.ledgers.middleware.impl.service;
 
-import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
-import de.adorsys.ledgers.deposit.api.domain.PaymentProductBO;
-import de.adorsys.ledgers.deposit.api.domain.TransactionStatusBO;
+import de.adorsys.ledgers.deposit.api.domain.*;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountPaymentService;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountService;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentCoreDataTO;
@@ -51,6 +49,7 @@ import de.adorsys.ledgers.um.api.domain.AisConsentBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.util.Ids;
+import de.adorsys.ledgers.util.exception.DepositModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,8 +60,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.AUTHENTICATION_FAILURE;
-import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.REQUEST_VALIDATION_FAILURE;
+import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.*;
+import static java.lang.String.format;
 
 @Slf4j
 @Service
@@ -121,8 +120,13 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
                           .build();
         }
         UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
-        accountService.getDepositAccountByIbanAndCheckStatus(paymentBO.getDebtorAccount().getIban(), LocalDateTime.now(), false);
-        accountService.getDepositAccountByIbanAndCheckStatus(paymentBO.getTargets().stream().map(t -> t.getCreditorAccount().getIban()).findFirst().get(), LocalDateTime.now(), false);
+
+        checkAccountStatus(accountService.getDepositAccountByIban(paymentBO.getDebtorAccount().getIban(), LocalDateTime.now(), false));
+        try {
+            checkAccountStatus(accountService.getDepositAccountByIban(paymentBO.getIbanFromCreditorAccount(), LocalDateTime.now(), false));
+        } catch (DepositModuleException e) {
+            log.info("Creditor account is located in another ASPSP");
+        }
 
         TransactionStatusBO status = scaUtils.hasSCA(userBO)
                                              ? TransactionStatusBO.ACCP
@@ -147,6 +151,15 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
             }
         }
         return response;
+    }
+
+    private void checkAccountStatus(DepositAccountDetailsBO account) {
+        if (!account.isEnabled()) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(PAYMENT_PROCESSING_FAILURE)
+                          .devMsg(format("Operation is Rejected as account: %s is %s", account.getAccount().getIban(), account.getAccount().getAccountStatus()))
+                          .build();
+        }
     }
 
     private void setPaymentProductAndType(final PaymentBO paymentBO, final SCAPaymentResponseTO response) {
