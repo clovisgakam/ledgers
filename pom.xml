@@ -253,6 +253,12 @@
 				<version>${apache.commons.collections}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${apache.commons.io}</version>
+			</dependency>
+
 			<!-- test dependencies -->
 
 			<dependency>
