@@ -41,9 +41,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static de.adorsys.ledgers.deposit.db.domain.AccountStatus.*;
-import static de.adorsys.ledgers.util.exception.DepositErrorCode.PAYMENT_PROCESSING_FAILURE;
 import static de.adorsys.ledgers.util.exception.PostingErrorCode.POSTING_NOT_FOUND;
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -130,47 +128,35 @@ public class DepositAccountServiceImplTest {
         when(depositAccountRepository.findByIbanIn(any())).thenReturn(Collections.singletonList(getDepositAccount(ENABLED)));
         //When
         DepositAccountDetailsBO accountDetailsBO = depositAccountService.getDepositAccountByIban("iban", LocalDateTime.now(), false);
-        if (!accountDetailsBO.isEnabled()) {
-            throw DepositModuleException.builder()
-                          .errorCode(PAYMENT_PROCESSING_FAILURE)
-                          .devMsg(format("Operation is Rejected as account: %s is %s", accountDetailsBO.getAccount().getIban(), accountDetailsBO.getAccount().getAccountStatus()))
-                          .build();
-        }
+        boolean checkAccountStatus = accountDetailsBO.isEnabled();
         //Then
         assertThat(accountDetailsBO).isNotNull();
         assertThat(accountDetailsBO.getAccount()).isNotNull();
+        assertThat(checkAccountStatus).isTrue();
     }
 
-    @Test(expected = DepositModuleException.class)
+    @Test
     public void checkAccountStatus_blocked() {
         when(depositAccountRepository.findByIbanIn(any())).thenReturn(Collections.singletonList(getDepositAccount(BLOCKED)));
         //When
         DepositAccountDetailsBO accountDetailsBO = depositAccountService.getDepositAccountByIban("iban", LocalDateTime.now(), false);
-        if (!accountDetailsBO.isEnabled()) {
-            throw DepositModuleException.builder()
-                          .errorCode(PAYMENT_PROCESSING_FAILURE)
-                          .devMsg(format("Operation is Rejected as account: %s is %s", accountDetailsBO.getAccount().getIban(), accountDetailsBO.getAccount().getAccountStatus()))
-                          .build();
-        }
+        boolean checkAccountStatus = accountDetailsBO.isEnabled();
         //Then
         assertThat(accountDetailsBO).isNotNull();
         assertThat(accountDetailsBO.getAccount()).isNotNull();
+        assertThat(checkAccountStatus).isFalse();
     }
 
-    @Test(expected = DepositModuleException.class)
+    @Test
     public void checkAccountStatus_deleted() {
         when(depositAccountRepository.findByIbanIn(any())).thenReturn(Collections.singletonList(getDepositAccount(DELETED)));
         //When
         DepositAccountDetailsBO accountDetailsBO = depositAccountService.getDepositAccountByIban("iban", LocalDateTime.now(), false);
-        if (!accountDetailsBO.isEnabled()) {
-            throw DepositModuleException.builder()
-                          .errorCode(PAYMENT_PROCESSING_FAILURE)
-                          .devMsg(format("Operation is Rejected as account: %s is %s", accountDetailsBO.getAccount().getIban(), accountDetailsBO.getAccount().getAccountStatus()))
-                          .build();
-        }
+        boolean checkAccountStatus = accountDetailsBO.isEnabled();
         //Then
         assertThat(accountDetailsBO).isNotNull();
         assertThat(accountDetailsBO.getAccount()).isNotNull();
+        assertThat(checkAccountStatus).isFalse();
     }
 
     @Test
