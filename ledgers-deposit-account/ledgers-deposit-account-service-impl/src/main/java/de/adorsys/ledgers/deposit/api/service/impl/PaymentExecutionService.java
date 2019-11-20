@@ -103,7 +103,8 @@ public class PaymentExecutionService implements InitializingBean {
     private TransactionStatusBO finalizePaymentStatus(Payment payment) {
         TransactionStatusBO status = null;
         try {
-            if (CollectionUtils.isNotEmpty(accountService.getDepositAccountsByIban(payment.getTargets().stream().map(t -> t.getCreditorAccount().getIban()).collect(Collectors.toList()), LocalDateTime.now(), false))) {
+            List<DepositAccountDetailsBO> creditorAccounts = accountService.getDepositAccountsByIban(payment.getTargets().stream().map(t -> t.getCreditorAccount().getIban()).collect(Collectors.toList()), LocalDateTime.now(), false);
+            if (CollectionUtils.isNotEmpty(creditorAccounts)) {
                 status = updatePaymentStatus(payment, TransactionStatus.ACCC);
             }
         } catch (DepositModuleException e) {
