@@ -6,10 +6,10 @@ import de.adorsys.ledgers.app.mock.MockbankInitData;
 import de.adorsys.ledgers.app.mock.SinglePaymentsData;
 import de.adorsys.ledgers.deposit.api.domain.AmountBO;
 import de.adorsys.ledgers.deposit.api.domain.DepositAccountBO;
-import de.adorsys.ledgers.deposit.api.domain.DepositAccountDetailsBO;
 import de.adorsys.ledgers.deposit.api.domain.TransactionDetailsBO;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountInitService;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountService;
+import de.adorsys.ledgers.deposit.api.service.DepositAccountTransactionService;
 import de.adorsys.ledgers.middleware.api.domain.account.AccountDetailsTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.AmountTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.BulkPaymentTO;
@@ -46,6 +46,7 @@ public class BankInitService {
     private final UserMapper userMapper;
     private final DepositAccountInitService depositAccountInitService;
     private final DepositAccountService depositAccountService;
+    private final DepositAccountTransactionService transactionService;
     private final AccountDetailsMapper accountDetailsMapper;
     private final PaymentRestInitiationService restInitiationService;
     private final CurrencyService currencyService;
@@ -57,13 +58,14 @@ public class BankInitService {
     @Autowired
     public BankInitService(MockbankInitData mockbankInitData, UserService userService, UserMapper userMapper,
                            DepositAccountInitService depositAccountInitService, DepositAccountService depositAccountService,
-                           AccountDetailsMapper accountDetailsMapper, PaymentRestInitiationService restInitiationService,
+                           DepositAccountTransactionService transactionService, AccountDetailsMapper accountDetailsMapper, PaymentRestInitiationService restInitiationService,
                            CurrencyService currencyService) {
         this.mockbankInitData = mockbankInitData;
         this.userService = userService;
         this.userMapper = userMapper;
         this.depositAccountInitService = depositAccountInitService;
         this.depositAccountService = depositAccountService;
+        this.transactionService = transactionService;
         this.accountDetailsMapper = accountDetailsMapper;
         this.restInitiationService = restInitiationService;
         this.currencyService = currencyService;
@@ -101,7 +103,7 @@ public class BankInitService {
         for (SinglePaymentsData paymentsData : mockbankInitData.getSinglePayments()) {
             SinglePaymentTO payment = paymentsData.getSinglePayment();
             try {
-                if (isAbsentTransactionRegular(payment.getDebtorAccount().getIban(), payment.getEndToEndIdentification())) {
+                if (isAbsentTransactionRegular(payment.getDebtorAccount().getIban(), payment.getDebtorAccount().getCurrency(), payment.getEndToEndIdentification())) {
                     UserTO user = getUserByIban(users, payment.getDebtorAccount().getIban());
                     restInitiationService.executePayment(user, PaymentTypeTO.SINGLE, payment);
                 }
@@ -118,10 +120,10 @@ public class BankInitService {
             BulkPaymentTO payment = paymentsData.getBulkPayment();
             try {
                 boolean isAbsentTransaction;
-                if (payment.getBatchBookingPreferred()) {
+                if (Optional.ofNullable(payment.getBatchBookingPreferred()).orElse(false)) {
                     isAbsentTransaction = isAbsentTransactionBatch(payment);
                 } else {
-                    isAbsentTransaction = isAbsentTransactionRegular(payment.getDebtorAccount().getIban(), payment.getPayments().iterator().next().getEndToEndIdentification());
+                    isAbsentTransaction = isAbsentTransactionRegular(payment.getDebtorAccount().getIban(), payment.getDebtorAccount().getCurrency(), payment.getPayments().iterator().next().getEndToEndIdentification());
                 }
                 if (isAbsentTransaction) {
                     UserTO user = getUserByIban(users, payment.getDebtorAccount().getIban());
@@ -136,20 +138,18 @@ public class BankInitService {
     }
 
     private boolean isAbsentTransactionBatch(BulkPaymentTO payment) {
-        boolean isAbsentTransaction;
-        DepositAccountDetailsBO account = depositAccountService.getDepositAccountByIban(payment.getDebtorAccount().getIban(), LocalDateTime.now(), false);
-        List<TransactionDetailsBO> transactions = depositAccountService.getTransactionsByDates(account.getAccount().getId(), START_DATE, LocalDateTime.now());
+        DepositAccountBO account = depositAccountService.getAccountByIbanAndCurrency(payment.getDebtorAccount().getIban(), payment.getDebtorAccount().getCurrency());
+        List<TransactionDetailsBO> transactions = depositAccountService.getTransactionsByDates(account.getId(), START_DATE, LocalDateTime.now());
         BigDecimal total = BigDecimal.ZERO.subtract(payment.getPayments().stream()
                                                             .map(SinglePaymentTO::getInstructedAmount)
                                                             .map(AmountTO::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, 5));
-        isAbsentTransaction = transactions.stream()
-                                      .noneMatch(t -> t.getTransactionAmount().getAmount().equals(total));
-        return isAbsentTransaction;
+        return transactions.stream()
+                       .noneMatch(t -> t.getTransactionAmount().getAmount().equals(total));
     }
 
-    private boolean isAbsentTransactionRegular(String iban, String entToEndId) {
-        DepositAccountDetailsBO account = depositAccountService.getDepositAccountByIban(iban, LocalDateTime.now(), false);
-        List<TransactionDetailsBO> transactions = depositAccountService.getTransactionsByDates(account.getAccount().getId(), START_DATE, LocalDateTime.now());
+    private boolean isAbsentTransactionRegular(String iban, Currency currency, String entToEndId) {
+        DepositAccountBO account = depositAccountService.getAccountByIbanAndCurrency(iban, currency);
+        List<TransactionDetailsBO> transactions = depositAccountService.getTransactionsByDates(account.getId(), START_DATE, LocalDateTime.now());
         return transactions.stream()
                        .noneMatch(t -> entToEndId.equals(t.getEndToEndId()));
     }
@@ -166,45 +166,37 @@ public class BankInitService {
             if (!currencyService.isCurrencyValid(details.getCurrency())) {
                 throw new IllegalArgumentException("Currency is not supported: " + details.getCurrency());
             }
-            try {
-                depositAccountService.getDepositAccountByIban(details.getIban(), LocalDateTime.now(), false);
-            } catch (DepositModuleException e) {
-                createAccount(details)      //TODO Matter of refactoring
-                        .ifPresent(a -> updateBalanceIfRequired(details, a));
-            }
+            DepositAccountBO account = depositAccountService.getOptionalAccountByIbanAndCurrency(details.getIban(), details.getCurrency())
+                                               .orElseGet(() -> createAccount(details));
+            updateBalanceIfRequired(details, account);
         }
     }
 
-    private void updateBalanceIfRequired(AccountDetailsTO details, DepositAccountBO a) {
+    private void updateBalanceIfRequired(AccountDetailsTO details, DepositAccountBO account) {
         getBalanceFromInitData(details)
-                .ifPresent(b -> updateBalance(details, a, b));
+                .ifPresent(b -> updateBalance(details, account, b));
     }
 
-    private void updateBalance(AccountDetailsTO details, DepositAccountBO a, BigDecimal b) {
-        AmountBO amount = new AmountBO(Currency.getInstance("EUR"), b);
+    private void updateBalance(AccountDetailsTO details, DepositAccountBO account, BigDecimal balanceValue) {
+        AmountBO amount = new AmountBO(details.getCurrency(), balanceValue);
         try {
-            depositAccountService.depositCash(a.getId(), amount, "SYSTEM");
+            transactionService.depositCash(account.getId(), amount, "SYSTEM");
         } catch (DepositModuleException e) {
-            logger.error("Unable to deposit cash to account: {}", details.getIban());
+            logger.error("Unable to deposit cash to account: {} {}", details.getIban(), details.getCurrency());
         }
     }
 
     private Optional<BigDecimal> getBalanceFromInitData(AccountDetailsTO details) {
         return mockbankInitData.getBalances().stream()
-                       .filter(b -> StringUtils.equals(b.getAccNbr(), details.getIban()))
+                       .filter(b -> StringUtils.equals(b.getAccNbr(), details.getIban()) && b.getCurrency().equals(details.getCurrency()))
                        .findFirst()
                        .map(AccountBalance::getBalance);
     }
 
-    private Optional<DepositAccountBO> createAccount(AccountDetailsTO details) {
-        try {
-            String userName = getUserNameByIban(details.getIban());
-            DepositAccountBO accountBO = accountDetailsMapper.toDepositAccountBO(details);
-            return Optional.of(depositAccountService.createDepositAccount(accountBO, userName));
-        } catch (DepositModuleException e) {
-            logger.error("Error creating Account For Mocked User");
-            return Optional.empty();
-        }
+    private DepositAccountBO createAccount(AccountDetailsTO details) {
+        String userName = getUserNameByIban(details.getIban());
+        DepositAccountBO accountBO = accountDetailsMapper.toDepositAccountBO(details);
+        return depositAccountService.createNewAccount(accountBO, userName, "");
     }
 
     private String getUserNameByIban(String iban) {

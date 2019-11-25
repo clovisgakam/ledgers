@@ -65,7 +65,7 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
 
     @Override
     public void updateAccountAccess(ScaInfoTO scaInfo, String userId, AccountAccessTO access) {
-        DepositAccountDetailsBO account = depositAccountService.getDepositAccountByIban(access.getIban(), LocalDateTime.now(), false);
+        DepositAccountDetailsBO account = depositAccountService.getAccountDetailsByIbanAndCurrency(access.getIban(), access.getCurrency(), LocalDateTime.now(), false);
         if (!account.isEnabled()) {
             throw MiddlewareModuleException.builder()
                           .errorCode(PAYMENT_PROCESSING_FAILURE)

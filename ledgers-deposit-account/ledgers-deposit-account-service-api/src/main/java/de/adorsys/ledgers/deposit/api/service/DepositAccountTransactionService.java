@@ -16,9 +16,12 @@
 
 package de.adorsys.ledgers.deposit.api.service;
 
-import de.adorsys.ledgers.deposit.db.domain.Payment;
+import de.adorsys.ledgers.deposit.api.domain.AmountBO;
+import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
+import de.adorsys.ledgers.postings.api.domain.PostingBO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Proceed with booking of payments orders.
@@ -27,5 +30,7 @@ import java.time.LocalDateTime;
  */
 public interface DepositAccountTransactionService {
 
-    void bookPayment(Payment payment, LocalDateTime postingTime, String userName);
+    List<PostingBO> bookPayment(PaymentBO payment, LocalDateTime postingTime, String userName);
+
+    void depositCash(String accountId, AmountBO amount, String user);
 }
