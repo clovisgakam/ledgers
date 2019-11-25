@@ -40,6 +40,8 @@ public class CubeType {
      * <p>
      * For example, to add a new item, do as follows:
      * getContent().add(newItem);
+     *
+     * @return List CubeTypes
      */
     public List<CubeType> getContent() {
         if (content == null) {

@@ -44,7 +44,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link CubeType }{@code >}}
      *
      * @param value value
-     * @return JAXBElement<CubeType>
+     * @return JAXBElement of CubeType
      */
     @XmlElementDecl(namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref", name = "Cube")
     public JAXBElement<CubeType> createCube(CubeType value) {
@@ -55,7 +55,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link CubeType }{@code >}}
      *
      * @param value value
-     * @return JAXBElement<CubeType>
+     * @return JAXBElement of CubeType
      */
     @XmlElementDecl(namespace = "http://www.ecb.int/vocabulary/2002-08-01/eurofxref", name = "Cube", scope = CubeType.class)
     public JAXBElement<CubeType> createCubeTypeCube(CubeType value) {
