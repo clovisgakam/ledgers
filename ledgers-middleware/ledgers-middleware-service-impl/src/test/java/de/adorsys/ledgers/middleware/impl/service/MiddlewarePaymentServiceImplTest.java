@@ -15,7 +15,6 @@ import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
-import de.adorsys.ledgers.middleware.api.service.ScaChallengeDataResolver;
 import de.adorsys.ledgers.middleware.impl.converter.*;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCancelPolicy;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCoreDataPolicy;
@@ -222,7 +221,6 @@ public class MiddlewarePaymentServiceImplTest {
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR, USD));
 
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
-        when(scaUtils.userBO(USER_ID)).thenReturn(userBO);
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
@@ -240,7 +238,6 @@ public class MiddlewarePaymentServiceImplTest {
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(Collections.emptyList());
 
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
-        when(scaUtils.userBO(USER_ID)).thenReturn(userBO);
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
@@ -258,7 +255,6 @@ public class MiddlewarePaymentServiceImplTest {
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.BLOCKED, EUR));
 
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
-        when(scaUtils.userBO(USER_ID)).thenReturn(userBO);
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
