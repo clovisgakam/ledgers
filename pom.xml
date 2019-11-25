@@ -527,6 +527,10 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<additionalOptions>-Xdoclint:none</additionalOptions>
+							<sourceFileExcludes>
+								<exclude>../ledgers-deposit-account-service-api/src/main/java/de/adorsys/ledgers/deposit/api/domain/exchange</exclude>
+								<exclude>*.java</exclude>
+							</sourceFileExcludes>
 						</configuration>
 						<executions>
 							<execution>
