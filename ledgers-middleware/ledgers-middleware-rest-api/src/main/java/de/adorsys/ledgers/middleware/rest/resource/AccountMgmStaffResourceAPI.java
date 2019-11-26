@@ -35,8 +35,7 @@ public interface AccountMgmStaffResourceAPI {
     String PAGE = "page";
     String SIZE = "size";
 
-    @ApiOperation(value = "TODO TEST",
-            notes = "TODO TEST",
+    @ApiOperation(value = "Retrieves account by iban and Currency",
             authorizations = @Authorization(value = "apiKey"))
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account creation successful"),

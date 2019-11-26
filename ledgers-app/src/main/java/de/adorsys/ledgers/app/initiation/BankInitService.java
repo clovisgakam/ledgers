@@ -11,6 +11,7 @@ import de.adorsys.ledgers.deposit.api.service.DepositAccountInitService;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountService;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountTransactionService;
 import de.adorsys.ledgers.middleware.api.domain.account.AccountDetailsTO;
+import de.adorsys.ledgers.middleware.api.domain.account.AccountReferenceTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.AmountTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.BulkPaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
@@ -25,6 +26,7 @@ import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 public class BankInitService {
@@ -118,21 +121,22 @@ public class BankInitService {
     private void performBulkPayments(List<UserTO> users) {
         for (BulkPaymentsData paymentsData : mockbankInitData.getBulkPayments()) {
             BulkPaymentTO payment = paymentsData.getBulkPayment();
+            AccountReferenceTO debtorAccount = payment.getDebtorAccount();
             try {
                 boolean isAbsentTransaction;
                 if (Optional.ofNullable(payment.getBatchBookingPreferred()).orElse(false)) {
                     isAbsentTransaction = isAbsentTransactionBatch(payment);
                 } else {
-                    isAbsentTransaction = isAbsentTransactionRegular(payment.getDebtorAccount().getIban(), payment.getDebtorAccount().getCurrency(), payment.getPayments().iterator().next().getEndToEndIdentification());
+                    isAbsentTransaction = isAbsentTransactionRegular(debtorAccount.getIban(), debtorAccount.getCurrency(), payment.getPayments().iterator().next().getEndToEndIdentification());
                 }
                 if (isAbsentTransaction) {
-                    UserTO user = getUserByIban(users, payment.getDebtorAccount().getIban());
+                    UserTO user = getUserByIban(users, debtorAccount.getIban());
                     restInitiationService.executePayment(user, PaymentTypeTO.BULK, payment);
                 }
             } catch (DepositModuleException e) {
                 logger.error(ACCOUNT_NOT_FOUND_MSG);
             } catch (UserManagementModuleException e) {
-                logger.error(NO_USER_BY_IBAN, payment.getDebtorAccount().getIban());
+                logger.error(NO_USER_BY_IBAN, debtorAccount.getIban());
             }
         }
     }
@@ -188,9 +192,14 @@ public class BankInitService {
 
     private Optional<BigDecimal> getBalanceFromInitData(AccountDetailsTO details) {
         return mockbankInitData.getBalances().stream()
-                       .filter(b -> StringUtils.equals(b.getAccNbr(), details.getIban()) && b.getCurrency().equals(details.getCurrency()))
+                       .filter(getAccountBalancePredicate(details))
                        .findFirst()
                        .map(AccountBalance::getBalance);
+    }
+
+    @NotNull
+    private Predicate<AccountBalance> getAccountBalancePredicate(AccountDetailsTO details) {
+        return b -> StringUtils.equals(b.getAccNbr(), details.getIban()) && b.getCurrency().equals(details.getCurrency());
     }
 
     private DepositAccountBO createAccount(AccountDetailsTO details) {

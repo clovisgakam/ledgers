@@ -11,7 +11,7 @@ import java.util.Set;
 @Api(tags = "LDG011 - Data management (STAFF access)")
 public interface DataMgmtStaffAPI {
     String BASE_PATH = "/staff-access/data";
-//TODO CONSIDER REFACTORING TO USE ACCOUNT-ID AS SIMPLE IBAN IS NOT A VALID IDENTIFIER ANYMORE
+//TODO CONSIDER REFACTORING TO USE ACCOUNT-ID AS SIMPLE IBAN IS NOT A VALID IDENTIFIER ANYMORE https://git.adorsys.de/adorsys/xs2a/psd2-dynamic-sandbox/issues/467
     @DeleteMapping(value = "/transactions/{iban}")
     @ApiOperation(value = "Removes all transactions for account", authorizations = @Authorization(value = "apiKey"))
     @ApiResponses(value = {

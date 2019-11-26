@@ -120,14 +120,14 @@ public class DepositAccountTransactionServiceImpl extends AbstractServiceImpl im
      * and each single payment will be individually sent to this method.
      */
     @Override
-    public List<PostingBO> bookPayment(PaymentBO payment, LocalDateTime pstTime, String userName) {
+    public void bookPayment(PaymentBO payment, LocalDateTime pstTime, String userName) {
         String oprDetails = serializeService.serializeOprDetails(paymentMapper.toPaymentOrder(payment));
         LedgerBO ledger = loadLedger();
 
         Set<PostingBO> postings = payment.getPaymentType() == PaymentTypeBO.BULK && Optional.ofNullable(payment.getBatchBookingPreferred()).orElse(false)
                                           ? createBatchPostings(pstTime, oprDetails, ledger, payment, userName)
                                           : createRegularPostings(pstTime, oprDetails, ledger, payment, userName);
-        return postings.stream().map(postingService::newPosting).collect(Collectors.toList());
+        postings.forEach(postingService::newPosting);
     }
 
     private Set<PostingBO> createRegularPostings(LocalDateTime pstTime, String oprDetails, LedgerBO ledger, PaymentBO payment, String userName) {
