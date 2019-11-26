@@ -88,7 +88,7 @@ public class AccessService {
         return accountAccesses.stream()
                        .filter(ac -> StringUtils.equalsIgnoreCase(ac.getIban(), debtorAccount))
                        .map(AccountAccessBO::getScaWeight)
-                       .findFirst()
+                       .min(Comparator.comparingInt(Integer::intValue))
                        .orElse(0);
     }
 

@@ -18,6 +18,7 @@ import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,9 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
     private final AccessService accessService;
     private final UserMapper userTOMapper = Mappers.getMapper(UserMapper.class);
     private final PageMapper pageMapper;
+
+    @Value("${sca.multilevel.enabled:false}")
+    private boolean multilevelScaEnable;
 
     @Override
     public UserTO create(UserTO user) {
@@ -126,5 +130,22 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
                       .errorCode(INSUFFICIENT_PERMISSION)
                       .devMsg("User doesn't belong to your branch!")
                       .build();
+    }
+
+    @Override
+    public boolean checkMultilevelScaRequired(String login, String iban) {
+        if (!multilevelScaEnable) {
+            return false;
+        }
+        UserBO user = userService.findByLogin(login);
+
+        if (!user.hasAccessToAccount(iban)) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .devMsg("User doesn't have access to the requested account")
+                          .build();
+        }
+
+        return accessService.resolveScaWeightByDebtorAccount(user.getAccountAccesses(), iban) < 100;
     }
 }
