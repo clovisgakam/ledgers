@@ -45,7 +45,7 @@ public interface UserMgmtRestAPI {
             @ApiResponse(code = 200, response = UserTO.class, message = "The user data record without the user pin."),
             @ApiResponse(code = 409, message = "Conflict. A user with email or login name already exist.")
     })
-    ResponseEntity<Boolean> register(@RequestParam("login") String login, @RequestParam("iban") String iban);
+    ResponseEntity<Boolean> multilevel(@RequestParam("login") String login, @RequestParam("iban") String iban);
 
     /**
      * Registers a new user with the system. Activation is dependent on the user role.

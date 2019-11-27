@@ -54,7 +54,7 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     private final ScaInfoHolder scaInfoHolder;
 
     @Override
-    public ResponseEntity<Boolean> register(String login, String iban) {
+    public ResponseEntity<Boolean> multilevel(String login, String iban) {
         return ResponseEntity.ok(middlewareUserService.checkMultilevelScaRequired(login, iban));
     }
 

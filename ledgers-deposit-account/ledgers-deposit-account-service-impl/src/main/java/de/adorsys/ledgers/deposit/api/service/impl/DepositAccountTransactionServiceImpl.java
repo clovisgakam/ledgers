@@ -32,6 +32,7 @@ import de.adorsys.ledgers.postings.api.service.LedgerService;
 import de.adorsys.ledgers.postings.api.service.PostingService;
 import de.adorsys.ledgers.util.Ids;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -237,7 +238,7 @@ public class DepositAccountTransactionServiceImpl extends AbstractServiceImpl im
     }
 
     private BigDecimal parseBD(String value) {
-        return BigDecimal.valueOf(Double.parseDouble(value));
+        return NumberUtils.createBigDecimal(value);
     }
 
     private LedgerAccountBO getLedgerAccount(LedgerBO ledger, PaymentProductBO paymentProduct, AccountReferenceBO reference, boolean isDebitLine, boolean isFirstLine, boolean isAllCurrenciesMatch) {
