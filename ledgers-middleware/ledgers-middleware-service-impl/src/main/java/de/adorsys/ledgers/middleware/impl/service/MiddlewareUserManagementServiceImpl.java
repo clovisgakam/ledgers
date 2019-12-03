@@ -19,6 +19,7 @@ import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +158,11 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
             return false;
         }
         UserBO user = userService.findByLogin(login);
+
+        if (CollectionUtils.isEmpty(references)) {
+            return user.getAccountAccesses().stream()
+                           .anyMatch(a -> a.getScaWeight() < 100);
+        }
         boolean allMatch = references.stream()
                                    .allMatch(r -> Optional.ofNullable(r.getCurrency())
                                                           .map(c -> user.hasAccessToAccount(r.getIban(), c))
@@ -171,9 +176,7 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
 
         return user.getAccountAccesses().stream()
                        .filter(a -> contained(a, references))
-                       .min(Comparator.comparing(AccountAccessBO::getScaWeight))
-                       .map(AccountAccessBO::getScaWeight)
-                       .orElse(0) < 100;
+                       .anyMatch(a -> a.getScaWeight() < 100);
     }
 
     private boolean contained(AccountAccessBO access, List<AccountReferenceTO> references) {
