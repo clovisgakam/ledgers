@@ -10,10 +10,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.SinglePaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
-import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
-import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
-import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
-import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
+import de.adorsys.ledgers.middleware.api.domain.um.*;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.impl.converter.*;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCoreDataPolicy;
@@ -23,6 +20,7 @@ import de.adorsys.ledgers.sca.domain.OpTypeBO;
 import de.adorsys.ledgers.sca.service.SCAOperationService;
 import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
+import de.adorsys.ledgers.um.api.domain.UserTypeBO;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
@@ -64,6 +62,8 @@ public class MiddlewarePaymentServiceImplTest {
     private static final String EMAIL_TEMPLATE = "The TAN for your one time sepa-credit-transfers order to Rozetka.ua at date 12-12-2018; account DE91100000000123456789; EUR 100 is: %s";
     private static final String USER_LOGIN = "userLogin";
     private static final String IBAN = "DE1234567890";
+    private static final UserTypeBO USER_TYPE_BO = UserTypeBO.FAKE;
+    private static final UserTypeTO USER_TYPE_TO = UserTypeTO.FAKE;
     private static final Currency EUR = Currency.getInstance("EUR");
     private static final Currency USD = Currency.getInstance("USD");
 
@@ -128,7 +128,6 @@ public class MiddlewarePaymentServiceImplTest {
         verify(paymentService, times(1)).getPaymentStatusById(PAYMENT_ID);
     }
 
-
     @Test
     public void generateAuthCode() {
         UserBO userBO = readYml(UserBO.class, "user1.yml");
@@ -184,8 +183,8 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.getTargets().get(0).setPaymentProduct(PaymentProductBO.INSTANT_SEPA);
-        UserBO userBO = new UserBO("Test", "", "");
-        UserTO userTO = new UserTO("Test", "", "");
+        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
+        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR));
 
@@ -207,8 +206,8 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.getTargets().get(0).setPaymentProduct(PaymentProductBO.INSTANT_SEPA);
-        UserBO userBO = new UserBO("Test", "", "");
-        UserTO userTO = new UserTO("Test", "", "");
+        UserBO userBO = new UserBO("Test", "", "",USER_TYPE_BO);
+        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR, USD));
 
@@ -224,8 +223,8 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.getTargets().get(0).setPaymentProduct(PaymentProductBO.INSTANT_SEPA);
-        UserBO userBO = new UserBO("Test", "", "");
-        UserTO userTO = new UserTO("Test", "", "");
+        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
+        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(Collections.emptyList());
 
@@ -241,8 +240,8 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.getTargets().get(0).setPaymentProduct(PaymentProductBO.INSTANT_SEPA);
-        UserBO userBO = new UserBO("Test", "", "");
-        UserTO userTO = new UserTO("Test", "", "");
+        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
+        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.BLOCKED, EUR));
 
@@ -250,7 +249,6 @@ public class MiddlewarePaymentServiceImplTest {
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
-
 
     private List<DepositAccountBO> getAccounts(AccountStatusBO status, Currency... currency) {
         return Arrays.stream(currency)

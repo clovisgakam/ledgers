@@ -1,6 +1,7 @@
 package de.adorsys.ledgers.um.db.repository;
 
 import de.adorsys.ledgers.um.db.domain.ScaMethodType;
+import de.adorsys.ledgers.um.db.domain.UserType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class ScaUserDataRepositoryIT {
         user.setPin("1234");
         user.setLogin("vne");
         user.setEmail("vne@adorsys.de");
+        user.setUserType(UserType.FAKE);
 
         user.getScaUserData().add(data);
         user = userRepository.save(user);

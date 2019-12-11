@@ -19,6 +19,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.SinglePaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.um.AccountAccessTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
+import de.adorsys.ledgers.middleware.api.domain.um.UserTypeTO;
 import de.adorsys.ledgers.middleware.api.service.CurrencyService;
 import de.adorsys.ledgers.middleware.impl.converter.AccountDetailsMapper;
 import de.adorsys.ledgers.middleware.impl.converter.UserMapper;
@@ -90,7 +91,7 @@ public class BankInitService {
             userService.findByLogin("admin");
             logger.error("Admin user is already present. Skipping creation");
         } catch (UserManagementModuleException e) { //TODO GET RID of Exception Driven Logic https://git.adorsys.de/adorsys/xs2a/psd2-dynamic-sandbox/issues/211
-            UserTO admin = new UserTO("admin", "admin@mail.de", "admin123"); //TODO Matter of refactoring
+            UserTO admin = new UserTO("admin", "admin@mail.de", "admin123", UserTypeTO.FAKE); //TODO Matter of refactoring
             admin.setUserRoles(Collections.singleton(UserRoleTO.SYSTEM));
             createUser(admin);
         }
