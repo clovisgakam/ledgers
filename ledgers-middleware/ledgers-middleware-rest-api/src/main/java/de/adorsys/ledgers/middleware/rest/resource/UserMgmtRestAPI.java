@@ -68,7 +68,7 @@ public interface UserMgmtRestAPI {
                                                                                                        + "<ul>"
                                                                                                        + "<li>A user is always registered as customer and is activated by default.</li>"
                                                                                                        + "<li>A user can only be given another role by an administrating STAFF member.</li>"
-                                                                                                       + "<li>Choose type 'FAKE' if you don'twant to receive any messages.</li>"
+                                                                                                       + "<li>Choose type 'FAKE' if you don't want to receive any messages.</li>"
                                                                                                        + "</ul>")
     @ApiResponses(value = {
             @ApiResponse(code = 200, response = UserTO.class, message = "The user data record without the user pin."),
