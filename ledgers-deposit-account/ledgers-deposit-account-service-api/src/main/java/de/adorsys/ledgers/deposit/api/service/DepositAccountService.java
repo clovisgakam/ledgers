@@ -57,5 +57,8 @@ public interface DepositAccountService {
 
     void deleteBranch(String branchId);
 
+    /**
+     * @deprecated should be removed after next release
+     */
     DepositAccountDetailsBO getDetailsByIban(String iban, LocalDateTime refTime, boolean withBalances);
 }

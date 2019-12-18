@@ -117,7 +117,7 @@ public class AccountResource implements AccountRestAPI {
     /**
      * @param iban
      * @return
-     * @deprecated: user request param instead
+     * @deprecated: should be removed after next release
      */
     @Override
     @PreAuthorize("accountInfoByIban(#iban)")

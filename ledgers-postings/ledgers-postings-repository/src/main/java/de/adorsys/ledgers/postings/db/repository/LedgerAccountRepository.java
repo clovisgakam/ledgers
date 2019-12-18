@@ -12,6 +12,7 @@ public interface LedgerAccountRepository extends NamedEntityRepository<LedgerAcc
 
     Optional<LedgerAccount> findOptionalByLedgerAndName(Ledger ledger, String name);
 
+    //TODO should be removed after next release
     @Query(value = "select distinct a from  LedgerAccount a where a.ledger=?2 and a.name in ?1")
     List<LedgerAccount> getAccountsByIbans(Set<String> ibans, Ledger ledger);
 
