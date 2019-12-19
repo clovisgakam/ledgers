@@ -226,7 +226,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     }
 
     @Override
-    public List<PaymentTO> gePendingPeriodicPayments(ScaInfoTO scaInfoTO) {
+    public List<PaymentTO> getPendingPeriodicPayments(ScaInfoTO scaInfoTO) {
         List<AccountReferenceBO> referenceList = detailsMapper.toAccountReferenceList(scaUtils.userBO(scaInfoTO.getUserId()).getAccountAccesses());
         List<PaymentBO> payments = paymentService.getPaymentsByTypeStatusAndDebtor(PaymentTypeBO.PERIODIC, ACSP, referenceList);
 

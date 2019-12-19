@@ -112,5 +112,5 @@ public interface MiddlewarePaymentService {
 
     SCAPaymentResponseTO authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
 
-    List<PaymentTO> gePendingPeriodicPayments(ScaInfoTO scaInfoTO);
+    List<PaymentTO> getPendingPeriodicPayments(ScaInfoTO scaInfoTO);
 }

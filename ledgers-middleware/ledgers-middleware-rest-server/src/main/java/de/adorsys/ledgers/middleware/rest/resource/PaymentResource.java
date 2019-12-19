@@ -56,7 +56,7 @@ public class PaymentResource implements PaymentRestAPI {
 
     @Override
     public ResponseEntity<List<PaymentTO>> getPendingPeriodicPayments() {
-        return ResponseEntity.ok(paymentService.gePendingPeriodicPayments(scaInfoHolder.getScaInfo()));
+        return ResponseEntity.ok(paymentService.getPendingPeriodicPayments(scaInfoHolder.getScaInfo()));
     }
 
     @Override
