@@ -126,7 +126,7 @@ public interface AccountRestAPI {
     /**
      * @param iban : the iban
      * @return : account details
-     * @deprecated: should be removed after next release
+     * @deprecated: user request param instead
      */
     @GetMapping(path = "/query", params = {IBAN_QUERY_PARAM})
     @ApiOperation(value = "Load Account Details By IBAN", authorizations = @Authorization(value = "apiKey"), notes = "Returns account details information given the account IBAN")

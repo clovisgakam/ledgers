@@ -78,7 +78,7 @@ public interface MiddlewareAccountManagementService {
      * @param time        the reference time.
      * @param withBalance boolean specifying if Balances has to be added to AccountDetails
      * @return account details.
-     * @deprecated should be removed after next release
+     * @deprecated shall be removed in v2.5
      */
     AccountDetailsTO getDepositAccountByIban(String iban, LocalDateTime time, boolean withBalance);
 
