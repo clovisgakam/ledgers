@@ -104,6 +104,10 @@ public class Payment {
     @Column(nullable = false)
     private AccountReference debtorAccount;
 
+    private String debtorName;
+
+    private String debtorAgent;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus transactionStatus;
@@ -111,7 +115,7 @@ public class Payment {
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private List<PaymentTarget> targets = new ArrayList<>();
 
-    public boolean isLastExecuted(LocalDate nextPossibleExecutionDate){
+    public boolean isLastExecuted(LocalDate nextPossibleExecutionDate) {
         return endDate != null && nextPossibleExecutionDate.isAfter(endDate);
     }
 }
