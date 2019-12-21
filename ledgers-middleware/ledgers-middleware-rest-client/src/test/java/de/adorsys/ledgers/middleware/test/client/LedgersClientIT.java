@@ -175,7 +175,7 @@ public class LedgersClientIT {
         access.setCurrency(Currency.getInstance("EUR"));
         access.setAccessType(accessType);
         access.setScaWeight(scaWeight);
-        access.setAccountId("12345678");
+        access.setAccountId(account.getId());
         return access;
     }
 

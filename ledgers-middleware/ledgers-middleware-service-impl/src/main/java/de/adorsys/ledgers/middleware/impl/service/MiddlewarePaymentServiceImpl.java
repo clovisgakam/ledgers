@@ -118,6 +118,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     private SCAPaymentResponseTO checkPaymentAndPrepareResponse(ScaInfoTO scaInfoTO, PaymentBO paymentBO) {
         validatePayment(paymentBO);
         DepositAccountBO debtorAccount = checkAccountStatusAndCurrencyMatch(paymentBO.getDebtorAccount());
+        paymentBO.setAccountId(debtorAccount.getId());
         try {
             paymentBO.getTargets()
                     .forEach(t -> {
