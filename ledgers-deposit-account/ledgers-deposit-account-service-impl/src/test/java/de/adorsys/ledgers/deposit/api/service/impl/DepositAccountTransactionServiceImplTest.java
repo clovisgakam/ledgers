@@ -255,7 +255,7 @@ public class DepositAccountTransactionServiceImplTest {
         return Stream.of(curr1, curr2)
                        .filter(Objects::nonNull)
                        .map(this::getReference)
-                       .map(r -> new PaymentTargetBO(nextTargetId(), "END-TO-END", getAmount(amount), r, null, "name", null, null, null, null, null))
+                       .map(r -> new PaymentTargetBO(nextTargetId(), "END-TO-END", getAmount(amount), r, null, "name", null, null, null, null, null, null))
                        .collect(Collectors.toList());
     }
 
