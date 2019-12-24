@@ -57,6 +57,4 @@
     <include file="migration/0022-add-column-account-id-to-account-accesses-and-payment-tables.xml" relativeToChangelogFile="true" />
     <include file="migration/0023-extend-payment-related-tables.xml" relativeToChangelogFile="true" />
 
-    <include file="migration/0023-extend-payment-related-tables.xml" relativeToChangelogFile="true" />
-
 </databaseChangeLog>
