@@ -1,0 +1,64 @@
+debtorPart:
+  batchBookingPreferred:
+    - batchBookingPreferred
+  requestedExecutionTime:
+    - requestedExecutionTime
+  startDate:
+    - startDate
+  endDate:
+    - endDate
+  executionRule:
+    - executionRule
+  frequency:
+    - frequency
+  dayOfExecution:
+    - dayOfExecution
+  debtorAccount:
+    - debtorAccount
+  debtorAgent:
+    - debtorAgent
+  debtorName:
+    - debtorName
+  transactionStatus:
+    - transactionStatus
+creditorPart:
+  endToEndIdentification:
+    - endToEndIdentification
+  instructedAmount:
+    - instructedAmount
+  currencyOfTransfer:
+    - currencyOfTransfer
+  creditorAccount:
+    - creditorAccount
+  creditorAgent:
+    - creditorAgent
+  creditorName:
+    - creditorName
+  purposeCode:
+    - purposeCode
+  remittanceInformationUnstructured:
+    - remittanceInformationUnstructured
+  remittanceInformationStructured:
+    - remittanceInformationStructured
+  chargeBearer:
+    - chargeBearer
+  creditorAddress:
+    - creditorAddress
+address:
+  street:
+    - street
+    - streetName
+  buildingNumber:
+    - buildingNumber
+  city:
+    - city
+    - townName
+  postalCode:
+    - postalCode
+    - postCode
+  country:
+    - country
+  line1:
+    - line1
+  line2:
+    - line2

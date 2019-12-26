@@ -19,6 +19,7 @@ package de.adorsys.ledgers.app;
 import de.adorsys.ledgers.app.initiation.BankInitService;
 import de.adorsys.ledgers.deposit.api.client.ExchangeRateClient;
 import de.adorsys.ledgers.deposit.api.service.EnableDepositAccountService;
+import de.adorsys.ledgers.middleware.client.EnableLedgersMiddlewareRestClient;
 import de.adorsys.ledgers.middleware.client.rest.AccountRestClient;
 import de.adorsys.ledgers.middleware.impl.EnableLedgersMiddlewareService;
 import de.adorsys.ledgers.middleware.rest.EnableLedgersMiddlewareRest;
@@ -48,6 +49,7 @@ import java.util.Arrays;
 @EnableDepositAccountService
 @EnableLedgersMiddlewareService
 @EnableLedgersMiddlewareRest
+@EnableLedgersMiddlewareRestClient
 @EnableUtils
 @EnableFeignClients(basePackageClasses = {AccountRestClient.class, ExchangeRateClient.class})
 public class LedgersApplication implements ApplicationListener<ApplicationReadyEvent> {
