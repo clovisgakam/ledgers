@@ -1,6 +1,12 @@
 debtorPart:
+  paymentId:
+    - paymentId
+    - PmtInfId
   batchBookingPreferred:
     - batchBookingPreferred
+  requestedExecutionDate:
+    - requestedExecutionDate
+    - ReqdExctnDt
   requestedExecutionTime:
     - requestedExecutionTime
   startDate:
@@ -15,33 +21,44 @@ debtorPart:
     - dayOfExecution
   debtorAccount:
     - debtorAccount
+    - DbtrAcct
   debtorAgent:
     - debtorAgent
+    - DbtrAgt
   debtorName:
     - debtorName
+    - Dbtr
   transactionStatus:
     - transactionStatus
+  targets:
+    - payments
 creditorPart:
   endToEndIdentification:
     - endToEndIdentification
+    - EndToEndId
   instructedAmount:
     - instructedAmount
+    - InstdAmt
   currencyOfTransfer:
     - currencyOfTransfer
   creditorAccount:
     - creditorAccount
+    - CdtrAcct
   creditorAgent:
     - creditorAgent
   creditorName:
     - creditorName
+    - Cdtr
   purposeCode:
     - purposeCode
   remittanceInformationUnstructured:
     - remittanceInformationUnstructured
+    - Ustrd
   remittanceInformationStructured:
     - remittanceInformationStructured
   chargeBearer:
     - chargeBearer
+    - ChrgBr
   creditorAddress:
     - creditorAddress
 address:
@@ -62,3 +79,17 @@ address:
     - line1
   line2:
     - line2
+reference:
+  iban:
+    - iban
+    - IBAN
+  currency:
+    - currency
+    - Ccy
+amount:
+  amount:
+    - amount
+    - ""
+  currency:
+    - currency
+    - Ccy

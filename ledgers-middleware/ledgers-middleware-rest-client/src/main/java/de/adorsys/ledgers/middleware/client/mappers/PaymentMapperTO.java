@@ -13,10 +13,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO.BULK;
 
@@ -28,6 +30,9 @@ public class PaymentMapperTO {
     private Map<String, List<String>> debtorPart;
     private Map<String, List<String>> creditorPart;
     private Map<String, List<String>> address;
+    private Map<String, List<String>> reference;
+    private Map<String, List<String>> amount;
+
     @JsonIgnore
     private ObjectMapper mapper;
     @JsonIgnore
@@ -56,8 +61,11 @@ public class PaymentMapperTO {
     private List<PaymentTargetTO> parseCreditorParts(JsonNode node, PaymentTypeTO type) {
         List<PaymentTargetTO> targets = new ArrayList<>();
         if (type == BULK) {
-            node.get("payments").elements()
-                    .forEachRemaining(n -> targets.add(mapTarget(n)));
+            debtorPart.get("targets").stream()
+                    .map(node::findValue)
+                    .filter(Objects::nonNull)
+                    .forEach(n -> n.elements()
+                                          .forEachRemaining(t -> targets.add(mapTarget(t))));
         } else {
             targets.add(mapTarget(node));
         }
@@ -69,27 +77,27 @@ public class PaymentMapperTO {
         paymentTO.setPaymentProduct(paymentProduct);
         paymentTO.setPaymentType(PaymentTypeTO.valueOf(paymentType));
 
-        mapProperties(debtorPart, "batchBookingPreferred", node, paymentTO::setRequestedExecutionDate, LocalDate.class);
-        mapProperties(debtorPart, "requestedExecutionTime", node, paymentTO::setRequestedExecutionTime, LocalTime.class);
+        mapProperties(debtorPart, "paymentId", node, paymentTO::setPaymentId, String.class);
+        mapProperties(debtorPart, "batchBookingPreferred", node, paymentTO::setBatchBookingPreferred, boolean.class);
+        mapProperties(debtorPart, "requestedExecutionDate", node, paymentTO::setRequestedExecutionDate, LocalDate.class);
         mapProperties(debtorPart, "requestedExecutionTime", node, paymentTO::setRequestedExecutionTime, LocalTime.class);
         mapProperties(debtorPart, "startDate", node, paymentTO::setStartDate, LocalDate.class);
         mapProperties(debtorPart, "endDate", node, paymentTO::setEndDate, LocalDate.class);
         mapProperties(debtorPart, "executionRule", node, paymentTO::setExecutionRule, String.class);
         mapProperties(debtorPart, "frequency", node, paymentTO::setFrequency, FrequencyCodeTO.class);
         mapProperties(debtorPart, "dayOfExecution", node, paymentTO::setDayOfExecution, Integer.class);
-        mapProperties(debtorPart, "debtorAccount", node, paymentTO::setDebtorAccount, AccountReferenceTO.class);
         mapProperties(debtorPart, "debtorAgent", node, paymentTO::setDebtorAgent, String.class);
         mapProperties(debtorPart, "debtorName", node, paymentTO::setDebtorName, String.class);
         mapProperties(debtorPart, "transactionStatus", node, paymentTO::setTransactionStatus, TransactionStatusTO.class);
+
+        fillEmbeddedProperty(debtorPart, "debtorAccount", node, this::mapReference, paymentTO::setDebtorAccount);
         return paymentTO;
     }
 
     private PaymentTargetTO mapTarget(JsonNode node) {
         PaymentTargetTO target = new PaymentTargetTO();
         mapProperties(creditorPart, "endToEndIdentification", node, target::setEndToEndIdentification, String.class);
-        mapProperties(creditorPart, "instructedAmount", node, target::setInstructedAmount, AmountTO.class);
         mapProperties(creditorPart, "currencyOfTransfer", node, target::setCurrencyOfTransfer, Currency.class);
-        mapProperties(creditorPart, "creditorAccount", node, target::setCreditorAccount, AccountReferenceTO.class);
         mapProperties(creditorPart, "creditorAgent", node, target::setCreditorAgent, String.class);
         mapProperties(creditorPart, "creditorName", node, target::setCreditorName, String.class);
         mapProperties(creditorPart, "purposeCode", node, target::setPurposeCode, PurposeCodeTO.class);
@@ -97,8 +105,17 @@ public class PaymentMapperTO {
         mapProperties(creditorPart, "remittanceInformationStructured", node, target::setRemittanceInformationStructured, RemittanceInformationStructuredTO.class);
         mapProperties(creditorPart, "chargeBearer", node, target::setChargeBearerTO, ChargeBearerTO.class);
 
-        target.setCreditorAddress(mapAddress(node.get("creditorAddress")));
+        fillEmbeddedProperty(creditorPart, "creditorAccount", node, this::mapReference, target::setCreditorAccount);
+        fillEmbeddedProperty(creditorPart, "instructedAmount", node, this::mapAmount, target::setInstructedAmount);
+        fillEmbeddedProperty(creditorPart, "creditorAddress", node, this::mapAddress, target::setCreditorAddress);
         return target;
+    }
+
+    private AccountReferenceTO mapReference(JsonNode node) {
+        AccountReferenceTO account = new AccountReferenceTO();
+        mapProperties(reference, "iban", node, account::setIban, String.class);
+        mapProperties(reference, "currency", node, account::setCurrency, Currency.class);
+        return account;
     }
 
     private AddressTO mapAddress(JsonNode node) {
@@ -113,22 +130,46 @@ public class PaymentMapperTO {
         return addressTO;
     }
 
+    private AmountTO mapAmount(JsonNode node) {
+        AmountTO instructedAmount = new AmountTO();
+        mapProperties(amount, "amount", node, instructedAmount::setAmount, BigDecimal.class);
+        mapProperties(amount, "currency", node, instructedAmount::setCurrency, Currency.class);
+        return instructedAmount;
+    }
+
+    private <T> void fillEmbeddedProperty(Map<String, List<String>> map, String property, JsonNode node, Function<JsonNode, T> mappingMethod, Consumer<T> consumer) {
+        Optional.ofNullable(map.get(property))
+                .ifPresent(props -> mapEmbeddedProperty(node, mappingMethod, consumer, props));
+    }
+
+    private <T> void mapEmbeddedProperty(JsonNode node, Function<JsonNode, T> mappingMethod, Consumer<T> consumer, List<String> properties) {
+        properties.stream()
+                .map(node::findValue)
+                .filter(Objects::nonNull)
+                .map(mappingMethod)
+                .forEach(consumer);
+    }
+
     private <T> void mapProperties(Map<String, List<String>> map, String property, JsonNode node, Consumer<T> consumer, Class<T> clazz) {
         Optional.ofNullable(map.get(property))
                 .ifPresent(pr -> pr.forEach(p -> mapProperty(node, consumer, clazz, p)));
     }
 
-    private <T> void mapProperty(JsonNode node, Consumer<T> consumer, Class<T> clazz, String p) {
-        Optional.ofNullable(node.get(p))
+    private <T> void mapProperty(JsonNode node, Consumer<T> consumer, Class<T> clazz, String property) {
+        Optional.ofNullable(node.findValue(property))
                 .map(n -> mapObject(n, clazz))
                 .ifPresent(consumer);
     }
 
+    @SuppressWarnings("PMD.AvoidReassigningParameters")
     private <T> T mapObject(JsonNode node, Class<T> clazz) {
         try {
+            while (node.fields().hasNext()) {
+                node = node.fields().next().getValue();
+            }
             return mapper.readValue(node.toString(), clazz);
         } catch (IOException e) {
-            log.error("Read tree exception {}, {}", e.getCause(), e.getMessage());
+            log.error("Parse value exception {}", e.getMessage());
         }
         return null;
     }
