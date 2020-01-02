@@ -23,9 +23,8 @@ public interface UserVerificationRestAPI {
     @ApiOperation(tags = UnprotectedEndpoint.UNPROTECTED_ENDPOINT, value = "Confirm user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, response = Boolean.class, message = "User was successfully confirm."),
-            @ApiResponse(code = 400, message = "Invalid verification token for user confirmation."),
-            @ApiResponse(code = 403, message = "Verification token is expired for user confirmation."),
-            @ApiResponse(code = 409, message = "User already confirm.")
+            @ApiResponse(code = 400, message = "Invalid verification token for user confirmation or user already confirm."),
+            @ApiResponse(code = 403, message = "Verification token is expired for user confirmation.")
     })
     ResponseEntity<Boolean> confirmVerificationToken(@RequestParam("verificationToken") String token);
 }

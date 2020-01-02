@@ -37,7 +37,6 @@ public class UserManagementHttpStatusResolver {
 
         //409 Block
         container.put(USER_ALREADY_EXISTS, CONFLICT);
-        container.put(USER_ALREADY_CONFIRM, CONFLICT);
     }
 
     public static HttpStatus resolveHttpStatusByCode(UserManagementErrorCode code) {
