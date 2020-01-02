@@ -91,7 +91,8 @@ public class BankInitService {
             userService.findByLogin("admin");
             logger.info("Admin user is already present. Skipping creation");
         } catch (UserManagementModuleException e) {
-            UserTO admin = new UserTO("admin", "admin@mail.de", "admin123", UserTypeTO.FAKE);
+            UserTO admin = new UserTO("admin", "admin@mail.de", "admin123");
+            admin.setUserType(UserTypeTO.FAKE);
             admin.setUserRoles(Collections.singleton(UserRoleTO.SYSTEM));
             createUser(admin);
         }
@@ -228,6 +229,7 @@ public class BankInitService {
                 userService.findByLogin(user.getLogin());
             } catch (UserManagementModuleException e) {
                 user.getUserRoles().add(UserRoleTO.CUSTOMER);
+                user.setUserType(UserTypeTO.FAKE);
                 createUser(user);
             }
         }

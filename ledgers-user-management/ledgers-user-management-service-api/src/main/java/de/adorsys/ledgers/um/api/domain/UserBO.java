@@ -41,12 +41,10 @@ public class UserBO {
 
     public UserBO(@NotNull String login,
                   @NotNull String email,
-                  @NotNull String pin,
-                  @NotNull UserTypeBO userType) {
+                  @NotNull String pin) {
         this.login = login;
         this.email = email;
         this.pin = pin;
-        this.userType = userType;
     }
 
     @Override
@@ -99,5 +97,5 @@ public class UserBO {
                        .anyMatch(a -> StringUtils.equalsIgnoreCase(a.getIban(), iban) && a.getCurrency().equals(currency));
     }
 
-    public boolean isRealUser() { return getUserType() != UserTypeBO.FAKE; }
+    public boolean isRealUser() { return getUserType() == UserTypeBO.REAL; }
 }

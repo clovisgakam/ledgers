@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="oza@adorsys.com.ua" id="27-12-2019-01">
+        <comment>Create sequence for token id</comment>
+        <createSequence sequenceName="email_verification_id_seq"/>
+    </changeSet>
+
+    <changeSet author="oza@adorsys.com.ua" id="27-12-2019-02">
+        <comment>Create table email_verification</comment>
+
+        <createTable tableName="email_verification">
+            <column name="token_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="token" type="VARCHAR(225)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="expired_date_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="issued_date_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="confirmed_date_time" type="DATETIME">
+            </column>
+
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="oza@adorsys.com.ua" id="27-12-2019-03">
+        <comment>Create foreign key in email_verification table</comment>
+        <addForeignKeyConstraint baseTableName="email_verification"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_users"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="user_id"
+                                 referencedTableName="users"
+        />
+    </changeSet>
+</databaseChangeLog>

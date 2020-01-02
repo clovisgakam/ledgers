@@ -30,6 +30,7 @@ public class UserTO {
 
     private String branch;
     @NotNull
+    @JsonIgnore
     private UserTypeTO userType;
 
     @JsonIgnore
@@ -37,11 +38,10 @@ public class UserTO {
         return CollectionUtils.isEmpty(userRoles);
     }
 
-    public UserTO(String login, String email, String pin, UserTypeTO userType) {
+    public UserTO(String login, String email, String pin) {
         this.login = login;
         this.email = email;
         this.pin = pin;
-        this.userType = userType;
     }
 
     @JsonIgnore

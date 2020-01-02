@@ -34,7 +34,7 @@ import javax.persistence.*;
         @UniqueConstraint(columnNames = "email", name = UserEntity.USER_EMAIL_UNIQUE)
 })
 public class UserEntity {
-	
+
 	public static final String USER_LOGIN_UNIQUE = "user_login_unique";
 	public static final String USER_EMAIL_UNIQUE = "user_email_unique";
 
@@ -71,6 +71,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @OneToOne(mappedBy = "user")
+    private EmailVerificationEntity emailVerification;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -88,11 +91,12 @@ public class UserEntity {
                 Objects.equals(getAccountAccesses(), that.getAccountAccesses()) &&
                 Objects.equals(getUserRoles(), that.getUserRoles()) &&
                 Objects.equals(getBranch(), that.getBranch()) &&
-                Objects.equals(getUserType(),that.getUserType());
+                Objects.equals(getUserType(),that.getUserType()) &&
+                Objects.equals(getEmailVerification(),that.getEmailVerification());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), getUserType());
+        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), getUserType(), getEmailVerification());
     }
 }

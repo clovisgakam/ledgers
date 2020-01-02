@@ -185,8 +185,10 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
-        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
-        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
+        UserBO userBO = new UserBO("Test", "", "");
+        UserTO userTO = new UserTO("Test", "", "");
+        userBO.setUserType(USER_TYPE_BO);
+        userTO.setUserType(USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR));
 
@@ -209,8 +211,10 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
-        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
-        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
+        UserBO userBO = new UserBO("Test", "", "");
+        UserTO userTO = new UserTO("Test", "", "");
+        userBO.setUserType(USER_TYPE_BO);
+        userTO.setUserType(USER_TYPE_TO);
 
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
@@ -224,8 +228,10 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
-        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
-        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
+        UserBO userBO = new UserBO("Test", "", "");
+        UserTO userTO = new UserTO("Test", "", "");
+        userBO.setUserType(USER_TYPE_BO);
+        userTO.setUserType(USER_TYPE_TO);
 
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
 
@@ -241,8 +247,10 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
-        UserBO userBO = new UserBO("Test", "", "", USER_TYPE_BO);
-        UserTO userTO = new UserTO("Test", "", "", USER_TYPE_TO);
+        UserBO userBO = new UserBO("Test", "", "");
+        UserTO userTO = new UserTO("Test", "", "");
+        userBO.setUserType(USER_TYPE_BO);
+        userTO.setUserType(USER_TYPE_TO);
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
 

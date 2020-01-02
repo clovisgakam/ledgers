@@ -20,6 +20,7 @@ import de.adorsys.ledgers.middleware.api.domain.sca.SCALoginResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
+import de.adorsys.ledgers.middleware.api.domain.um.UserTypeTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.AppManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareOnlineBankingService;
@@ -76,7 +77,7 @@ public class AppMgmtResource implements AppMgmtRestAPI {
         user.setPin(adminUser.getPin());
         user.setEmail(adminUser.getEmail());
         user.getUserRoles().add(UserRoleTO.SYSTEM);
-        user.setUserType(adminUser.getUserType());
+        user.setUserType(UserTypeTO.FAKE);
         userManagementService.create(user);
 
         SCALoginResponseTO scaLoginResponseTO = middlewareUserService.authorise(adminUser.getLogin(), adminUser.getPin(), UserRoleTO.SYSTEM);

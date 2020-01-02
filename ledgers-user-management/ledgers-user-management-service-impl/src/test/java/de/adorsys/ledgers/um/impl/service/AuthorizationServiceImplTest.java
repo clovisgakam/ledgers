@@ -94,9 +94,10 @@ public class AuthorizationServiceImplTest {
     }
 
     private UserBO getUser() {
-        UserBO user = new UserBO(USER_LOGIN, USER_EMAIL, USER_PIN, USER_TYPE);
+        UserBO user = new UserBO(USER_LOGIN, USER_EMAIL, USER_PIN);
         user.setId(USER_ID);
         user.setUserRoles(Collections.singletonList(UserRoleBO.CUSTOMER));
+        user.setUserType(USER_TYPE);
         user.setAccountAccesses(getAccesses());
         return user;
     }
