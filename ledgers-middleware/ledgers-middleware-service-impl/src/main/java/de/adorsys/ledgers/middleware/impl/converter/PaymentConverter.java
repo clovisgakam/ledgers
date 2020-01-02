@@ -74,32 +74,7 @@ public interface PaymentConverter {
         return PaymentProductTO.getByValue(paymentProduct).get();
     }
 
-    public abstract PaymentBO toPaymentBO(PaymentTO payment);
-
-    @Mapping(target = "paymentType", expression = "java(PaymentTypeBO.SINGLE)")
-    @Mapping(source = "paymentStatus", target = "transactionStatus")
-    @Mapping(target = "paymentProduct", expression = "java(payment.getPaymentProduct().getValue())")
-    @Mapping(target = "targets", expression = "java(java.util.Collections.singletonList(toPaymentTarget(payment)))")
-    PaymentBO toPaymentBO(SinglePaymentTO payment);
-
-    @Mapping(target = "paymentType", expression = "java(PaymentTypeBO.PERIODIC)")
-    @Mapping(source = "paymentStatus", target = "transactionStatus")
-    @Mapping(target = "paymentProduct", expression = "java(payment.getPaymentProduct().getValue())")
-    @Mapping(target = "targets", expression = "java(java.util.Collections.singletonList(toPaymentTarget(payment)))")
-    PaymentBO toPaymentBO(PeriodicPaymentTO payment);
-
-    @Mapping(target = "paymentType", expression = "java(PaymentTypeBO.BULK)")
-    @Mapping(target = "requestedExecutionTime", expression = "java(java.util.Optional.ofNullable(payment.getPayments()).map(l -> l.get(0).getRequestedExecutionTime()).orElse(null))")
-    @Mapping(source = "paymentStatus", target = "transactionStatus")
-    @Mapping(target = "paymentProduct", expression = "java(payment.getPaymentProduct().getValue())")
-    @Mapping(target = "targets", source = "payment.payments")
-    PaymentBO toPaymentBO(BulkPaymentTO payment);
-
-    PaymentTargetBO toPaymentTarget(SinglePaymentTO payment);
-
-    PaymentTargetBO toPaymentTarget(PeriodicPaymentTO payment);
-
-    List<PaymentTargetBO> toPaymentTarget(List<SinglePaymentTO> payment);
+    PaymentBO toPaymentBO(PaymentTO payment);
 
     List<TransactionTO> toTransactionTOList(List<TransactionDetailsBO> transactions);
 
