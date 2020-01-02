@@ -37,7 +37,8 @@ public class UserVerificationServiceImplTest {
 
     private static final String USER_ID = "SomeUniqueID";
     private static final String VERIFICATION_TOKEN = "Hccf3sWaSrgpBVjBx0osHk";
-    private static final EmailVerificationStatus VERIFICATION_STATUS = EmailVerificationStatus.VERIFIED;
+    private static final EmailVerificationStatus VERIFIED = EmailVerificationStatus.VERIFIED;
+    private static final EmailVerificationStatus PENDING = EmailVerificationStatus.PENDING;
     private static final LocalDateTime DATE = LocalDateTime.now();
     private UserEntity userEntity;
 
@@ -49,7 +50,7 @@ public class UserVerificationServiceImplTest {
     @Test
     public void createVerificationToken() {
         when(userRepository.findById(USER_ID)).thenReturn(Optional.ofNullable(userEntity));
-        when(emailVerificationRepository.findByUserIdAndStatusNot(USER_ID, VERIFICATION_STATUS)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.plusWeeks(1))));
+        when(emailVerificationRepository.findByUserIdAndStatusNot(USER_ID, VERIFIED)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.plusWeeks(1))));
 
         String token = userVerificationService.createVerificationToken(USER_ID);
         assertTrue(!token.isEmpty());
@@ -57,7 +58,7 @@ public class UserVerificationServiceImplTest {
 
     @Test
     public void confirmUser() {
-        when(emailVerificationRepository.findByToken(VERIFICATION_TOKEN)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.plusWeeks(1))));
+        when(emailVerificationRepository.findByTokenAndStatus(VERIFICATION_TOKEN, PENDING)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.plusWeeks(1))));
         when(userRepository.findById(USER_ID)).thenReturn(Optional.ofNullable(userEntity));
 
         boolean isConfirmed = userVerificationService.confirmUser(VERIFICATION_TOKEN);
@@ -66,7 +67,7 @@ public class UserVerificationServiceImplTest {
 
     @Test(expected = UserManagementModuleException.class)
     public void confirmUser_expiredToken() {
-        when(emailVerificationRepository.findByToken(VERIFICATION_TOKEN)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.minusWeeks(2))));
+        when(emailVerificationRepository.findByTokenAndStatus(VERIFICATION_TOKEN, PENDING)).thenReturn(Optional.ofNullable(getVerificationToken(DATE.minusWeeks(2))));
         when(userRepository.findById(USER_ID)).thenReturn(Optional.ofNullable(userEntity));
 
         userVerificationService.confirmUser(VERIFICATION_TOKEN);
