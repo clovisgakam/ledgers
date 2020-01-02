@@ -28,7 +28,7 @@ public class AuthorizationServiceImplTest {
     private static final String LOGIN_TOKEN = "eyJraWQiOiJHY1dnNlpodlNTc2p6SnpjblVzdHRjIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJjMldVU2p4clIyZ3BRQkQtbzRlZFNrIiwidG9rZW5fdXNhZ2UiOiJMT0dJTiIsInJvbGUiOiJDVVNUT01FUiIsInNjYV9pZCI6IlYwMDIwMTkwNzI1MTEyMTE1YzJXVVNqeHJSMmdwUUJELW80ZWRTayIsImF1dGhvcmlzYXRpb25faWQiOiJWMDAyMDE5MDcyNTExMjExNWMyV1VTanhyUjJncFFCRC1vNGVkU2siLCJleHAiOjE1NjQwNDM0NzUsImxvZ2luIjoiNzc3IiwiaWF0IjoxNTY0MDQyODc1LCJqdGkiOiJqUjVLdkZKQlNid2c3d1VuNi04Tm5jIn0.CzO7rBTosaSgUly9OhiztOX-wfrYi-Mt1K1AvqE7qQM";
     private static final String USER_IBAN = "DE1234567890";
     private static final String TPP_ID = "ZXCVBN";
-    private static final UserTypeBO USER_TYPE = UserTypeBO.FAKE;
+    private static final UserTypeBO USER_TYPE = UserTypeBO.SYSTEM;
 
     @InjectMocks
     AuthorizationServiceImpl authorizationService;

@@ -55,7 +55,7 @@ public class LedgersClientIT {
     private static final String BRANCH_LOGIN = "12345678";
     private static final String PIN = "12345";
     private static final String BANK_CODE = "76070024";
-    private static final UserTypeTO USER_TYPE = UserTypeTO.FAKE;
+    private static final UserTypeTO USER_TYPE = UserTypeTO.SYSTEM;
 
     private static final UserTO BRANCH = getUser(BRANCH_LOGIN, UserRoleTO.STAFF);
     private static UserTO USER_1 = getUser("01", CUSTOMER);

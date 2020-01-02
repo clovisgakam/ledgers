@@ -30,7 +30,6 @@ public class UserTO {
 
     private String branch;
     @NotNull
-    @JsonIgnore
     private UserTypeTO userType;
 
     @JsonIgnore

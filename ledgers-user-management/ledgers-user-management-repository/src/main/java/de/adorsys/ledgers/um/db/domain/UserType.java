@@ -4,5 +4,6 @@ public enum UserType {
 
     FAKE,
     REAL,
-    NISP
+    NISP,
+    SYSTEM
 }

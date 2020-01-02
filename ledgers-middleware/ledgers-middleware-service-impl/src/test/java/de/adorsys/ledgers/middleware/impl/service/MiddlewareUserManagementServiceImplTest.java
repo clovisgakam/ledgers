@@ -150,7 +150,7 @@ public class MiddlewareUserManagementServiceImplTest {
 
     private UserBO getUser() {
         UserBO user = new UserBO("", "", "");
-        user.setUserType(UserTypeBO.FAKE);
+        user.setUserType(UserTypeBO.SYSTEM);
         user.setAccountAccesses(getAccesses());
         return user;
     }

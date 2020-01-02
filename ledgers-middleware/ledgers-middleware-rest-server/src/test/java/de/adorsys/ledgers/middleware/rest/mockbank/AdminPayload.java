@@ -9,7 +9,7 @@ public class AdminPayload {
 		admin.setEmail("admin@admin.me");
 		admin.setLogin("admin");
 		admin.setPin("admin123");
-		admin.setUserType(UserTypeTO.FAKE);
+		admin.setUserType(UserTypeTO.SYSTEM);
 		return admin;
 	}
 }

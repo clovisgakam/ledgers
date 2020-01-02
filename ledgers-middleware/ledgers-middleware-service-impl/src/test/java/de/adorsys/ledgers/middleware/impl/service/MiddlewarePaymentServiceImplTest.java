@@ -63,9 +63,6 @@ public class MiddlewarePaymentServiceImplTest {
     private static final String IBAN = "DE1234567890";
     private static final Currency EUR = Currency.getInstance("EUR");
     private static final Currency USD = Currency.getInstance("USD");
-    private static final UserTypeBO USER_TYPE_BO = UserTypeBO.FAKE;
-    private static final UserTypeTO USER_TYPE_TO = UserTypeTO.FAKE;
-
 
     @InjectMocks
     private MiddlewarePaymentServiceImpl middlewareService;
@@ -187,8 +184,6 @@ public class MiddlewarePaymentServiceImplTest {
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
         UserBO userBO = new UserBO("Test", "", "");
         UserTO userTO = new UserTO("Test", "", "");
-        userBO.setUserType(USER_TYPE_BO);
-        userTO.setUserType(USER_TYPE_TO);
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR));
 
@@ -213,8 +208,6 @@ public class MiddlewarePaymentServiceImplTest {
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
         UserBO userBO = new UserBO("Test", "", "");
         UserTO userTO = new UserTO("Test", "", "");
-        userBO.setUserType(USER_TYPE_BO);
-        userTO.setUserType(USER_TYPE_TO);
 
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
@@ -230,8 +223,6 @@ public class MiddlewarePaymentServiceImplTest {
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
         UserBO userBO = new UserBO("Test", "", "");
         UserTO userTO = new UserTO("Test", "", "");
-        userBO.setUserType(USER_TYPE_BO);
-        userTO.setUserType(USER_TYPE_TO);
 
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
 
@@ -249,8 +240,7 @@ public class MiddlewarePaymentServiceImplTest {
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
         UserBO userBO = new UserBO("Test", "", "");
         UserTO userTO = new UserTO("Test", "", "");
-        userBO.setUserType(USER_TYPE_BO);
-        userTO.setUserType(USER_TYPE_TO);
+
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
         when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
 

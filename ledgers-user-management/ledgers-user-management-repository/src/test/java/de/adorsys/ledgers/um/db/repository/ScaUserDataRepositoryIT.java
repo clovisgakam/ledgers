@@ -49,7 +49,7 @@ public class ScaUserDataRepositoryIT {
         user.setPin("1234");
         user.setLogin("test");
         user.setEmail("test@mail.de");
-        user.setUserType(UserType.FAKE);
+        user.setUserType(UserType.SYSTEM);
 
         user.getScaUserData().add(data);
         user = userRepository.save(user);
@@ -57,5 +57,4 @@ public class ScaUserDataRepositoryIT {
         ScaUserDataEntity result = scaUserDataRepository.findById(data.getId()).orElse(null);
         Assert.notNull(result);
     }
-
 }

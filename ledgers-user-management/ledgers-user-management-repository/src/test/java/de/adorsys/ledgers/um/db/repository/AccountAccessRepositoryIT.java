@@ -50,7 +50,7 @@ public class AccountAccessRepositoryIT {
         user.setPin("1234");
         user.setLogin("test");
         user.setEmail("test@mail.de");
-        user.setUserType(UserType.FAKE);
+        user.setUserType(UserType.SYSTEM);
         user.getAccountAccesses().add(accountAccess);
         user = userRepository.save(user);
         accountAccess = user.getAccountAccesses().iterator().next();

@@ -24,4 +24,4 @@ accountAccesses:
     iban: 7777777
 userRoles:
   - CUSTOMER
-userType: FAKE
+userType: SYSTEM
