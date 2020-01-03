@@ -1,28 +1,17 @@
 package de.adorsys.ledgers.um.api.service;
 
+import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
+import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
+
 public interface UserVerificationService {
 
-    /**
-     * Create a verification token for user
-     *
-     * @param userId User identifier
-     * @return a token
-     */
-    String createVerificationToken(String userId);
+    EmailVerificationBO findByUserIdAndStatusNot(String userId, EmailVerificationStatusBO status);
 
-    /**
-     * Send email with link for user confirmation
-     *
-     * @param token verification token
-     * @return boolean value if email was send
-     */
-    boolean sendVerificationEmail(String token);
+    EmailVerificationBO findByToken(String token);
 
-    /**
-     * Confirm user
-     *
-     * @param token verification token
-     * @return boolean value if user was confirmed
-     */
-    boolean confirmUser(String token);
+    EmailVerificationBO findByTokenAndStatus(String token, EmailVerificationStatusBO statusBO);
+
+    void updateEmailVerification(EmailVerificationBO emailVerificationBO);
+
+    boolean sendMessage(String subject, String from, String email, String message);
 }

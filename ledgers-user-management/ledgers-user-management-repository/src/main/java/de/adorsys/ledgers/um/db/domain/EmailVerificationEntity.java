@@ -1,9 +1,6 @@
 package de.adorsys.ledgers.um.db.domain;
 
-import de.adorsys.ledgers.util.Ids;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -40,13 +37,4 @@ public class EmailVerificationEntity {
     @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
-
-    @PrePersist
-    public void doUpdateToken() {
-        LocalDateTime now = LocalDateTime.now();
-        setToken(Ids.id());
-        setExpiredDateTime(now.plusWeeks(1));
-        setStatus(EmailVerificationStatus.PENDING);
-        setIssuedDateTime(now);
-    }
 }

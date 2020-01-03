@@ -3,16 +3,26 @@ package de.adorsys.ledgers.middleware.api.service;
 public interface EmailVerificationService {
 
     /**
-     * Return boolean value if email with link for user confirmation was send
+     * Create a verification token for user
      *
-     * @param userId id of user initiating operation
+     * @param userId User identifier
+     * @return a token
      */
-    boolean sendVerificationToken(String userId);
+    String createVerificationToken(String userId);
 
     /**
-     * Return boolean value if user was confirmed
+     * Send email with link for user confirmation
      *
      * @param token verification token
+     * @return boolean value if email was send
      */
-    boolean confirmVerificationToken(String token);
+    boolean sendVerificationEmail(String token);
+
+    /**
+     * Confirm user
+     *
+     * @param token verification token
+     * @return boolean value if user was confirmed
+     */
+    boolean confirmUser(String token);
 }
