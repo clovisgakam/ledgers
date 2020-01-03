@@ -64,7 +64,6 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     @Override
     public ResponseEntity<UserTO> register(String login, String email, String pin, UserRoleTO role) {
         UserTO user = onlineBankingService.register(login, email, pin, role);
-        user.setUserType(UserTypeTO.FAKE);
         user.setPin(null);
         return ResponseEntity.ok(user);
     }

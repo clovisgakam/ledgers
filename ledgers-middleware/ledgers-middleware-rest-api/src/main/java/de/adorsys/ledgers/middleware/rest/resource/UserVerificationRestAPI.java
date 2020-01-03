@@ -17,7 +17,7 @@ public interface UserVerificationRestAPI {
             @ApiResponse(code = 400, message = "Error sending email: user not found."),
             @ApiResponse(code = 404, message = "Error sending email: verification token not found.")
     })
-    ResponseEntity<Boolean> sendEmailVerification();
+    ResponseEntity<Void> sendEmailVerification();
 
     @GetMapping("/email")
     @ApiOperation(tags = UnprotectedEndpoint.UNPROTECTED_ENDPOINT, value = "Confirm user")
@@ -26,5 +26,5 @@ public interface UserVerificationRestAPI {
             @ApiResponse(code = 400, message = "Invalid verification token for user confirmation or user already confirm."),
             @ApiResponse(code = 403, message = "Verification token is expired for user confirmation.")
     })
-    ResponseEntity<Boolean> confirmVerificationToken(@RequestParam("verificationToken") String token);
+    ResponseEntity<Void> confirmVerificationToken(@RequestParam("verificationToken") String token);
 }

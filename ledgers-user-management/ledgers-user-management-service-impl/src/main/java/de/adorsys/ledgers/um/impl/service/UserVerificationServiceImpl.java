@@ -1,12 +1,14 @@
 package de.adorsys.ledgers.um.impl.service;
 
+import de.adorsys.ledgers.um.api.domain.UserBO;
+import de.adorsys.ledgers.um.api.domain.UserTypeBO;
+import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.um.api.service.UserVerificationService;
 import de.adorsys.ledgers.um.db.domain.EmailVerificationStatus;
 import de.adorsys.ledgers.um.db.domain.UserEntity;
-import de.adorsys.ledgers.um.db.domain.UserType;
 import de.adorsys.ledgers.um.db.domain.EmailVerificationEntity;
-import de.adorsys.ledgers.um.db.repository.UserRepository;
 import de.adorsys.ledgers.um.db.repository.EmailVerificationRepository;
+import de.adorsys.ledgers.um.impl.converter.UserConverter;
 import de.adorsys.ledgers.um.impl.service.password.UserMailSender;
 
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
@@ -25,10 +27,6 @@ import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
 @RequiredArgsConstructor
 public class UserVerificationServiceImpl implements UserVerificationService {
 
-    private static final String USER_WITH_ID_NOT_FOUND = "User with id %s not found";
-    private static final String VERIFICATION_TOKEN_NOT_FOUND = "Verification token not found: %s";
-    private static final String INVALID_TOKEN = "Invalid verification token %s or user is already confirmed";
-    private static final String EXPIRED = "Verification token for user %s is expired for confirmation";
     private static final EmailVerificationStatus VERIFIED = EmailVerificationStatus.VERIFIED;
     private static final EmailVerificationStatus PENDING = EmailVerificationStatus.PENDING;
 
@@ -47,44 +45,37 @@ public class UserVerificationServiceImpl implements UserVerificationService {
     @Value("${verify.email.endpoint}")
     private String endpoint;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final EmailVerificationRepository emailVerificationRepository;
     private final UserMailSender userMailSender;
+    private final UserConverter userConverter;
 
     @Override
     public String createVerificationToken(String userId) {
-        Optional<UserEntity> userEntity = userRepository.findById(userId);
-        if (!userEntity.isPresent()) {
-            throw UserManagementModuleException.builder()
-                          .errorCode(TOKEN_CREATION_ERROR)
-                          .devMsg(String.format(USER_WITH_ID_NOT_FOUND, userId))
-                          .build();
-        }
+        UserBO userBO = userService.findById(userId);
         Optional<EmailVerificationEntity> verificationToken = emailVerificationRepository.findByUserIdAndStatusNot(userId, VERIFIED);
-        EmailVerificationEntity token;
+        EmailVerificationEntity emailEntity;
         if (verificationToken.isPresent()) {
-            token = verificationToken.get();
-            token.doUpdateToken();
+            emailEntity = verificationToken.get();
+            emailEntity.doUpdateToken();
         } else {
-            token = new EmailVerificationEntity();
-            token.setUser(userEntity.get());
+            emailEntity = new EmailVerificationEntity();
+            emailEntity.setUser(userConverter.toUserPO(userBO));
         }
-        emailVerificationRepository.save(token);
-        return token.getToken();
+        emailVerificationRepository.save(emailEntity);
+        return emailEntity.getToken();
     }
 
     @Override
     public boolean sendVerificationEmail(String token) {
-        Optional<EmailVerificationEntity> verificationToken = emailVerificationRepository.findByToken(token);
-        if (!verificationToken.isPresent()) {
-            throw UserManagementModuleException.builder()
-                          .errorCode(TOKEN_NOT_FOUND)
-                          .devMsg(String.format(VERIFICATION_TOKEN_NOT_FOUND, token))
-                          .build();
-        }
-        EmailVerificationEntity emailVerificationEntity = verificationToken.get();
-        UserEntity user = emailVerificationEntity.getUser();
-        return userMailSender.send(subject, from, user.getEmail(), formatMessage(message, emailVerificationEntity, emailVerificationEntity.getExpiredDateTime(), user.getEmail()));
+        EmailVerificationEntity verificationToken = emailVerificationRepository.findByToken(token)
+                                                            .orElseThrow(() -> UserManagementModuleException.builder()
+                                                                                       .errorCode(TOKEN_NOT_FOUND)
+                                                                                       .devMsg(String.format("Verification token not found: %s", token))
+                                                                                       .build());
+
+        UserEntity user = verificationToken.getUser();
+        return userMailSender.send(subject, from, user.getEmail(), formatMessage(message, verificationToken, verificationToken.getExpiredDateTime(), user.getEmail()));
     }
 
     private String formatMessage(String message, EmailVerificationEntity token, LocalDateTime date, String email) {
@@ -96,23 +87,22 @@ public class UserVerificationServiceImpl implements UserVerificationService {
         EmailVerificationEntity verificationToken = emailVerificationRepository.findByTokenAndStatus(token, PENDING)
                                                             .orElseThrow(() -> UserManagementModuleException.builder()
                                                                                        .errorCode(INVALID_VERIFICATION_TOKEN)
-                                                                                       .devMsg(String.format(INVALID_TOKEN, token))
+                                                                                       .devMsg(String.format("Invalid verification token %s or user is already confirmed", token))
                                                                                        .build());
 
         if (verificationToken.getExpiredDateTime().isBefore(LocalDateTime.now())) {
             throw UserManagementModuleException.builder()
                           .errorCode(EXPIRED_TOKEN)
-                          .devMsg(String.format(EXPIRED, verificationToken.getUser().getLogin()))
+                          .devMsg(String.format("Verification token for user %s is expired for confirmation", verificationToken.getUser().getLogin()))
                           .build();
         }
 
-        Optional<UserEntity> userEntity = userRepository.findById(verificationToken.getUser().getId());
-        UserEntity user = userEntity.get();
+        UserBO userBO = userService.findById(verificationToken.getUser().getId());
         verificationToken.setConfirmedDateTime(LocalDateTime.now());
         verificationToken.setStatus(EmailVerificationStatus.VERIFIED);
-        user.setUserType(UserType.REAL);
+        userBO.setUserType(UserTypeBO.REAL);
         emailVerificationRepository.save(verificationToken);
-        userRepository.save(user);
+        userService.updateUser(userBO);
         return true;
     }
 }

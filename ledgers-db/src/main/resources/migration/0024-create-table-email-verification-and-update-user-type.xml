@@ -51,4 +51,13 @@
                                  referencedTableName="users"
         />
     </changeSet>
+
+    <changeSet author="oza@adorsys.com.ua" id="03-01-2020-04">
+        <comment>Update user_type</comment>
+        <update tableName="users">
+            <column name="user_type" value="SYSTEM"/>
+            <where>user_type='FAKE'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

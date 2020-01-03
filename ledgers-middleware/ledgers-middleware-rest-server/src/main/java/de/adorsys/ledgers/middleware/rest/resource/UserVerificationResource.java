@@ -21,12 +21,14 @@ public class UserVerificationResource implements UserVerificationRestAPI {
 
     @Override
     @PreAuthorize("tokenUsage('DIRECT_ACCESS')")
-    public ResponseEntity<Boolean> sendEmailVerification() {
-        return ResponseEntity.ok(emailVerificationService.sendVerificationToken(scaInfoHolder.getUserId()));
+    public ResponseEntity<Void> sendEmailVerification() {
+        emailVerificationService.sendVerificationToken(scaInfoHolder.getUserId());
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public ResponseEntity<Boolean> confirmVerificationToken(String token) {
-        return ResponseEntity.ok(emailVerificationService.confirmVerificationToken(token));
+    public ResponseEntity<Void> confirmVerificationToken(String token) {
+        emailVerificationService.confirmVerificationToken(token);
+        return ResponseEntity.ok().build();
     }
 }

@@ -18,10 +18,7 @@ package de.adorsys.ledgers.um.impl.service;
 
 import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.UserService;
-import de.adorsys.ledgers.um.db.domain.AccountAccess;
-import de.adorsys.ledgers.um.db.domain.AisConsentEntity;
-import de.adorsys.ledgers.um.db.domain.ScaUserDataEntity;
-import de.adorsys.ledgers.um.db.domain.UserEntity;
+import de.adorsys.ledgers.um.db.domain.*;
 import de.adorsys.ledgers.um.db.repository.AisConsentRepository;
 import de.adorsys.ledgers.um.db.repository.UserRepository;
 import de.adorsys.ledgers.um.impl.converter.AisConsentMapper;
@@ -177,6 +174,7 @@ public class UserServiceImpl implements UserService {
         checkDuplicateScaMethods(userBO.getScaUserData());
         UserEntity user = userConverter.toUserPO(userBO);
         checkIfPasswordModifiedAndEncode(user);
+        checkIfEmailModified(user);
         hashStaticTan(user);
         UserEntity save = userRepository.save(user);
         return convertToUserBoAndDecodeTan(save);
@@ -205,6 +203,13 @@ public class UserServiceImpl implements UserService {
         String oldPin = findById(user.getId()).getPin();
         if (!user.getPin().equals(oldPin)) {
             user.setPin(passwordEnc.encode(user.getId(), user.getPin()));
+        }
+    }
+
+    private void checkIfEmailModified(UserEntity user) {
+        String oldEmail = findById(user.getId()).getEmail();
+        if (!user.getEmail().equals(oldEmail)) {
+            user.setUserType(UserType.FAKE);
         }
     }
 

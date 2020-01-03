@@ -1,4 +1,4 @@
-package de.adorsys.ledgers.middleware.impl.service.upload;
+package de.adorsys.ledgers.middleware.impl.service;
 
 import de.adorsys.ledgers.middleware.api.service.EmailVerificationService;
 import de.adorsys.ledgers.um.api.service.UserVerificationService;
