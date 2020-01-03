@@ -163,7 +163,7 @@ public class MiddlewarePaymentServiceImplTest {
         PaymentBO paymentBO = readYml(PaymentBO.class, SINGLE_BO);
         when(coreDataPolicy.getPaymentCoreData(any(), eq(paymentBO))).thenReturn(PaymentCoreDataPolicyHelper.getPaymentCoreDataInternal(paymentBO));
 
-        when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
+        when(paymentConverter.toPaymentBO(any(PaymentTO.class),any())).thenReturn(paymentBO);
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(Collections.singletonList(new DepositAccountBO("", paymentBO.getDebtorAccount().getIban(), null, null, null, null, paymentBO.getDebtorAccount().getCurrency(), null, null, null, AccountStatusBO.ENABLED, null, null, null, null)));
         when(paymentService.initiatePayment(any(), any())).thenReturn(paymentBO);
         when(paymentService.executePayment(any(), any())).thenReturn(TransactionStatusBO.ACSP);
@@ -171,14 +171,14 @@ public class MiddlewarePaymentServiceImplTest {
         when(scaUtils.userBO(USER_ID)).thenReturn(userBO);
         when(scaResponseResolver.updatePaymentRelatedResponseFields(any(), any())).thenAnswer(i -> localResolver.updatePaymentRelatedResponseFields((SCAPaymentResponseTO) i.getArguments()[0], (PaymentBO) i.getArguments()[1]));
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
-        Object result = middlewareService.initiatePayment(buildScaInfoTO(), readYml(SinglePaymentTO.class, SINGLE_TO), PaymentTypeTO.SINGLE);
+        Object result = middlewareService.initiatePayment(buildScaInfoTO(), readYml(PaymentTO.class, SINGLE_BO), PaymentTypeTO.SINGLE);
         assertNotNull(result);
     }
 
     @Test
     public void initPmtRejectByCurrencySuccess() {
         //Payment: debtor - EUR / amount - EUR // Account - EUR
-        SinglePaymentTO paymentTO = getPayment(EUR, EUR);
+        PaymentTO paymentTO = getPayment(EUR, EUR);
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
@@ -187,7 +187,7 @@ public class MiddlewarePaymentServiceImplTest {
 
         when(accountService.getAccountsByIbanAndParamCurrency(any(), any())).thenReturn(getAccounts(AccountStatusBO.ENABLED, EUR));
 
-        when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
+        when(paymentConverter.toPaymentBO(any(PaymentTO.class),any())).thenReturn(paymentBO);
         when(scaUtils.userBO(USER_ID)).thenReturn(userBO);
         when(paymentService.initiatePayment(any(), any())).thenReturn(paymentBO);
         when(coreDataPolicy.getPaymentCoreData(any(), eq(paymentBO))).thenReturn(PaymentCoreDataPolicyHelper.getPaymentCoreDataInternal(paymentBO));
@@ -202,14 +202,14 @@ public class MiddlewarePaymentServiceImplTest {
     @Test(expected = MiddlewareModuleException.class)
     public void initPmtRejectByCurrencyFail_NullEur2Accs() {
         //Payment: debtor - null / amount - EUR // Account - EUR/USD
-        SinglePaymentTO paymentTO = getPayment(null, USD);
+        PaymentTO paymentTO = getPayment(null, USD);
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
         UserBO userBO = new UserBO("Test", "", "");
         UserTO userTO = new UserTO("Test", "", "");
 
-        when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
+        when(paymentConverter.toPaymentBO(any(PaymentTO.class),any())).thenReturn(paymentBO);
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
@@ -217,7 +217,7 @@ public class MiddlewarePaymentServiceImplTest {
     @Test(expected = MiddlewareModuleException.class)
     public void initPmtRejectByCurrencyFail_UsdEurEur() {
         //Payment: debtor - USD / amount - EUR // Account - EUR
-        SinglePaymentTO paymentTO = getPayment(USD, EUR);
+        PaymentTO paymentTO = getPayment(USD, EUR);
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
@@ -226,7 +226,7 @@ public class MiddlewarePaymentServiceImplTest {
 
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
 
-        when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
+        when(paymentConverter.toPaymentBO(any(PaymentTO.class), any())).thenReturn(paymentBO);
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
@@ -234,7 +234,7 @@ public class MiddlewarePaymentServiceImplTest {
     @Test(expected = MiddlewareModuleException.class)
     public void initPmtRejectByCurrencyFail_BlockedAccount() {
         //Payment: debtor - USD / amount - EUR // Account - EUR
-        SinglePaymentTO paymentTO = getPayment(USD, EUR);
+        PaymentTO paymentTO = getPayment(USD, EUR);
         PaymentBO paymentBO = pmtMapper.toPaymentBO(paymentTO);
         paymentBO.setTransactionStatus(TransactionStatusBO.ACSC);
         paymentBO.setPaymentProduct("instant-sepa-credit-transfers");
@@ -242,7 +242,7 @@ public class MiddlewarePaymentServiceImplTest {
         UserTO userTO = new UserTO("Test", "", "");
 
         Whitebox.setInternalState(middlewareService, "paymentProductsConfig", getPaymentConfig());
-        when(paymentConverter.toPaymentBO(any(), any())).thenReturn(paymentBO);
+        when(paymentConverter.toPaymentBO(any(PaymentTO.class),any())).thenReturn(paymentBO);
 
         middlewareService.initiatePayment(buildScaInfoTO(), paymentTO, PaymentTypeTO.SINGLE);
     }
@@ -262,12 +262,15 @@ public class MiddlewarePaymentServiceImplTest {
         return account;
     }
 
-    private SinglePaymentTO getPayment(Currency payerCur, Currency amountCur) {
-        SinglePaymentTO payment = new SinglePaymentTO();
-        payment.setPaymentProduct(PaymentProductTO.SEPA);
+    private PaymentTO getPayment(Currency payerCur, Currency amountCur) {
+        PaymentTO payment = new PaymentTO();
+        payment.setPaymentProduct("sepa-credit-transfers");
+        payment.setPaymentType(PaymentTypeTO.SINGLE);
         payment.setDebtorAccount(getReference(payerCur));
-        payment.setInstructedAmount(getAmount(amountCur));
-        payment.setCreditorAccount(getReference(payerCur));
+        PaymentTargetTO target = new PaymentTargetTO();
+        target.setInstructedAmount(getAmount(amountCur));
+        target.setCreditorAccount(getReference(payerCur));
+        payment.setTargets(Collections.singletonList(target));
         return payment;
     }
 
