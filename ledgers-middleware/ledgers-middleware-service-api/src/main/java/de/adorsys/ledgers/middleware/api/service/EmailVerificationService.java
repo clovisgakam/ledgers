@@ -14,15 +14,13 @@ public interface EmailVerificationService {
      * Send email with link for user confirmation
      *
      * @param token verification token
-     * @return boolean value if email was send
      */
-    boolean sendVerificationEmail(String token);
+    void sendVerificationEmail(String token);
 
     /**
      * Confirm user
      *
      * @param token verification token
-     * @return boolean value if user was confirmed
      */
-    boolean confirmUser(String token);
+    void confirmUser(String token);
 }

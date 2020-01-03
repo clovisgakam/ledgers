@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RequiredArgsConstructor
 public class VerifyUserFilter extends OncePerRequestFilter {
-    private static final List<String> EXCLUDE_URL = Arrays.asList("/emails/email-verification", "/staff-access/data/branch/{branchId}");
+    private static final List<String> EXCLUDE_URLS = Arrays.asList("/emails/email-verification", "/staff-access/data/branch/{branchId}");
     private final UserService userService;
 
     @Override
@@ -41,7 +41,7 @@ public class VerifyUserFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String servletPath = request.getServletPath();
-        return EXCLUDE_URL.stream()
+        return EXCLUDE_URLS.stream()
                        .anyMatch(servletPath::startsWith);
     }
 }

@@ -17,7 +17,7 @@
             </column>
 
             <column name="token" type="VARCHAR(225)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
 
             <column name="status" type="VARCHAR(255)">
@@ -36,7 +36,7 @@
             </column>
 
             <column name="user_id" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
     </changeSet>

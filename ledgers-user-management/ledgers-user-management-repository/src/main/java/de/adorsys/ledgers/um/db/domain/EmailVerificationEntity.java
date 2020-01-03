@@ -18,17 +18,17 @@ public class EmailVerificationEntity {
     @Column(name = "token_id")
     private Long id;
 
-    @Column(name = "token")
+    @Column(name = "token", unique = true, nullable = false)
     private String token;
 
-    @Column(name="status", nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private EmailVerificationStatus status;
 
-    @Column(name = "expired_date_time")
+    @Column(name = "expired_date_time", nullable = false)
     private LocalDateTime expiredDateTime;
 
-    @Column(name = "issued_date_time")
+    @Column(name = "issued_date_time", nullable = false)
     private LocalDateTime issuedDateTime;
 
     @Column(name = "confirmed_date_time")

@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
         checkDuplicateScaMethods(userBO.getScaUserData());
         UserEntity user = userConverter.toUserPO(userBO);
         checkIfPasswordModifiedAndEncode(user);
-        checkIfEmailModified(user);
+        ifEmailChangedUserFake(user);
         hashStaticTan(user);
         UserEntity save = userRepository.save(user);
         return convertToUserBoAndDecodeTan(save);
@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void checkIfEmailModified(UserEntity user) {
+    private void ifEmailChangedUserFake(UserEntity user) {
         String oldEmail = findById(user.getId()).getEmail();
         if (!user.getEmail().equals(oldEmail)) {
             user.setUserType(UserType.FAKE);

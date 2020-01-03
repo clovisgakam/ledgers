@@ -20,9 +20,10 @@ import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
 @RequiredArgsConstructor
 public class EmailVerificationServiceImpl implements EmailVerificationService {
 
-    private static final EmailVerificationStatusBO VERIFIED = EmailVerificationStatusBO.VERIFIED;
-    private static final EmailVerificationStatusBO PENDING = EmailVerificationStatusBO.PENDING;
+    private static final EmailVerificationStatusBO STATUS_VERIFIED = EmailVerificationStatusBO.VERIFIED;
+    private static final EmailVerificationStatusBO STATUS_PENDING = EmailVerificationStatusBO.PENDING;
 
+    //TODO use @ConfigurationProperties
     @Value("${verify.token.template.message}")
     private String message;
 
@@ -46,7 +47,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         UserBO userBO = userService.findById(userId);
         EmailVerificationBO emailVerification;
         try {
-            emailVerification = userVerificationService.findByUserIdAndStatusNot(userId, VERIFIED);
+            emailVerification = userVerificationService.findByUserIdAndStatusNot(userId, STATUS_VERIFIED);
             emailVerification.updateToken();
         } catch (UserManagementModuleException e) {
             emailVerification = new EmailVerificationBO();
@@ -58,15 +59,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     @Override
-    public boolean sendVerificationEmail(String token) {
+    public void sendVerificationEmail(String token) {
         EmailVerificationBO emailVerificationBO = userVerificationService.findByToken(token);
         UserBO user = emailVerificationBO.getUser();
-        return userVerificationService.sendMessage(subject, from, user.getEmail(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), user.getEmail()));
+        userVerificationService.sendMessage(subject, from, user.getEmail(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), user.getEmail()));
     }
 
     @Override
-    public boolean confirmUser(String token) {
-        EmailVerificationBO emailVerification = userVerificationService.findByTokenAndStatus(token, PENDING);
+    public void confirmUser(String token) {
+        EmailVerificationBO emailVerification = userVerificationService.findByTokenAndStatus(token, STATUS_PENDING);
         if (emailVerification.isExpired()) {
             throw UserManagementModuleException.builder()
                           .errorCode(EXPIRED_TOKEN)
@@ -80,6 +81,5 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         userBO.setUserType(UserTypeBO.REAL);
         userVerificationService.updateEmailVerification(emailVerification);
         userService.updateUser(userBO);
-        return true;
     }
 }
