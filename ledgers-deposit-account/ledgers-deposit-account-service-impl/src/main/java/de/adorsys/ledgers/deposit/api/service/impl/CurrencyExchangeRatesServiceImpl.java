@@ -106,10 +106,12 @@ public class CurrencyExchangeRatesServiceImpl implements CurrencyExchangeRatesSe
                                                   .build());
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private Currency getCurrency(JsonNode node) {
         return Currency.getInstance(node.get(CURRENCY_FIELD_NAME).textValue());
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private String getRateFromNode(JsonNode node) {
         return node.get(RATE_FIELD_NAME).asText();
     }
