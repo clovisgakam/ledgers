@@ -76,7 +76,7 @@ public class CurrencyExchangeRatesServiceImpl implements CurrencyExchangeRatesSe
 
     @Override
     public List<ExchangeRateBO> getExchangeRates(Currency debtor, Currency amount, Currency creditor) {
-        if (debtor.equals(amount) && amount.equals(creditor)) {
+        if (debtor == amount && amount == creditor) {
             return Collections.emptyList();
         }
         Map<Currency, String> rates = getAllRates();
@@ -95,7 +95,7 @@ public class CurrencyExchangeRatesServiceImpl implements CurrencyExchangeRatesSe
 
     @Override
     public BigDecimal applyRate(Currency curFrom, Currency curTo, BigDecimal value) {
-        if (curFrom.equals(curTo)) {
+        if (curFrom == curTo) {
             return value;
         }
         ExchangeRateBO rate = resolveExchangeRate(curFrom, curTo, getAllRates());
@@ -107,7 +107,7 @@ public class CurrencyExchangeRatesServiceImpl implements CurrencyExchangeRatesSe
     }
 
     private void updateRatesList(Currency curFrom, Currency curTo, Map<Currency, String> rates, List<ExchangeRateBO> ratesToReturn) {
-        if (!curFrom.equals(curTo)) {
+        if (curFrom != curTo) {
             ExchangeRateBO rate = resolveExchangeRate(curFrom, curTo, rates);
             if (!rate.getRateFrom().equals(rate.getRateTo())) {
                 ratesToReturn.add(rate);
@@ -116,7 +116,7 @@ public class CurrencyExchangeRatesServiceImpl implements CurrencyExchangeRatesSe
     }
 
     private ExchangeRateBO resolveExchangeRate(Currency curFrom, Currency curTo, Map<Currency, String> rates) {
-        if (!curFrom.equals(curTo)) {
+        if (curFrom != curTo) {
             String rateFrom = resolveRate(curFrom, rates);
             String rateTo = resolveRate(curTo, rates);
             if (!rateFrom.equals(rateTo)) {
