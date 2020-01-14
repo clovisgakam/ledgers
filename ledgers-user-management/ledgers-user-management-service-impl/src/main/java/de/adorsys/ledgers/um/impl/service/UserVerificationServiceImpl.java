@@ -27,8 +27,8 @@ public class UserVerificationServiceImpl implements UserVerificationService {
     private final UserMailSender userMailSender;
 
     @Override
-    public EmailVerificationBO findByUserIdAndStatusNot(String userId, EmailVerificationStatusBO status) {
-        EmailVerificationEntity entity = emailVerificationRepository.findByUserIdAndStatusNot(userId, emailVerificationMapper.toEmailVerificationStatus(status))
+    public EmailVerificationBO findByScaIdAndStatusNot(String scaId, EmailVerificationStatusBO status) {
+        EmailVerificationEntity entity = emailVerificationRepository.findByScaUserDataIdAndStatusNot(scaId, emailVerificationMapper.toEmailVerificationStatus(status))
                                                  .orElseThrow(() -> UserManagementModuleException.builder()
                                                                             .errorCode(TOKEN_NOT_FOUND)
                                                                             .devMsg("Verification token not found")
@@ -51,7 +51,7 @@ public class UserVerificationServiceImpl implements UserVerificationService {
         EmailVerificationEntity verificationToken = emailVerificationRepository.findByTokenAndStatus(token, emailVerificationMapper.toEmailVerificationStatus(statusBO))
                                                             .orElseThrow(() -> UserManagementModuleException.builder()
                                                                                        .errorCode(INVALID_VERIFICATION_TOKEN)
-                                                                                       .devMsg(String.format("Invalid verification token %s or user is already confirmed", token))
+                                                                                       .devMsg(String.format("Invalid verification token %s or email is already confirmed", token))
                                                                                        .build());
         return emailVerificationMapper.toEmailVerificationBO(verificationToken);
     }

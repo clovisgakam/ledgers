@@ -29,8 +29,6 @@ public class UserTO {
     private Collection<UserRoleTO> userRoles = new ArrayList<>();
 
     private String branch;
-    @NotNull
-    private UserTypeTO userType;
 
     @JsonIgnore
     public boolean userHasRoles() {

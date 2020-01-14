@@ -3,9 +3,8 @@ package de.adorsys.ledgers.middleware.impl.service;
 import de.adorsys.ledgers.middleware.api.service.EmailVerificationService;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
-import de.adorsys.ledgers.um.api.domain.UserBO;
-import de.adorsys.ledgers.um.api.domain.UserTypeBO;
-import de.adorsys.ledgers.um.api.service.UserService;
+import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
+import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.um.api.service.UserVerificationService;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import lombok.RequiredArgsConstructor;
@@ -40,19 +39,19 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private String endpoint;
 
     private final UserVerificationService userVerificationService;
-    private final UserService userService;
+    private final ScaUserDataService scaUserDataService;
 
     @Override
-    public String createVerificationToken(String userId) {
-        UserBO userBO = userService.findById(userId);
+    public String createVerificationToken(String email) {
+        ScaUserDataBO scaUserDataBO = scaUserDataService.findByEmail(email);
         EmailVerificationBO emailVerification;
         try {
-            emailVerification = userVerificationService.findByUserIdAndStatusNot(userId, STATUS_VERIFIED);
+            emailVerification = userVerificationService.findByScaIdAndStatusNot(scaUserDataBO.getId(), STATUS_VERIFIED);
             emailVerification.updateToken();
         } catch (UserManagementModuleException e) {
             emailVerification = new EmailVerificationBO();
             emailVerification.createToken();
-            emailVerification.setUser(userBO);
+            emailVerification.setScaUserData(scaUserDataBO);
         }
         userVerificationService.updateEmailVerification(emailVerification);
         return emailVerification.getToken();
@@ -61,8 +60,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Override
     public void sendVerificationEmail(String token) {
         EmailVerificationBO emailVerificationBO = userVerificationService.findByToken(token);
-        UserBO user = emailVerificationBO.getUser();
-        userVerificationService.sendMessage(subject, from, user.getEmail(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), user.getEmail()));
+        ScaUserDataBO scaUserDataBO = emailVerificationBO.getScaUserData();
+        userVerificationService.sendMessage(subject, from, scaUserDataBO.getMethodValue(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), scaUserDataBO.getMethodValue()));
     }
 
     @Override
@@ -71,15 +70,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         if (emailVerification.isExpired()) {
             throw UserManagementModuleException.builder()
                           .errorCode(EXPIRED_TOKEN)
-                          .devMsg(String.format("Verification token for user %s is expired for confirmation", emailVerification.getUser().getLogin()))
+                          .devMsg(String.format("Verification token for email %s is expired for confirmation", emailVerification.getScaUserData().getMethodValue()))
                           .build();
         }
 
-        UserBO userBO = userService.findById(emailVerification.getUser().getId());
+        ScaUserDataBO scaUserDataBO = scaUserDataService.findByEmail(emailVerification.getScaUserData().getMethodValue());
         emailVerification.setConfirmedDateTime(LocalDateTime.now());
         emailVerification.setStatus(EmailVerificationStatusBO.VERIFIED);
-        userBO.setUserType(UserTypeBO.REAL);
+        scaUserDataBO.setValid(true);
         userVerificationService.updateEmailVerification(emailVerification);
-        userService.updateUser(userBO);
+        scaUserDataService.updateScaUserData(scaUserDataBO);
     }
 }

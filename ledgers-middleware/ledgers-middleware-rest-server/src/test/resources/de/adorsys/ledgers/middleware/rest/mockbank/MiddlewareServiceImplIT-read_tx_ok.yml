@@ -45,7 +45,6 @@ users:
     accountAccesses:
       - iban: DE69760700240340283600
         accessType: OWNER
-    userType: SYSTEM
   - login: anton.brueckner
     email: anton.brueckner@mail.de
     pin: 12345
@@ -55,7 +54,6 @@ users:
     accountAccesses:
       - iban: DE80760700240271232400
         accessType: OWNER
-    userType: SYSTEM
   - login: max.musterman
     email: max.musterman@mail.de
     pin: 12345
@@ -65,7 +63,6 @@ users:
     accountAccesses:
       - iban: DE38760700240320465700
         accessType: OWNER
-    userType: SYSTEM
 
 
 ###############################################

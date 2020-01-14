@@ -35,6 +35,6 @@ public class EmailVerificationEntity {
     private LocalDateTime confirmedDateTime;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "sca_id")
+    private ScaUserDataEntity scaUserData;
 }

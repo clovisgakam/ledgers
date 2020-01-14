@@ -17,6 +17,7 @@
 package de.adorsys.ledgers.um.impl.service;
 
 import de.adorsys.ledgers.um.api.domain.*;
+import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.um.db.domain.*;
 import de.adorsys.ledgers.um.db.repository.AisConsentRepository;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private static final String CONSENT_WITH_ID_S_NOT_FOUND = "Consent with id=%s not found";
 
     private final UserRepository userRepository;
+    private final ScaUserDataService scaUserDataService;
     private final AisConsentRepository consentRepository;
     private final UserConverter userConverter;
     private final PasswordEnc passwordEnc;
@@ -174,7 +176,7 @@ public class UserServiceImpl implements UserService {
         checkDuplicateScaMethods(userBO.getScaUserData());
         UserEntity user = userConverter.toUserPO(userBO);
         checkIfPasswordModifiedAndEncode(user);
-        ifEmailChangedUserFake(user);
+        ifScaChangedEmailNotValid(user.getScaUserData());
         hashStaticTan(user);
         UserEntity save = userRepository.save(user);
         return convertToUserBoAndDecodeTan(save);
@@ -206,10 +208,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void ifEmailChangedUserFake(UserEntity user) {
-        String oldEmail = findById(user.getId()).getEmail();
-        if (!user.getEmail().equals(oldEmail)) {
-            user.setUserType(UserType.FAKE);
+    private void ifScaChangedEmailNotValid(List<ScaUserDataEntity> scaUserDataEntities) {
+        for (ScaUserDataEntity scaUserDataEntity : scaUserDataEntities) {
+            String oldEmail = scaUserDataService.findById(scaUserDataEntity.getId()).getMethodValue();
+            if (!scaUserDataEntity.getMethodValue().equals(oldEmail)) {
+                scaUserDataEntity.setValid(false);
+            }
         }
     }
 

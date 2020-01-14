@@ -48,7 +48,6 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
 
         branchStaff.setBranch(branch);
         branchStaff.setUserRoles(Collections.singletonList(UserRoleTO.STAFF));
-        branchStaff.setUserType(UserTypeTO.FAKE);
         UserTO user = middlewareUserService.create(branchStaff);
         user.setPin(null);
 
@@ -76,7 +75,6 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
         // Assert that the role is neither system nor technical
         user.getUserRoles().remove(UserRoleTO.SYSTEM);
         user.getUserRoles().remove(UserRoleTO.TECHNICAL);
-        user.setUserType(UserTypeTO.FAKE);
 
         UserTO newUser = middlewareUserService.create(user);
         newUser.setPin(null);

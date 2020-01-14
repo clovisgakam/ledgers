@@ -21,7 +21,6 @@ import de.adorsys.ledgers.sca.domain.OpTypeBO;
 import de.adorsys.ledgers.sca.service.SCAOperationService;
 import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
-import de.adorsys.ledgers.um.api.domain.UserTypeBO;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;

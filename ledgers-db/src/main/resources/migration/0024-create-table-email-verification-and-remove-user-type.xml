@@ -35,7 +35,7 @@
             <column name="confirmed_date_time" type="DATETIME">
             </column>
 
-            <column name="user_id" type="VARCHAR(255)">
+            <column name="sca_id" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
@@ -44,20 +44,28 @@
     <changeSet author="oza@adorsys.com.ua" id="27-12-2019-03">
         <comment>Create foreign key in email_verification table</comment>
         <addForeignKeyConstraint baseTableName="email_verification"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_users"
+                                 baseColumnNames="sca_id"
+                                 constraintName="fk_sca_data"
                                  onDelete="CASCADE"
-                                 referencedColumnNames="user_id"
-                                 referencedTableName="users"
+                                 referencedColumnNames="sca_id"
+                                 referencedTableName="sca_data"
         />
     </changeSet>
 
-    <changeSet author="oza@adorsys.com.ua" id="03-01-2020-04">
-        <comment>Update user_type</comment>
-        <update tableName="users">
-            <column name="user_type" value="SYSTEM"/>
-            <where>user_type='FAKE'</where>
-        </update>
+    <changeSet author="oza@adorsys.com.ua" id="13-01-2020-04">
+        <comment>Remove user_type column at users table</comment>
+        <dropColumn tableName="users">
+            <column name="user_type"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet author="oza@adorsys.com.ua" id="13-01-2020-05">
+        <comment>Add column is_valid to sca_data table</comment>
+        <addColumn tableName="sca_data">
+            <column name="is_valid" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

@@ -47,7 +47,6 @@ users:
         accessType: OWNER
     userRoles:
       - CUSTOMER
-    userType: SYSTEM
   - login: anton.brueckner
     email: anton.brueckner@mail.de
     pin: 12345
@@ -59,7 +58,6 @@ users:
         accessType: OWNER
     userRoles:
       - CUSTOMER
-    userType: SYSTEM
   - login: max.musterman
     email: max.musterman@mail.de
     pin: 12345
@@ -71,7 +69,6 @@ users:
         accessType: OWNER
     userRoles:
       - CUSTOMER
-    userType: SYSTEM
 
 
 ###############################################

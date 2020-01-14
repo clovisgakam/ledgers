@@ -18,7 +18,7 @@ public class EmailVerificationBO {
     private LocalDateTime expiredDateTime;
     private LocalDateTime issuedDateTime;
     private LocalDateTime confirmedDateTime;
-    private UserBO user;
+    private ScaUserDataBO scaUserData;
 
     public void createToken() {
         LocalDateTime now = LocalDateTime.now();

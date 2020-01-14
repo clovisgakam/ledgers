@@ -4,7 +4,6 @@ import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
 import de.adorsys.ledgers.middleware.rest.security.JWTAuthenticationFilter;
 import de.adorsys.ledgers.middleware.rest.security.MiddlewareAuthentication;
 import de.adorsys.ledgers.middleware.rest.security.TokenAuthenticationService;
-import de.adorsys.ledgers.middleware.rest.security.VerifyUserFilter;
 import de.adorsys.ledgers.um.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
         http.addFilterBefore(new DisableEndpointFilter(environment), BasicAuthenticationFilter.class);
         http.addFilterBefore(new JWTAuthenticationFilter(tokenAuthenticationService), BasicAuthenticationFilter.class);
-        http.addFilterBefore(new VerifyUserFilter(userService), BasicAuthenticationFilter.class);
     }
 
     @Bean

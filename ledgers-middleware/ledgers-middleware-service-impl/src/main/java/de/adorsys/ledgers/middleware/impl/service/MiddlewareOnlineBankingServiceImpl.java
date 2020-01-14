@@ -111,7 +111,6 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
     public UserTO register(String login, String email, String pin, UserRoleTO role) {
         UserTO user = new UserTO(login, email, pin);
         user.getUserRoles().add(role);
-        user.setUserType(UserTypeTO.FAKE);
         UserBO userBO = userTOMapper.toUserBO(user);
         return userTOMapper.toUserTO(userService.create(userBO));
     }

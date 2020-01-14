@@ -3,22 +3,22 @@ package de.adorsys.ledgers.middleware.api.service;
 public interface EmailVerificationService {
 
     /**
-     * Create a verification token for user
+     * Create a verification token for email
      *
-     * @param userId User identifier
+     * @param email Sca email
      * @return a token
      */
-    String createVerificationToken(String userId);
+    String createVerificationToken(String email);
 
     /**
-     * Send email with link for user confirmation
+     * Send email with link for email confirmation
      *
      * @param token verification token
      */
     void sendVerificationEmail(String token);
 
     /**
-     * Confirm user
+     * Confirm email
      *
      * @param token verification token
      */

@@ -5,7 +5,7 @@ import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
 
 public interface UserVerificationService {
 
-    EmailVerificationBO findByUserIdAndStatusNot(String userId, EmailVerificationStatusBO status);
+    EmailVerificationBO findByScaIdAndStatusNot(String scaId, EmailVerificationStatusBO status);
 
     EmailVerificationBO findByToken(String token);
 

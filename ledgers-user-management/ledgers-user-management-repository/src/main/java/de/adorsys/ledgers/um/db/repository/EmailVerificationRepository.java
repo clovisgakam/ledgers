@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface EmailVerificationRepository extends JpaRepository<EmailVerificationEntity, Long> {
 
-    Optional<EmailVerificationEntity> findByUserIdAndStatusNot(String userId, EmailVerificationStatus status);
+    Optional<EmailVerificationEntity> findByScaUserDataIdAndStatusNot(String scaId, EmailVerificationStatus status);
 
     Optional<EmailVerificationEntity> findByTokenAndStatus(String token, EmailVerificationStatus status);
 
