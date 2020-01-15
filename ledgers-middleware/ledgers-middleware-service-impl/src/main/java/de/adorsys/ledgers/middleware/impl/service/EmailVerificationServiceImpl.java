@@ -61,7 +61,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     public void sendVerificationEmail(String token) {
         EmailVerificationBO emailVerificationBO = scaVerificationService.findByToken(token);
         ScaUserDataBO scaUserDataBO = emailVerificationBO.getScaUserData();
-        scaVerificationService.sendMessage(subject, from, scaUserDataBO.getMethodValue(), formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), scaUserDataBO.getMethodValue()));
+        scaVerificationService.sendMessage(subject, from, scaUserDataBO.getMethodValue(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), scaUserDataBO.getMethodValue()));
     }
 
     @Override
@@ -80,9 +80,5 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         scaUserDataBO.setValid(true);
         scaVerificationService.updateEmailVerification(emailVerification);
         scaUserDataService.updateScaUserData(scaUserDataBO);
-    }
-
-    public String formatMessage(String message, String basePath, String endpoint, String token, LocalDateTime date, String email) {
-        return String.format(message, basePath + endpoint + "?verificationToken=" + token, date.getMonth().toString() + " " + date.getDayOfMonth() + ", " + date.getYear() + " " + date.getHour() + ":" + date.getMinute(), email);
     }
 }

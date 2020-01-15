@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.junit.MockitoJUnitRunner;
 import pro.javatar.commons.reader.ResourceReader;
 import pro.javatar.commons.reader.YamlReader;
@@ -20,7 +21,6 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,9 +57,14 @@ public class EmailVerificationServiceImplTest {
 
     @Test
     public void sendVerificationEmail() {
+        Whitebox.setInternalState(emailVerificationService, "message", "example");
+        Whitebox.setInternalState(emailVerificationService, "subject", "example");
+        Whitebox.setInternalState(emailVerificationService, "from", "example");
+        Whitebox.setInternalState(emailVerificationService, "basePath", "example");
+        Whitebox.setInternalState(emailVerificationService, "endpoint", "example");
+
         when(scaVerificationService.findByToken(any())).thenReturn(getEmailVerificationBO(date));
         when(scaVerificationService.sendMessage(any(), any(), any(), any())).thenReturn(true);
-        when(emailVerificationService.formatMessage("", "", "", "", LocalDateTime.now(), "")).thenReturn(anyString());
 
         emailVerificationService.sendVerificationEmail(VERIFICATION_TOKEN);
     }
