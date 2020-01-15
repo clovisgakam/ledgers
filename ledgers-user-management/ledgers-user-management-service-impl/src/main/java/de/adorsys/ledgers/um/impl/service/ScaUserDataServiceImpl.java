@@ -39,7 +39,6 @@ public class ScaUserDataServiceImpl implements ScaUserDataService {
         return userConverter.toScaUserDataBO(scaUserDataEntity);
     }
 
-
     @Override
     public void updateScaUserData(ScaUserDataBO scaUserDataBO) {
         scaUserDataRepository.save(userConverter.toScaUserDataEntity(scaUserDataBO));

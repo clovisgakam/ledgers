@@ -5,7 +5,7 @@ import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.um.api.service.ScaUserDataService;
-import de.adorsys.ledgers.um.api.service.UserVerificationService;
+import de.adorsys.ledgers.um.api.service.ScaVerificationService;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Value("${verify.email.endpoint}")
     private String endpoint;
 
-    private final UserVerificationService userVerificationService;
+    private final ScaVerificationService scaVerificationService;
     private final ScaUserDataService scaUserDataService;
 
     @Override
@@ -46,27 +46,27 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         ScaUserDataBO scaUserDataBO = scaUserDataService.findByEmail(email);
         EmailVerificationBO emailVerification;
         try {
-            emailVerification = userVerificationService.findByScaIdAndStatusNot(scaUserDataBO.getId(), STATUS_VERIFIED);
+            emailVerification = scaVerificationService.findByScaIdAndStatusNot(scaUserDataBO.getId(), STATUS_VERIFIED);
             emailVerification.updateToken();
         } catch (UserManagementModuleException e) {
             emailVerification = new EmailVerificationBO();
             emailVerification.createToken();
             emailVerification.setScaUserData(scaUserDataBO);
         }
-        userVerificationService.updateEmailVerification(emailVerification);
+        scaVerificationService.updateEmailVerification(emailVerification);
         return emailVerification.getToken();
     }
 
     @Override
     public void sendVerificationEmail(String token) {
-        EmailVerificationBO emailVerificationBO = userVerificationService.findByToken(token);
+        EmailVerificationBO emailVerificationBO = scaVerificationService.findByToken(token);
         ScaUserDataBO scaUserDataBO = emailVerificationBO.getScaUserData();
-        userVerificationService.sendMessage(subject, from, scaUserDataBO.getMethodValue(), emailVerificationBO.formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), scaUserDataBO.getMethodValue()));
+        scaVerificationService.sendMessage(subject, from, scaUserDataBO.getMethodValue(), formatMessage(message, basePath, endpoint, emailVerificationBO.getToken(), emailVerificationBO.getExpiredDateTime(), scaUserDataBO.getMethodValue()));
     }
 
     @Override
     public void confirmUser(String token) {
-        EmailVerificationBO emailVerification = userVerificationService.findByTokenAndStatus(token, STATUS_PENDING);
+        EmailVerificationBO emailVerification = scaVerificationService.findByTokenAndStatus(token, STATUS_PENDING);
         if (emailVerification.isExpired()) {
             throw UserManagementModuleException.builder()
                           .errorCode(EXPIRED_TOKEN)
@@ -78,7 +78,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         emailVerification.setConfirmedDateTime(LocalDateTime.now());
         emailVerification.setStatus(EmailVerificationStatusBO.VERIFIED);
         scaUserDataBO.setValid(true);
-        userVerificationService.updateEmailVerification(emailVerification);
+        scaVerificationService.updateEmailVerification(emailVerification);
         scaUserDataService.updateScaUserData(scaUserDataBO);
+    }
+
+    public String formatMessage(String message, String basePath, String endpoint, String token, LocalDateTime date, String email) {
+        return String.format(message, basePath + endpoint + "?verificationToken=" + token, date.getMonth().toString() + " " + date.getDayOfMonth() + ", " + date.getYear() + " " + date.getHour() + ":" + date.getMinute(), email);
     }
 }

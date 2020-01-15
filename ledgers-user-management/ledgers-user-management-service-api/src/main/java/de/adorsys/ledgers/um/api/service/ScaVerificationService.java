@@ -3,7 +3,7 @@ package de.adorsys.ledgers.um.api.service;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
 
-public interface UserVerificationService {
+public interface ScaVerificationService {
 
     EmailVerificationBO findByScaIdAndStatusNot(String scaId, EmailVerificationStatusBO status);
 

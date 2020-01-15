@@ -34,10 +34,6 @@ public class EmailVerificationBO {
         setIssuedDateTime(now);
     }
 
-    public String formatMessage(String message, String basePath, String endpoint, String token, LocalDateTime date, String email) {
-        return String.format(message, basePath + endpoint + "?verificationToken=" + token, date.getMonth().toString() + " " + date.getDayOfMonth() + ", " + date.getYear() + " " + date.getHour() + ":" + date.getMinute(), email);
-    }
-
     public boolean isExpired() {
         return getExpiredDateTime().isBefore(LocalDateTime.now());
     }

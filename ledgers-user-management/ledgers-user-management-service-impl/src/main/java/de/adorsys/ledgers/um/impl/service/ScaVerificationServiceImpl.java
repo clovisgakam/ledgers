@@ -2,7 +2,7 @@ package de.adorsys.ledgers.um.impl.service;
 
 import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
-import de.adorsys.ledgers.um.api.service.UserVerificationService;
+import de.adorsys.ledgers.um.api.service.ScaVerificationService;
 import de.adorsys.ledgers.um.db.domain.EmailVerificationEntity;
 import de.adorsys.ledgers.um.db.repository.EmailVerificationRepository;
 import de.adorsys.ledgers.um.impl.converter.EmailVerificationMapper;
@@ -20,7 +20,7 @@ import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.TOKEN_NO
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserVerificationServiceImpl implements UserVerificationService {
+public class ScaVerificationServiceImpl implements ScaVerificationService {
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final EmailVerificationMapper emailVerificationMapper;
