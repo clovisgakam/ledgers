@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional
@@ -22,11 +24,13 @@ public class ScaUserDataServiceImpl implements ScaUserDataService {
 
     @Override
     public ScaUserDataBO findByEmail(String email) {
-        ScaUserDataEntity userUserDataEntity = scaUserDataRepository.findByMethodValue(email)
+        ScaUserDataEntity userUserDataEntity = scaUserDataRepository.findByMethodValue(email).stream()
+                                                       .findFirst()
                                                        .orElseThrow(() -> ScaModuleException.builder()
                                                                                   .errorCode(SCAErrorCode.USER_SCA_DATA_NOT_FOUND)
                                                                                   .devMsg(String.format("Sca data with email: %s not found", email))
                                                                                   .build());
+
         return userConverter.toScaUserDataBO(userUserDataEntity);
     }
 
