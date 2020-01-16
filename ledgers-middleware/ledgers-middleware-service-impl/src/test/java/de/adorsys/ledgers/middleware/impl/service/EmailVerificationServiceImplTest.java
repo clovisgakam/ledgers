@@ -1,5 +1,6 @@
 package de.adorsys.ledgers.middleware.impl.service;
 
+import de.adorsys.ledgers.middleware.impl.config.EmailVerificationProperties;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationBO;
 import de.adorsys.ledgers.um.api.domain.EmailVerificationStatusBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
@@ -11,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.junit.MockitoJUnitRunner;
 import pro.javatar.commons.reader.ResourceReader;
 import pro.javatar.commons.reader.YamlReader;
@@ -32,6 +32,8 @@ public class EmailVerificationServiceImplTest {
     private ScaVerificationService scaVerificationService;
     @Mock
     private ScaUserDataService scaUserDataService;
+    @Mock
+    private EmailVerificationProperties emailVerificationProperties;
 
     private ResourceReader reader = YamlReader.getInstance();
 
@@ -57,14 +59,9 @@ public class EmailVerificationServiceImplTest {
 
     @Test
     public void sendVerificationEmail() {
-        Whitebox.setInternalState(emailVerificationService, "message", "example");
-        Whitebox.setInternalState(emailVerificationService, "subject", "example");
-        Whitebox.setInternalState(emailVerificationService, "from", "example");
-        Whitebox.setInternalState(emailVerificationService, "basePath", "example");
-        Whitebox.setInternalState(emailVerificationService, "endpoint", "example");
-
         when(scaVerificationService.findByToken(any())).thenReturn(getEmailVerificationBO(date));
         when(scaVerificationService.sendMessage(any(), any(), any(), any())).thenReturn(true);
+        when(emailVerificationProperties.getTemplate()).thenReturn(getEmailTemplate());
 
         emailVerificationService.sendVerificationEmail(VERIFICATION_TOKEN);
     }
@@ -101,5 +98,13 @@ public class EmailVerificationServiceImplTest {
         bo.setExpiredDateTime(date);
         bo.setScaUserData(scaUserDataBO);
         return bo;
+    }
+
+    private EmailVerificationProperties.EmailTemplate getEmailTemplate(){
+        EmailVerificationProperties.EmailTemplate template = new EmailVerificationProperties.EmailTemplate();
+        template.setSubject("Please verify your email address");
+        template.setFrom("noreply@adorsys.de");
+        template.setMessage("example");
+        return template;
     }
 }
