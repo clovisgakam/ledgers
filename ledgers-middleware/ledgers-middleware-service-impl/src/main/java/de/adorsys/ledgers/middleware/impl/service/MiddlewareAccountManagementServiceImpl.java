@@ -398,11 +398,11 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         AccountAccessBO account = new AccountAccessBO();
         if (userRole == STAFF) {
             account = userService.findById(userId).getAccountAccesses().stream()
-                                              .filter(a -> a.getIban().equals(iban)).findAny()
-                                              .orElseThrow(() -> MiddlewareModuleException.builder()
-                                                                         .devMsg("You dont have permission to modify this account")
-                                                                         .errorCode(INSUFFICIENT_PERMISSION)
-                                                                         .build());
+                              .filter(a -> a.getIban().equals(iban)).findAny()
+                              .orElseThrow(() -> MiddlewareModuleException.builder()
+                                                         .devMsg("You dont have permission to modify this account")
+                                                         .errorCode(INSUFFICIENT_PERMISSION)
+                                                         .build());
         }
         log.info("Permission checked for account {} -> OK", account.getIban());
         depositAccountService.deleteTransactions(iban);

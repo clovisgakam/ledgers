@@ -27,6 +27,6 @@ public class AccountAccessBO {
         this.accessType = accessType;
     }
 
-    public AccountAccessBO(){
+    public AccountAccessBO() {
     }
 }

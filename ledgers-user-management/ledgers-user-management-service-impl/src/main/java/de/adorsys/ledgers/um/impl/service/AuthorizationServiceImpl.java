@@ -179,16 +179,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     private AccountAccessBO confirmAndReturnAccess(String subject, AccountAccessBO accountAccessFT, List<AccountAccessBO> accountAccesses) {
         return accountAccesses.stream()
-                                          .filter(a -> matchAccess(accountAccessFT, a))
-                                          .findFirst()
-                                          .orElseThrow(() -> {
-                                              String message = String.format(PERMISSION_MODEL_CHANGED_NO_SUFFICIENT_PERMISSION, subject, accountAccessFT.getIban());
-                                              log.warn(message);
-                                              return UserManagementModuleException.builder()
-                                                             .errorCode(INSUFFICIENT_PERMISSION)
-                                                             .devMsg(message)
-                                                             .build();
-                                          });
+                       .filter(a -> matchAccess(accountAccessFT, a))
+                       .findFirst()
+                       .orElseThrow(() -> {
+                           String message = String.format(PERMISSION_MODEL_CHANGED_NO_SUFFICIENT_PERMISSION, subject, accountAccessFT.getIban());
+                           log.warn(message);
+                           return UserManagementModuleException.builder()
+                                          .errorCode(INSUFFICIENT_PERMISSION)
+                                          .devMsg(message)
+                                          .build();
+                       });
     }
 
     private boolean matchAccess(AccountAccessBO requested, AccountAccessBO existent) {
