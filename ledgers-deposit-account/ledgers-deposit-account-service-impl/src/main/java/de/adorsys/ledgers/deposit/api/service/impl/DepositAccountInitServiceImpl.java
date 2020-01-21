@@ -7,14 +7,12 @@ import de.adorsys.ledgers.postings.api.domain.*;
 import de.adorsys.ledgers.postings.api.service.ChartOfAccountService;
 import de.adorsys.ledgers.postings.api.service.LedgerService;
 import de.adorsys.ledgers.util.Ids;
-import de.adorsys.ledgers.util.exception.DepositModuleException;
 import de.adorsys.ledgers.util.exception.PostingModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -67,8 +65,8 @@ public class DepositAccountInitServiceImpl implements DepositAccountInitService 
         } catch (PostingModuleException ex) {
             // NoOp. Create ledger account below.
             log.info("Creating new Ledger Account for {}", model.getName());
-            LedgerAccountBO parent = Optional.ofNullable(getParentLedgerAccount(ledger, model)).orElseThrow(() -> DepositModuleException.builder().build());
-            LedgerAccountBO la = newLedgerAccountObj(ledger, model, parent);
+            LedgerAccountBO parent = getParentLedgerAccount(ledger, model);
+            LedgerAccountBO la = newLedgerAccountObj(ledger, model, parent); // NOSONAR
             ledgerService.newLedgerAccount(la, SYSTEM);
         }
     }
