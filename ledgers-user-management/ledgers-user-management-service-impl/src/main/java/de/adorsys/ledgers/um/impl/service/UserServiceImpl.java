@@ -50,6 +50,7 @@ import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@SuppressWarnings("PMD.TooManyMethods")
 public class UserServiceImpl implements UserService {
     private static final String USER_WITH_LOGIN_NOT_FOUND = "User with login=%s not found";
     private static final String USER_WITH_ID_NOT_FOUND = "User with id=%s not found";
@@ -115,6 +116,7 @@ public class UserServiceImpl implements UserService {
         checkDuplicateScaMethods(scaDataList);
 
         List<ScaUserDataEntity> scaMethods = userConverter.toScaUserDataListEntity(scaDataList);
+        ifScaChangedEmailNotValid(scaMethods);
         user.getScaUserData().clear();
         user.getScaUserData().addAll(scaMethods);
         hashStaticTan(user);
@@ -209,11 +211,15 @@ public class UserServiceImpl implements UserService {
     }
 
     private void ifScaChangedEmailNotValid(List<ScaUserDataEntity> scaUserDataEntities) {
-        for (ScaUserDataEntity scaUserDataEntity : scaUserDataEntities) {
-            String oldEmail = scaUserDataService.findById(scaUserDataEntity.getId()).getMethodValue();
-            if (!scaUserDataEntity.getMethodValue().equals(oldEmail) && scaUserDataEntity.getScaMethod() == ScaMethodType.EMAIL) {
-                scaUserDataEntity.setValid(false);
-            }
+        scaUserDataEntities.stream()
+                .filter(e -> e.getId() != null && e.getScaMethod() == ScaMethodType.EMAIL)
+                .forEach(this::checkAndResetValidityScaEmail);
+    }
+
+    private void checkAndResetValidityScaEmail(ScaUserDataEntity dataEntity) {
+        boolean isEqual = scaUserDataService.findById(dataEntity.getId()).getMethodValue().equals(dataEntity.getMethodValue());
+        if (!isEqual) {
+            dataEntity.setValid(false);
         }
     }
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -56,5 +57,11 @@ public class ScaUserDataBO {
 
     public boolean isEmailValid() {
         return isValid;
+    }
+
+    public static String chkId(String id) {
+        return StringUtils.isBlank(id)
+                       ? null
+                       : id;
     }
 }
