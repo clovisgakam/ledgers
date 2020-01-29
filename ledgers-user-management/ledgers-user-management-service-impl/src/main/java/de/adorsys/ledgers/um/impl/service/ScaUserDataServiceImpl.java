@@ -4,7 +4,6 @@ import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.um.db.domain.ScaUserDataEntity;
 import de.adorsys.ledgers.um.db.repository.ScaUserDataRepository;
-import de.adorsys.ledgers.um.db.repository.UserRepository;
 import de.adorsys.ledgers.um.impl.converter.UserConverter;
 import de.adorsys.ledgers.util.exception.SCAErrorCode;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
@@ -23,7 +22,6 @@ import static de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO.EMAIL;
 @RequiredArgsConstructor
 public class ScaUserDataServiceImpl implements ScaUserDataService {
     private final ScaUserDataRepository scaUserDataRepository;
-    private final UserRepository userRepository;
     private final UserConverter userConverter;
 
     @Override
