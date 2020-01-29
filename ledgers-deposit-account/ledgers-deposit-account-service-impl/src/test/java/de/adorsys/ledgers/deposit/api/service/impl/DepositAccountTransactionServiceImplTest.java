@@ -29,6 +29,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -49,8 +50,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DepositAccountTransactionServiceImplTest {
     private static final String ACCOUNT_ID = "ACCOUNT_ID";
-    private static final String POSTING_ID = "posting_ID";
-    private static final String SYSTEM = "System";
     private static final LocalDateTime REQUEST_TIME = LocalDateTime.now();
     private static final Currency EUR = Currency.getInstance("EUR");
     private static final Currency USD = Currency.getInstance("USD");
@@ -336,8 +335,7 @@ public class DepositAccountTransactionServiceImplTest {
         //given
         PaymentBO payment = getPayment(BULK, EUR, EUR, EUR, null, true);
 
-        when(paymentMapper.toPaymentOrder(any())).thenAnswer(i -> localPaymentMapper.toPaymentOrder((PaymentBO) i.getArguments()[0]));
-        when(paymentMapper.toPaymentTargetDetails(anyString(), any(), any(), any())).thenAnswer(i -> localPaymentMapper.toPaymentTargetDetails((String) i.getArguments()[0], (PaymentTargetBO) i.getArguments()[1], (LocalDate) i.getArguments()[2], (List<ExchangeRateBO>) i.getArguments()[3]));
+        Whitebox.setInternalState(transactionService, "paymentMapper", Mappers.getMapper(PaymentMapper.class));
         when(postingMapper.buildPosting(any(), anyString(), anyString(), any(), anyString())).thenAnswer(i -> localPostingMapper.buildPosting((LocalDateTime) i.getArguments()[0], (String) i.getArguments()[1], (String) i.getArguments()[2], (LedgerBO) i.getArguments()[3], (String) i.getArguments()[4]));
         when(postingMapper.buildPostingLine(anyString(), any(), any(), any(), anyString(), anyString())).thenAnswer(i -> localPostingMapper.buildPostingLine((String) i.getArguments()[0], (LedgerAccountBO) i.getArguments()[1], (BigDecimal) i.getArguments()[2], (BigDecimal) i.getArguments()[3], (String) i.getArguments()[4], (String) i.getArguments()[5]));
         when(serializeService.serializeOprDetails(any())).thenAnswer(i -> STATIC_MAPPER.writeValueAsString(i.getArguments()[0]));
@@ -366,7 +364,8 @@ public class DepositAccountTransactionServiceImplTest {
         PostingLineBO line1 = lines.get(0);
         assertThat(line1).isEqualToIgnoringGivenFields(expectedLine(null, new LedgerAccountBO(null, new LedgerBO()), BigDecimal.TEN, BigDecimal.ZERO, null, null, null, posting.getOprSrc()), "id", "details");
         assertThat(line1.getDetails()).isNotBlank();
-      //  assertThat(STATIC_MAPPER.readValue(line1.getDetails(), PaymentTargetDetailsBO.class)).isEqualToIgnoringGivenFields(getExpectedDetails(payment, line1.getId(), null));
+        List<ExchangeRateBO> exchangeRates1 = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(lines.get(0).getDetails(), TransactionDetailsBO.class).getExchangeRate();
+        assertThat(STATIC_MAPPER.readValue(line1.getDetails(), PaymentTargetDetailsBO.class)).isEqualToIgnoringGivenFields(getExpectedDetails(payment, line1.getId(), exchangeRates1), "creditorAgent", "creditorName", "creditorAccount", "remittanceInformationUnstructured");
 
         PostingLineBO line2 = lines.get(1);
         assertThat(line2).isEqualToIgnoringGivenFields(expectedLine(null, new LedgerAccountBO(null, new LedgerBO()), BigDecimal.ZERO, BigDecimal.TEN, null, null, null, payment.getPaymentId()), "id", "details");
@@ -422,8 +421,7 @@ public class DepositAccountTransactionServiceImplTest {
         //given
         PaymentBO payment = getPayment(BULK, EUR, USD, USD, null, true);
 
-        when(paymentMapper.toPaymentOrder(any())).thenAnswer(i -> localPaymentMapper.toPaymentOrder((PaymentBO) i.getArguments()[0]));
-        when(paymentMapper.toPaymentTargetDetails(anyString(), any(), any(), any())).thenAnswer(i -> localPaymentMapper.toPaymentTargetDetails((String) i.getArguments()[0], (PaymentTargetBO) i.getArguments()[1], (LocalDate) i.getArguments()[2], (List<ExchangeRateBO>) i.getArguments()[3]));
+        Whitebox.setInternalState(transactionService, "paymentMapper", Mappers.getMapper(PaymentMapper.class));
         when(postingMapper.buildPosting(any(), anyString(), anyString(), any(), anyString())).thenAnswer(i -> localPostingMapper.buildPosting((LocalDateTime) i.getArguments()[0], (String) i.getArguments()[1], (String) i.getArguments()[2], (LedgerBO) i.getArguments()[3], (String) i.getArguments()[4]));
         when(postingMapper.buildPostingLine(anyString(), any(), any(), any(), anyString(), anyString())).thenAnswer(i -> localPostingMapper.buildPostingLine((String) i.getArguments()[0], (LedgerAccountBO) i.getArguments()[1], (BigDecimal) i.getArguments()[2], (BigDecimal) i.getArguments()[3], (String) i.getArguments()[4], (String) i.getArguments()[5]));
         when(serializeService.serializeOprDetails(any())).thenAnswer(i -> STATIC_MAPPER.writeValueAsString(i.getArguments()[0]));
@@ -451,7 +449,7 @@ public class DepositAccountTransactionServiceImplTest {
         PostingLineBO line1 = lines.get(0);
         assertThat(line1).isEqualToIgnoringGivenFields(expectedLine(null, new LedgerAccountBO(null, new LedgerBO()), BigDecimal.valueOf(8.3333), BigDecimal.ZERO, null, null, null, posting.getOprSrc()), "id", "details");
         assertThat(line1.getDetails()).isNotBlank();
-       // assertThat(STATIC_MAPPER.readValue(line1.getDetails(), PaymentTargetDetailsBO.class)).isEqualToIgnoringGivenFields(getExpectedDetails(payment, line1.getId(), null));
+        List<ExchangeRateBO> exchangeRates1 = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(lines.get(0).getDetails(), TransactionDetailsBO.class).getExchangeRate();
 
         PostingLineBO line2 = lines.get(1);
         assertThat(line2).isEqualToIgnoringGivenFields(expectedLine(null, null, BigDecimal.ZERO, BigDecimal.valueOf(8.3333), null, null, null, posting.getOprSrc()), "id", "details");

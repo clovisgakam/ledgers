@@ -107,16 +107,6 @@ public class PaymentExecutionServiceTest {
         assertSame(STATUS_BO_RJCT, status);
     }
 
-//    @Test(expected = DepositModuleException.class)
-//    public void executeSinglePayment_paymentProcessingFailure() {
-//        //given
-//        when(accountService.getAccountDetailsById(anyString(), any(LocalDateTime.class), anyBoolean())).thenReturn(getDepositAccountDetailsBO(EUR));
-//        when(exchangeRatesService.applyRate(any(), any(), any())).thenReturn(BigDecimal.ONE);
-//
-//        //when
-//        executionService.executePayment(getSinglePaymentWithCurrencyNull(), "userName");
-//    }
-
     @Test
     public void executeBulkPayment_status_ACSC() {
         //given
@@ -208,15 +198,6 @@ public class PaymentExecutionServiceTest {
         return payment;
     }
 
-    private Payment getSinglePaymentWithCurrencyNull() {
-        Payment payment = readFile(Payment.class, "PaymentSingle.yml");
-        payment.getTargets().forEach(t -> t.setPayment(payment));
-//        Amount a = new Amount();
-//        a.setCurrency(null);
-//        a.setAmount(null);
-//        payment.getTargets().get(0).setInstructedAmount(a);
-        return payment;
-    }
 
     private Payment getSinglePaymentChanged(TransactionStatus status, LocalDate endDate) {
         Payment payment = getSinglePayment();
