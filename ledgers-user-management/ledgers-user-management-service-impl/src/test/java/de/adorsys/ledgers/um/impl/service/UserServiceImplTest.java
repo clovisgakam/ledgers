@@ -69,9 +69,9 @@ public class UserServiceImplTest {
         when(repository.save(userEntity)).thenReturn(userEntity);
         when(converter.toUserBO(any())).thenReturn(userBO);
 
-        userService.updateScaData(scaUserDataBOS, userBO);
+        userService.updateScaData(scaUserDataBOS, USER_LOGIN);
 
-        verify(repository, times(1)).findFirstByLogin(userEntity.getLogin());
+        verify(repository, times(1)).findFirstByLogin(USER_LOGIN);
         verify(repository, times(1)).save(userEntity);
     }
 
@@ -81,7 +81,7 @@ public class UserServiceImplTest {
 
         when(repository.findFirstByLogin(USER_LOGIN)).thenReturn(Optional.empty());
 
-        userService.updateScaData(scaUserDataBOS, userBO);
+        userService.updateScaData(scaUserDataBOS, USER_LOGIN);
     }
 
     private <T> List<T> getScaUserData(Class<T> clazz) throws IOException {

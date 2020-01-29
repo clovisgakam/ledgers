@@ -75,11 +75,11 @@ public class MiddlewareUserManagementServiceImplTest {
     @Test
     public void updateScaMethods() {
         String userLogin = "userLogin";
-        when(userService.updateScaData(userBO.getScaUserData(), userBO)).thenReturn(userBO);
+        when(userService.updateScaData(userBO.getScaUserData(), userLogin)).thenReturn(userBO);
 
-        middlewareUserService.updateScaData(userTO, userTO.getScaUserData());
+        middlewareUserService.updateScaData(userLogin, userTO.getScaUserData());
 
-        verify(userService, times(1)).updateScaData(userBO.getScaUserData(), userBO);
+        verify(userService, times(1)).updateScaData(userBO.getScaUserData(), userLogin);
     }
 
     private static <T> T readYml(Class<T> aClass, String fileName) {

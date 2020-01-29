@@ -40,9 +40,9 @@ public interface MiddlewareUserManagementService {
      * Update SCA methods by user login
      *
      * @param scaDataList user methods
-     * @param userTO user transfer object
+     * @param userLogin   user login
      */
-    UserTO updateScaData(UserTO userTO, List<ScaUserDataTO> scaDataList);
+    UserTO updateScaData(String userLogin, List<ScaUserDataTO> scaDataList);
 
     /**
      * Adds new account for a specific User

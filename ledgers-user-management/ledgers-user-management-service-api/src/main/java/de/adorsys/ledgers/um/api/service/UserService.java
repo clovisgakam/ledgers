@@ -52,10 +52,10 @@ public interface UserService {
      * Update SCA methods by user login
      *
      * @param scaDataList user methods
-     * @param userBO User business object
+     * @param userLogin   user login
      * @return The user object.
      */
-    UserBO updateScaData(List<ScaUserDataBO> scaDataList, UserBO userBO);
+    UserBO updateScaData(List<ScaUserDataBO> scaDataList, String userLogin);
 
     UserBO updateAccountAccess(String userLogin, List<AccountAccessBO> accountAccessListBO);
 

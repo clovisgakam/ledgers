@@ -123,7 +123,7 @@ public class UserResourceTest {
     public void updateUserScaData() throws Exception {
         UserBO userBO = getUserBO();
         when(userService.findById(anyString())).thenReturn(userBO);
-        when(userService.updateScaData(any(), any())).thenReturn(userBO);
+        when(userService.updateScaData(any(), anyString())).thenReturn(userBO);
 
         String jsonScaUserData = JsonReader.getInstance().getStringFromFile("de/adorsys/ledgers/um/rest/controller/scaUserData.json");
 
@@ -137,7 +137,7 @@ public class UserResourceTest {
         assertThat(mvcResult.getResponse().getHeader("Location"), is("/users/" + USER_ID));
 
         verify(userService, times(1)).findById(USER_ID);
-        verify(userService, times(1)).updateScaData(any(), any());
+        verify(userService, times(1)).updateScaData(any(), anyString());
     }
 
     @Test

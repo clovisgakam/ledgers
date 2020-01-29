@@ -105,13 +105,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBO updateScaData(List<ScaUserDataBO> scaDataList, UserBO userBO) {
-        log.info("Retrieving user by login={}", userBO.getLogin());
-        UserEntity user = userRepository.findFirstByLogin(userBO.getLogin())
-                                  .orElseThrow(getModuleExceptionSupplier(userBO.getLogin(), USER_NOT_FOUND, USER_WITH_LOGIN_NOT_FOUND));
+    public UserBO updateScaData(List<ScaUserDataBO> scaDataList, String userLogin) {
+        log.info("Retrieving user by login={}", userLogin);
+        UserEntity user = userRepository.findFirstByLogin(userLogin)
+                                  .orElseThrow(getModuleExceptionSupplier(userLogin, USER_NOT_FOUND, USER_WITH_LOGIN_NOT_FOUND));
 
         checkDuplicateScaMethods(scaDataList);
-        scaUserDataService.ifScaChangedEmailNotValid(userBO.getScaUserData(), scaDataList);
+        scaUserDataService.ifScaChangedEmailNotValid(userConverter.toUserBO(user).getScaUserData(), scaDataList);
         List<ScaUserDataEntity> scaMethods = userConverter.toScaUserDataListEntity(scaDataList);
         user.getScaUserData().clear();
         user.getScaUserData().addAll(scaMethods);
