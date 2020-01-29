@@ -4,6 +4,7 @@ import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.um.db.domain.ScaUserDataEntity;
 import de.adorsys.ledgers.um.db.repository.ScaUserDataRepository;
+import de.adorsys.ledgers.um.db.repository.UserRepository;
 import de.adorsys.ledgers.um.impl.converter.UserConverter;
 import de.adorsys.ledgers.util.exception.SCAErrorCode;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
@@ -12,12 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO.EMAIL;
+
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ScaUserDataServiceImpl implements ScaUserDataService {
     private final ScaUserDataRepository scaUserDataRepository;
+    private final UserRepository userRepository;
     private final UserConverter userConverter;
 
     @Override
@@ -44,5 +50,24 @@ public class ScaUserDataServiceImpl implements ScaUserDataService {
     @Override
     public void updateScaUserData(ScaUserDataBO scaUserDataBO) {
         scaUserDataRepository.save(userConverter.toScaUserDataEntity(scaUserDataBO));
+    }
+
+    @Override
+    public void ifScaChangedEmailNotValid(List<ScaUserDataBO> oldScaData, List<ScaUserDataBO> newScaData) {
+        oldScaData.stream()
+                .filter(e -> e.getScaMethod() == EMAIL)
+                .forEach(o -> checkAndUpdateValidity(o, newScaData));
+    }
+
+    private void checkAndUpdateValidity(ScaUserDataBO o, List<ScaUserDataBO> newScaData) {
+        newScaData.stream()
+                .filter(n -> n.getId().equals(o.getId()))
+                .filter(n -> n.getScaMethod() == EMAIL)
+                .findFirst()
+                .ifPresent(n -> {
+                    if (!n.getMethodValue().equals(o.getMethodValue())) {
+                        n.setValid(false);
+                    }
+                });
     }
 }

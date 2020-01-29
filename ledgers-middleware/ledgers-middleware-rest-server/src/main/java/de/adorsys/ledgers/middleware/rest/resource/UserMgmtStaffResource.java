@@ -102,7 +102,7 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
     @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<Void> updateUserScaData(String userId, List<ScaUserDataTO> data) {
         UserTO user = findUserForBranch(userId);
-        UserTO userWithUpdatedSca = middlewareUserService.updateScaData(user.getLogin(), data);
+        UserTO userWithUpdatedSca = middlewareUserService.updateScaData(user, data);
         URI uri = UriComponentsBuilder.fromUriString("/staff-access" + UserMgmtRestAPI.BASE_PATH + "/" + userWithUpdatedSca.getId())
                           .build().toUri();
         return ResponseEntity.created(uri).build();

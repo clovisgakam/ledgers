@@ -2,6 +2,7 @@ package de.adorsys.ledgers.um.impl.service;
 
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
+import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import de.adorsys.ledgers.um.db.domain.UserEntity;
 import de.adorsys.ledgers.um.db.repository.UserRepository;
@@ -41,6 +42,8 @@ public class UserServiceImplTest {
     private HashMacSecretSource secretSource;
     @Mock
     private BearerTokenService bearerTokenService;
+    @Mock
+    private ScaUserDataService scaUserDataService;
 
     private ResourceReader reader = YamlReader.getInstance();
 
@@ -66,9 +69,9 @@ public class UserServiceImplTest {
         when(repository.save(userEntity)).thenReturn(userEntity);
         when(converter.toUserBO(any())).thenReturn(userBO);
 
-        userService.updateScaData(scaUserDataBOS, USER_LOGIN);
+        userService.updateScaData(scaUserDataBOS, userBO);
 
-        verify(repository, times(1)).findFirstByLogin(USER_LOGIN);
+        verify(repository, times(1)).findFirstByLogin(userEntity.getLogin());
         verify(repository, times(1)).save(userEntity);
     }
 
@@ -78,7 +81,7 @@ public class UserServiceImplTest {
 
         when(repository.findFirstByLogin(USER_LOGIN)).thenReturn(Optional.empty());
 
-        userService.updateScaData(scaUserDataBOS, USER_LOGIN);
+        userService.updateScaData(scaUserDataBOS, userBO);
     }
 
     private <T> List<T> getScaUserData(Class<T> clazz) throws IOException {

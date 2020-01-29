@@ -19,7 +19,10 @@ package de.adorsys.ledgers.um.impl.service;
 import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.ScaUserDataService;
 import de.adorsys.ledgers.um.api.service.UserService;
-import de.adorsys.ledgers.um.db.domain.*;
+import de.adorsys.ledgers.um.db.domain.AccountAccess;
+import de.adorsys.ledgers.um.db.domain.AisConsentEntity;
+import de.adorsys.ledgers.um.db.domain.ScaUserDataEntity;
+import de.adorsys.ledgers.um.db.domain.UserEntity;
 import de.adorsys.ledgers.um.db.repository.AisConsentRepository;
 import de.adorsys.ledgers.um.db.repository.UserRepository;
 import de.adorsys.ledgers.um.impl.converter.AisConsentMapper;
@@ -45,12 +48,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
+import static de.adorsys.ledgers.util.exception.UserManagementModuleException.getModuleExceptionSupplier;
 
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
-@SuppressWarnings("PMD.TooManyMethods")
 public class UserServiceImpl implements UserService {
     private static final String USER_WITH_LOGIN_NOT_FOUND = "User with login=%s not found";
     private static final String USER_WITH_ID_NOT_FOUND = "User with id=%s not found";
@@ -92,10 +95,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserBO findById(String id) {
         UserEntity user = userRepository.findById(id)
-                                  .orElseThrow(() -> UserManagementModuleException.builder()
-                                                             .errorCode(USER_NOT_FOUND)
-                                                             .devMsg(String.format(USER_WITH_ID_NOT_FOUND, id))
-                                                             .build());
+                                  .orElseThrow(getModuleExceptionSupplier(id, USER_NOT_FOUND, USER_WITH_ID_NOT_FOUND));
         return convertToUserBoAndDecodeTan(user);
     }
 
@@ -105,18 +105,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBO updateScaData(List<ScaUserDataBO> scaDataList, String userLogin) {
-        log.info("Retrieving user by login={}", userLogin);
-        UserEntity user = userRepository.findFirstByLogin(userLogin)
-                                  .orElseThrow(() -> UserManagementModuleException.builder()
-                                                             .errorCode(USER_NOT_FOUND)
-                                                             .devMsg(String.format(USER_WITH_LOGIN_NOT_FOUND, userLogin))
-                                                             .build());
+    public UserBO updateScaData(List<ScaUserDataBO> scaDataList, UserBO userBO) {
+        log.info("Retrieving user by login={}", userBO.getLogin());
+        UserEntity user = userRepository.findFirstByLogin(userBO.getLogin())
+                                  .orElseThrow(getModuleExceptionSupplier(userBO.getLogin(), USER_NOT_FOUND, USER_WITH_LOGIN_NOT_FOUND));
 
         checkDuplicateScaMethods(scaDataList);
-
+        scaUserDataService.ifScaChangedEmailNotValid(userBO.getScaUserData(), scaDataList);
         List<ScaUserDataEntity> scaMethods = userConverter.toScaUserDataListEntity(scaDataList);
-        ifScaChangedEmailNotValid(scaMethods);
         user.getScaUserData().clear();
         user.getScaUserData().addAll(scaMethods);
         hashStaticTan(user);
@@ -126,14 +122,12 @@ public class UserServiceImpl implements UserService {
         return convertToUserBoAndDecodeTan(save);
     }
 
+
     @Override
     public UserBO updateAccountAccess(String userLogin, List<AccountAccessBO> accountAccessListBO) {
         log.info("Retrieving user by login={}", userLogin);
         UserEntity user = userRepository.findFirstByLogin(userLogin)
-                                  .orElseThrow(() -> UserManagementModuleException.builder()
-                                                             .errorCode(USER_NOT_FOUND)
-                                                             .devMsg(String.format(USER_WITH_LOGIN_NOT_FOUND, userLogin))
-                                                             .build());
+                                  .orElseThrow(getModuleExceptionSupplier(userLogin, USER_NOT_FOUND, USER_WITH_LOGIN_NOT_FOUND));
 
         List<AccountAccess> accountAccesses = userConverter.toAccountAccessListEntity(accountAccessListBO);
         user.getAccountAccesses().clear();
@@ -153,10 +147,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AisConsentBO loadConsent(String consentId) {
         AisConsentEntity aisConsentEntity = consentRepository.findById(consentId)
-                                                    .orElseThrow(() -> UserManagementModuleException.builder()
-                                                                               .errorCode(CONSENT_NOT_FOUND)
-                                                                               .devMsg(String.format(CONSENT_WITH_ID_S_NOT_FOUND, consentId))
-                                                                               .build());
+                                                    .orElseThrow(getModuleExceptionSupplier(consentId, CONSENT_NOT_FOUND, CONSENT_WITH_ID_S_NOT_FOUND));
         return aisConsentMapper.toAisConsentBO(aisConsentEntity);
     }
 
@@ -176,9 +167,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserBO updateUser(UserBO userBO) {
         checkDuplicateScaMethods(userBO.getScaUserData());
+        checkAndResetValidityScaEmail(userBO);
         UserEntity user = userConverter.toUserPO(userBO);
         checkIfPasswordModifiedAndEncode(user);
-        ifScaChangedEmailNotValid(user.getScaUserData());
         hashStaticTan(user);
         UserEntity save = userRepository.save(user);
         return convertToUserBoAndDecodeTan(save);
@@ -210,26 +201,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void ifScaChangedEmailNotValid(List<ScaUserDataEntity> scaUserDataEntities) {
-        scaUserDataEntities.stream()
-                .filter(e -> e.getId() != null && e.getScaMethod() == ScaMethodType.EMAIL)
-                .forEach(this::checkAndResetValidityScaEmail);
-    }
-
-    private void checkAndResetValidityScaEmail(ScaUserDataEntity dataEntity) {
-        boolean isEqual = scaUserDataService.findById(dataEntity.getId()).getMethodValue().equals(dataEntity.getMethodValue());
-        if (!isEqual) {
-            dataEntity.setValid(false);
-        }
+    private void checkAndResetValidityScaEmail(UserBO user) {
+        scaUserDataService.ifScaChangedEmailNotValid(findById(user.getId()).getScaUserData(), user.getScaUserData());
     }
 
     @NotNull
     public UserEntity getUser(String login) {
         return userRepository.findFirstByLogin(login)
-                       .orElseThrow(() -> UserManagementModuleException.builder()
-                                                  .errorCode(USER_NOT_FOUND)
-                                                  .devMsg(String.format(USER_WITH_LOGIN_NOT_FOUND, login))
-                                                  .build());
+                       .orElseThrow(getModuleExceptionSupplier(login, USER_NOT_FOUND, USER_WITH_LOGIN_NOT_FOUND));
     }
 
     private UserBO convertToUserBoAndDecodeTan(UserEntity user) {

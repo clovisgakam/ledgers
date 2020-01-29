@@ -68,7 +68,7 @@ public class UserResource {
     public ResponseEntity<Void> updateUserScaData(@PathVariable String id, @RequestBody List<ScaUserDataBO> data) {
         try {
             UserBO userBO = userService.findById(id);
-            UserBO user = userService.updateScaData(data, userBO.getLogin());
+            UserBO user = userService.updateScaData(data, userBO);
 
             URI uri = UriComponentsBuilder.fromUriString(USERS + user.getId())
                               .build().toUri();

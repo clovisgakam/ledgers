@@ -65,8 +65,8 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
     }
 
     @Override
-    public UserTO updateScaData(String userLogin, List<ScaUserDataTO> scaDataList) {
-        UserBO userBO = userService.updateScaData(userTOMapper.toScaUserDataListBO(scaDataList), userLogin);
+    public UserTO updateScaData(UserTO user, List<ScaUserDataTO> scaDataList) {
+        UserBO userBO = userService.updateScaData(userTOMapper.toScaUserDataListBO(scaDataList), userTOMapper.toUserBO(user));
         return userTOMapper.toUserTO(userBO);
     }
 

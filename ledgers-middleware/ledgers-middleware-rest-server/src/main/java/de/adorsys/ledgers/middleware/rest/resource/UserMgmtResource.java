@@ -128,7 +128,7 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     @PreAuthorize("tokenUsage('DIRECT_ACCESS')")
     public ResponseEntity<Void> updateUserScaData(List<ScaUserDataTO> data) {
         UserTO userTO = middlewareUserService.findById(scaInfoHolder.getUserId());
-        UserTO user = middlewareUserService.updateScaData(userTO.getLogin(), data);
+        UserTO user = middlewareUserService.updateScaData(userTO, data);
 
         URI uri = UriComponentsBuilder.fromUriString(BASE_PATH + "/" + user.getId())
                           .build().toUri();
@@ -151,7 +151,7 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     @PreAuthorize("hasAnyRole('STAFF','SYSTEM')")
     public ResponseEntity<Void> updateScaDataByUserId(@PathVariable String userId, @RequestBody List<ScaUserDataTO> data) {
         UserTO userTO = middlewareUserService.findById(userId);
-        UserTO user = middlewareUserService.updateScaData(userTO.getLogin(), data);
+        UserTO user = middlewareUserService.updateScaData(userTO, data);
 
         URI uri = UriComponentsBuilder.fromUriString(BASE_PATH + "/" + user.getId())
                           .build().toUri();
