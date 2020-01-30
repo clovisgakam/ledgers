@@ -259,6 +259,7 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
             operation.setAuthCodeHash(generateHash(operation.getId(), confirmationCode));
             scaValidation.setAuthConfirmationCode(confirmationCode);
         }
+        scaValidation.setScaStatus(ScaStatusBO.valueOf(status.name()));
         updateOperationStatus(operation, AuthCodeStatus.VALIDATED, status, scaWeight);
     }
 
