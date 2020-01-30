@@ -43,7 +43,7 @@ public interface UserConverter {
 
     ScaUserDataBO toScaUserDataBO(ScaUserDataEntity entity);
 
-    @Mapping(target = "id", expression = "java(de.adorsys.ledgers.um.api.domain.ScaUserDataBO.chkId(bo.getId()))")
+    @Mapping(target = "id", expression = "java(de.adorsys.ledgers.um.api.domain.ScaUserDataBO.checkId(bo.getId()))")
     ScaUserDataEntity toScaUserDataEntity(ScaUserDataBO bo);
 
     List<ScaUserDataBO> toScaUserDataListBO(List<ScaUserDataEntity> list);
