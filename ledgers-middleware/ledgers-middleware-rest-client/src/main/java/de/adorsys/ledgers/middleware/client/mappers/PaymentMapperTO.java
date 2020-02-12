@@ -86,9 +86,11 @@ public class PaymentMapperTO {
         mapProperties(debtorPart, "endDate", node, paymentTO::setEndDate, LocalDate.class);
         mapProperties(debtorPart, "executionRule", node, paymentTO::setExecutionRule, String.class);
         mapProperties(debtorPart, "frequency", node, paymentTO::setFrequency, FrequencyCodeTO.class);
-        if (!StringUtils.isAllUpperCase(node.findValue("frequency").asText())) {
-            paymentTO.setFrequency(FrequencyCodeTO.getByValue(node.findValue("frequency").asText()));
-        }
+        Optional.ofNullable(node.findValue("frequency")).map(JsonNode::asText).ifPresent(v -> {
+            if (!StringUtils.isAllUpperCase(v)) {
+                paymentTO.setFrequency(FrequencyCodeTO.getByValue(node.findValue("frequency").asText()));
+            }
+        });
         mapProperties(debtorPart, "dayOfExecution", node, paymentTO::setDayOfExecution, Integer.class);
         mapProperties(debtorPart, "debtorAgent", node, paymentTO::setDebtorAgent, String.class);
         mapProperties(debtorPart, "debtorName", node, paymentTO::setDebtorName, String.class);
