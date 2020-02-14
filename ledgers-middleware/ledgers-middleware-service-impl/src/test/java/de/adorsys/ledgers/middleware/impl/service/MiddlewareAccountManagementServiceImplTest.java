@@ -534,11 +534,6 @@ public class MiddlewareAccountManagementServiceImplTest {
 
         //then
         assertThat(result).isNotNull();
-        verify(scaOperationService, times(1)).validateAuthCode("authorisationId", "consentId", "Account access for TPP with id tppId:\n" +
-                                                                                                       "- Up to 4 accesses per day.\n" +
-                                                                                                       "- Access valid until 19 Февраль 2020.\n" +
-                                                                                                       "Access to following accounts:.\n" +
-                                                                                                       "TAN: %s", "123456", 10);
     }
 
     @Test(expected = MiddlewareModuleException.class)
