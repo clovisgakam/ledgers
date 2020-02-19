@@ -16,7 +16,7 @@ public enum FrequencyCodeTO {
 
     private String value;
 
-    private final static Map<String, FrequencyCodeTO> container = new HashMap<>();
+    private static final Map<String, FrequencyCodeTO> container = new HashMap<>();
 
     static {
         for (FrequencyCodeTO code : values()) {
