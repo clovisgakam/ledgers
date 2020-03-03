@@ -242,13 +242,10 @@ public class MiddlewareUserManagementServiceImplTest {
 
         //then
         assertThat(user.getScaUserData().size()).isEqualTo((2));
-
         assertThat(user.getScaUserData().get(0).getScaMethod()).isEqualByComparingTo(ScaMethodTypeTO.EMAIL);
         assertThat(user.getScaUserData().get(0).getMethodValue()).isEqualTo("spe@adorsys.com.ua");
-
         assertThat(user.getScaUserData().get(1).getScaMethod()).isEqualTo(ScaMethodTypeTO.MOBILE);
         assertThat(user.getScaUserData().get(1).getMethodValue()).isEqualTo("+380933686868");
-
         verify(userService, times(1)).findByLogin(userLogin);
     }
 
