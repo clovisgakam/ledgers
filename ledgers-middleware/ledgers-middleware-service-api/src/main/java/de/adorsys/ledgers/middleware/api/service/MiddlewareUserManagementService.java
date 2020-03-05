@@ -1,8 +1,6 @@
 package de.adorsys.ledgers.middleware.api.service;
 
-import de.adorsys.ledgers.middleware.api.domain.account.AccountIdentifierTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.account.AccountReferenceTO;
-import de.adorsys.ledgers.middleware.api.domain.account.AdditionalAccountInformationTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
 import de.adorsys.ledgers.middleware.api.domain.um.AccountAccessTO;
 import de.adorsys.ledgers.middleware.api.domain.um.ScaUserDataTO;
@@ -86,6 +84,4 @@ public interface MiddlewareUserManagementService {
     boolean checkMultilevelScaRequired(String login, String iban);
 
     boolean checkMultilevelScaRequired(String login, List<AccountReferenceTO> references);
-
-    List<AdditionalAccountInformationTO> getAdditionalInformation(ScaInfoTO scaInfoHolder, AccountIdentifierTypeTO accountIdentifierType, String accountIdentifier);
 }

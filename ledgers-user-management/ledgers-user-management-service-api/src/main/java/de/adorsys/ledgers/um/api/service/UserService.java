@@ -104,8 +104,4 @@ public interface UserService {
     UserBO updateUser(UserBO userBO);
 
     List<UserBO> findUsersByIban(String iban);
-
-    List<UserBO> findOwnersByIban(String iban);
-
-    List<UserBO> findOwnersByAccountId(String accountId);
 }
