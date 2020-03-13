@@ -1,7 +1,10 @@
 package de.adorsys.ledgers.middleware.impl.service;
 
-import de.adorsys.ledgers.middleware.api.service.MiddlewareResetPasswordService;
-import de.adorsys.ledgers.security.*;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareUserPasswordService;
+import de.adorsys.ledgers.security.GenerateCode;
+import de.adorsys.ledgers.security.ResetPassword;
+import de.adorsys.ledgers.security.SendCode;
+import de.adorsys.ledgers.security.VerifyCode;
 import de.adorsys.ledgers.um.api.service.ResetPasswordCodeGenerator;
 import de.adorsys.ledgers.um.api.service.ResetPasswordCodeSender;
 import de.adorsys.ledgers.um.api.service.ResetPasswordCodeVerifier;
@@ -13,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MiddlewareResetPasswordServiceImpl implements MiddlewareResetPasswordService {
+public class MiddlewareUserPasswordServiceImpl implements MiddlewareUserPasswordService {
     private final ResetPasswordCodeGenerator resetPasswordCodeGenerator;
     private final ResetPasswordCodeSender resetPasswordCodeSender;
     private final ResetPasswordCodeVerifier resetPasswordCodeVerifier;
@@ -26,8 +29,8 @@ public class MiddlewareResetPasswordServiceImpl implements MiddlewareResetPasswo
     }
 
     @Override
-    public UpdatePassword updatePassword(ResetPassword resetPassword) {
+    public void updatePassword(ResetPassword resetPassword) {
         VerifyCode result = resetPasswordCodeVerifier.verifyCode(resetPassword.getCode());
-        return resetPasswordService.updatePassword(result.getUserId(), resetPassword.getNewPassword());
+        resetPasswordService.updatePassword(result.getUserId(), resetPassword.getNewPassword());
     }
 }

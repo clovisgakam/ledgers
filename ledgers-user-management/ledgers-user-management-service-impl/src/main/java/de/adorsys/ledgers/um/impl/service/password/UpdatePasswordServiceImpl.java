@@ -1,6 +1,5 @@
 package de.adorsys.ledgers.um.impl.service.password;
 
-import de.adorsys.ledgers.security.UpdatePassword;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import de.adorsys.ledgers.um.api.service.UpdatePasswordService;
 import de.adorsys.ledgers.um.db.domain.UserEntity;
@@ -22,7 +21,7 @@ public class UpdatePasswordServiceImpl implements UpdatePasswordService {
 
     @Override
     @Transactional
-    public UpdatePassword updatePassword(String userId, String newPassword) {
+    public void updatePassword(String userId, String newPassword) {
         UserEntity user = userRepository.findById(userId)
                                   .orElseThrow(() -> UserManagementModuleException.builder()
                                                              .errorCode(USER_NOT_FOUND)
@@ -30,6 +29,5 @@ public class UpdatePasswordServiceImpl implements UpdatePasswordService {
                                                              .build());
 
         user.setPin(passwordEnc.encode(userId, newPassword));
-        return new UpdatePassword(true);
     }
 }

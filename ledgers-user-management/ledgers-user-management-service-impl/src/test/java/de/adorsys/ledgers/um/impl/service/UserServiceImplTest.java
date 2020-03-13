@@ -260,7 +260,7 @@ public class UserServiceImplTest {
     @Test
     public void findByBranchAndUserRolesIn() {
         //given
-        when(converter.toUserRole(any())).thenReturn(Collections.singletonList(UserRole.CUSTOMER));
+        when(converter.toUserRoles(any())).thenReturn(Collections.singletonList(UserRole.CUSTOMER));
         when(converter.toUserBO(any())).thenReturn(userBO);
         when(repository.findByBranchAndUserRolesInAndLoginContaining(any(), any(), any(), any())).thenReturn(new PageImpl<UserEntity>(Collections.singletonList(userEntity)));
 
@@ -270,7 +270,7 @@ public class UserServiceImplTest {
         //then
         assertThat(user.getContent().get(0)).isNotNull();
         assertEquals(userBO, user.getContent().get(0));
-        verify(converter, times(1)).toUserRole(Collections.singletonList(UserRoleBO.CUSTOMER));
+        verify(converter, times(1)).toUserRoles(Collections.singletonList(UserRoleBO.CUSTOMER));
     }
 
     @Test

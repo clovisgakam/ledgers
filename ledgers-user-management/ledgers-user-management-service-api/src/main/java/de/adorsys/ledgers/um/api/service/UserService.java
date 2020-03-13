@@ -88,6 +88,14 @@ public interface UserService {
     Page<UserBO> findByBranchAndUserRolesIn(String branch, List<UserRoleBO> userRoles, String queryParam, Pageable pageable);
 
     /**
+     * Loads users collection by branch and the given roles
+     *
+     * @param role user role
+     * @return List of users filtered by branch and user roles
+     */
+    Page<UserBO> findByUserRole(UserRoleBO role, String queryParam, Pageable pageable);
+
+    /**
      * Counts amount of users for a branch
      *
      * @param branch branch

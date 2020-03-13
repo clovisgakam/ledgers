@@ -38,10 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
@@ -149,7 +146,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserBO> findByBranchAndUserRolesIn(String branch, List<UserRoleBO> userRoles, String queryParam, Pageable pageable) {
-        Page<UserBO> users = userRepository.findByBranchAndUserRolesInAndLoginContaining(branch, userConverter.toUserRole(userRoles), queryParam, pageable)
+        Page<UserBO> users = userRepository.findByBranchAndUserRolesInAndLoginContaining(branch, userConverter.toUserRoles(userRoles), queryParam, pageable)
+                                     .map(userConverter::toUserBO);
+        users.forEach(this::decodeStaticTanForUser);
+        return users;
+    }
+
+    @Override
+    public Page<UserBO> findByUserRole(UserRoleBO role, String queryParam, Pageable pageable) {
+        Page<UserBO> users = userRepository.findAllByUserRolesInAndLoginContaining(Collections.singletonList(userConverter.toUserRole(role)), queryParam, pageable)
                                      .map(userConverter::toUserBO);
         users.forEach(this::decodeStaticTanForUser);
         return users;

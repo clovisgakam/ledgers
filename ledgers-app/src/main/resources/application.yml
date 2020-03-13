@@ -132,6 +132,7 @@ currency:
 #TanEncryption
 application:
   security:
+    admin_default_password: admin123
     masterPassword: $VoL973@sd
     encryptorAlgorithm: PBEWITHSHA1ANDDESEDE
 

@@ -2,14 +2,13 @@ package de.adorsys.ledgers.middleware.rest.resource;
 
 import de.adorsys.ledgers.security.ResetPassword;
 import de.adorsys.ledgers.security.SendCode;
-import de.adorsys.ledgers.security.UpdatePassword;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "LDG007 - Reset password for user")
-public interface ResetPasswordRestAPI {
+@Api(tags = "LDG007 - Reset user password")
+public interface UserPasswordRestAPI {
     String BASE_PATH = "/password";
 
     @PostMapping
@@ -18,5 +17,5 @@ public interface ResetPasswordRestAPI {
 
     @PutMapping
     @ApiOperation(value = "Update user password")
-    ResponseEntity<UpdatePassword> updatePassword(@RequestBody ResetPassword resetPassword);
+    ResponseEntity<Void> updatePassword(@RequestBody ResetPassword resetPassword);
 }

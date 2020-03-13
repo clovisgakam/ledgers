@@ -115,7 +115,7 @@ public class UserConverterTest {
 
     @Test
     public void toUserRole() {
-        List<UserRole> result = converter.toUserRole(Collections.singletonList(UserRoleBO.CUSTOMER));
+        List<UserRole> result = converter.toUserRoles(Collections.singletonList(UserRoleBO.CUSTOMER));
         assertThat(result).isEqualTo(Collections.singletonList(UserRole.CUSTOMER));
     }
 

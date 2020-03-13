@@ -24,17 +24,25 @@ import de.adorsys.ledgers.um.api.domain.AccountAccessBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
 import de.adorsys.ledgers.um.api.domain.UserRoleBO;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Named(value = "toUserTO")
     UserTO toUserTO(UserBO user);
+
+    @Mapping(target = "accountAccesses", ignore = true)
+    UserTO toUserToIgnoreAccountAccess(UserBO user);
 
     UserBO toUserBO(UserTO user);
 
+    @IterableMapping(qualifiedByName = "toUserTO")
     List<UserTO> toUserTOList(List<UserBO> listUsers);
 
     List<UserBO> toUserBOList(List<UserTO> listUsers);
@@ -58,4 +66,9 @@ public interface UserMapper {
     List<UserRoleTO> toUserRoleTO(List<UserRoleBO> userRoles);
 
     List<UserRoleBO> toUserRoleBO(List<UserRoleTO> userRoles);
+
+    UserRoleTO toUserRoleTO(UserRoleBO source);
+
+    UserRoleBO toUserRoleBO(UserRoleTO source);
+
 }

@@ -27,11 +27,10 @@ import de.adorsys.ledgers.um.api.domain.UserBO;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,9 +41,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BankInitService {
-    private final Logger logger = LoggerFactory.getLogger(BankInitService.class);
+    private static final String ACCOUNT_NOT_FOUND_MSG = "Account {} not Found! Should never happen while initiating mock data!";
+    private static final String NO_USER_BY_IBAN = "Could not get User By Iban {}! Should never happen while initiating mock data!";
+    private static final LocalDateTime START_DATE = LocalDateTime.of(2018, 1, 1, 1, 1);
 
     private final MockbankInitData mockbankInitData;
     private final UserService userService;
@@ -56,28 +59,10 @@ public class BankInitService {
     private final PaymentRestInitiationService restInitiationService;
     private final CurrencyService currencyService;
 
-    private static final String ACCOUNT_NOT_FOUND_MSG = "Account {} not Found! Should never happen while initiating mock data!";
-    private static final String NO_USER_BY_IBAN = "Could not get User By Iban {}! Should never happen while initiating mock data!";
-    private static final LocalDateTime START_DATE = LocalDateTime.of(2018, 1, 1, 1, 1);
-
-    @Autowired
-    public BankInitService(MockbankInitData mockbankInitData, UserService userService, UserMapper userMapper,
-                           DepositAccountInitService depositAccountInitService, DepositAccountService depositAccountService,
-                           DepositAccountTransactionService transactionService, AccountDetailsMapper accountDetailsMapper, PaymentRestInitiationService restInitiationService,
-                           CurrencyService currencyService) {
-        this.mockbankInitData = mockbankInitData;
-        this.userService = userService;
-        this.userMapper = userMapper;
-        this.depositAccountInitService = depositAccountInitService;
-        this.depositAccountService = depositAccountService;
-        this.transactionService = transactionService;
-        this.accountDetailsMapper = accountDetailsMapper;
-        this.restInitiationService = restInitiationService;
-        this.currencyService = currencyService;
-    }
 
     public void init() {
         depositAccountInitService.initConfigData();
+        createSystemUser();
         createAdmin();
     }
 
@@ -87,14 +72,21 @@ public class BankInitService {
         performTransactions();
     }
 
+    private void createSystemUser() {
+        doCreateUser("system", UserRoleTO.SYSTEM);
+    }
+
     private void createAdmin() {
+        doCreateUser("admin", UserRoleTO.ADMIN);
+    }
+
+    private void doCreateUser(String login, UserRoleTO role) {
         try {
-            userService.findByLogin("admin");
-            logger.info("Admin user is already present. Skipping creation");
+            userService.findByLogin(login);
         } catch (UserManagementModuleException e) {
-            UserTO admin = new UserTO("admin", "admin@mail.de", "admin123");
-            admin.setUserRoles(Collections.singleton(UserRoleTO.SYSTEM));
-            createUser(admin);
+            UserTO user = new UserTO(login, login + "@mail.de", login + "123");
+            user.setUserRoles(Collections.singleton(role));
+            createUser(user);
         }
     }
 
@@ -113,9 +105,9 @@ public class BankInitService {
                     restInitiationService.executePayment(user, PaymentTypeTO.SINGLE, payment);
                 }
             } catch (DepositModuleException e) {
-                logger.error(ACCOUNT_NOT_FOUND_MSG, payment.getDebtorAccount().getIban());
+                log.error(ACCOUNT_NOT_FOUND_MSG, payment.getDebtorAccount().getIban());
             } catch (UserManagementModuleException e) {
-                logger.error(NO_USER_BY_IBAN, payment.getDebtorAccount().getIban());
+                log.error(NO_USER_BY_IBAN, payment.getDebtorAccount().getIban());
             }
         }
     }
@@ -136,9 +128,9 @@ public class BankInitService {
                     restInitiationService.executePayment(user, PaymentTypeTO.BULK, payment);
                 }
             } catch (DepositModuleException e) {
-                logger.error(ACCOUNT_NOT_FOUND_MSG, debtorAccount.getIban());
+                log.error(ACCOUNT_NOT_FOUND_MSG, debtorAccount.getIban());
             } catch (UserManagementModuleException e) {
-                logger.error(NO_USER_BY_IBAN, debtorAccount.getIban());
+                log.error(NO_USER_BY_IBAN, debtorAccount.getIban());
             }
         }
     }
@@ -188,7 +180,7 @@ public class BankInitService {
         try {
             transactionService.depositCash(account.getId(), amount, "SYSTEM");
         } catch (DepositModuleException e) {
-            logger.error("Unable to deposit cash to account: {} {}", details.getIban(), details.getCurrency());
+            log.error("Unable to deposit cash to account: {} {}", details.getIban(), details.getCurrency());
         }
     }
 
@@ -249,7 +241,7 @@ public class BankInitService {
         try {
             userService.create(userMapper.toUserBO(user));
         } catch (UserManagementModuleException e1) {
-            logger.error("User already exists! Should never happen while initiating mock data!");
+            log.error("User already exists! Should never happen while initiating mock data!");
         }
     }
 }
