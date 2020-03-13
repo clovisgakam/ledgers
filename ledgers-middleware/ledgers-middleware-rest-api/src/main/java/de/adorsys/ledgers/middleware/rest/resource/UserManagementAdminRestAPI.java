@@ -1,6 +1,5 @@
 package de.adorsys.ledgers.middleware.rest.resource;
 
-import de.adorsys.ledgers.middleware.api.domain.sca.SCALoginResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserCredentialsTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserLoginTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "LDG014 - User management (ADMIN access)")
 public interface UserManagementAdminRestAPI {
-    String BASE_PATH = "/api/v1/management";
+    String BASE_PATH = "/admin-access";
 
     /**
      * Authorize returns a bearer token that can be reused by the consuming application.
@@ -36,7 +35,7 @@ public interface UserManagementAdminRestAPI {
      *
      * @return list of users for the branch
      */
-    @ApiOperation(value = "Lists users by branch and role", notes = "Lists users by branch and roles.", authorizations = @Authorization(value = "apiKey"))
+    @ApiOperation(value = "Lists users by branch", notes = "Lists users by branch.", authorizations = @Authorization(value = "apiKey"))
     @GetMapping("/{userId}")
     ResponseEntity<CustomPageImpl<UserTO>> getUsersByBranch(
             @PathVariable("userId") String userId,
@@ -49,8 +48,8 @@ public interface UserManagementAdminRestAPI {
      *
      * @return list of users
      */
-    @ApiOperation(value = "Lists users by branch and role", notes = "Lists users by branch and roles.", authorizations = @Authorization(value = "apiKey"))
-    @GetMapping("/{userId}")
+    @ApiOperation(value = "Lists users by role", notes = "Lists users by roles.", authorizations = @Authorization(value = "apiKey"))
+    @GetMapping("/user/{userId}")
     ResponseEntity<CustomPageImpl<UserTO>> getUsers(@RequestParam("role") UserRoleTO role,
                                                     @RequestParam(value = "queryParam", defaultValue = "", required = false) String queryParam,
                                                     @RequestParam("page") int page,

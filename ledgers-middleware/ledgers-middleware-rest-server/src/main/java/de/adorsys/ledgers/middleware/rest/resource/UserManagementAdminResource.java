@@ -1,11 +1,9 @@
 package de.adorsys.ledgers.middleware.rest.resource;
 
-import de.adorsys.ledgers.middleware.api.domain.sca.SCALoginResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserCredentialsTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserLoginTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
-import de.adorsys.ledgers.middleware.api.service.MiddlewareOnlineBankingService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUpdatePasswordService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementAdminService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
@@ -28,7 +26,6 @@ import static java.util.Arrays.asList;
 @RestController
 @MiddlewareUserResource
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping(UserManagementAdminRestAPI.BASE_PATH)
 public class UserManagementAdminResource implements UserManagementAdminRestAPI {
     private final MiddlewareUserManagementService middlewareUserService;
@@ -42,12 +39,14 @@ public class UserManagementAdminResource implements UserManagementAdminRestAPI {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updatePassword(UpdatePassword updatePassword) {
         middlewareUpdatePasswordService.updatePassword(updatePassword);
         return ResponseEntity.accepted().build();
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CustomPageImpl<UserTO>> getUsersByBranch(String userId, String queryParam, int page, int size) {
         UserTO branchStaff = middlewareUserService.findById(userId);
         return ResponseEntity.ok(middlewareUserService.getUsersByBranchAndRoles(branchStaff.getBranch(),
@@ -57,11 +56,13 @@ public class UserManagementAdminResource implements UserManagementAdminRestAPI {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CustomPageImpl<UserTO>> getUsers(UserRoleTO role, String queryParam, int page, int size) {
         return ResponseEntity.ok(middlewareUserService.getUsersByRole(role, queryParam, new CustomPageableImpl(page, size)));
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserTO> createUser(String userId, UserTO user) {
         return ResponseEntity.ok(middlewareUserManagementAdminService.create(userId, user));
     }

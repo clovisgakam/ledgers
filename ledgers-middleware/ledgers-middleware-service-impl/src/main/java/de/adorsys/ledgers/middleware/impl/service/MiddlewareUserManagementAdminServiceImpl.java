@@ -61,7 +61,7 @@ public class MiddlewareUserManagementAdminServiceImpl implements MiddlewareUserM
                           .build();
         }
         user.setBranch(branchId);
-        user.setUserRoles(Collections.singletonList(UserRoleTO.STAFF));
+        user.setUserRoles(Collections.singletonList(STAFF));
     }
 
     private void updateCustomerUser(String branchId, UserTO user) {

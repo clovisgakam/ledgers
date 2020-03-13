@@ -24,7 +24,6 @@ import java.util.List;
 
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
 
-
 @RestController
 @MiddlewareUserResource
 @RequiredArgsConstructor
