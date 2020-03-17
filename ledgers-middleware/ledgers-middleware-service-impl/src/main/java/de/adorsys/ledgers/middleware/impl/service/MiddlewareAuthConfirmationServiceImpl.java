@@ -58,7 +58,9 @@ public class MiddlewareAuthConfirmationServiceImpl implements MiddlewareAuthConf
                 depositAccountPaymentService.updatePaymentStatus(authConfirmationBO.getOpId(), authConfirmationBO.getOpTypeBO() == OpTypeBO.PAYMENT
                                                                                                        ? TransactionStatusBO.ACTC
                                                                                                        : TransactionStatusBO.CANC);
-                TransactionStatusBO status = depositAccountPaymentService.executePayment(authConfirmationBO.getOpId(), userLogin);
+                TransactionStatusBO status = authConfirmationBO.getOpTypeBO() == OpTypeBO.PAYMENT
+                                                     ? depositAccountPaymentService.executePayment(authConfirmationBO.getOpId(), userLogin)
+                                                     : TransactionStatusBO.CANC;
                 confirmation.transactionStatus(TransactionStatusTO.valueOf(status.toString()));
             } else if (multilevelScaEnable) {
                 TransactionStatusBO status = depositAccountPaymentService.updatePaymentStatus(authConfirmationBO.getOpId(), PATC);
