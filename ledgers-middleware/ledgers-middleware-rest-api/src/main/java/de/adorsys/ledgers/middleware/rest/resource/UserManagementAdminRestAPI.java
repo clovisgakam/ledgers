@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "LDG014 - User management (ADMIN access)")
 public interface UserManagementAdminRestAPI {
-    String BASE_PATH = "/admin-access";
+    String BASE_PATH = "/admin-access" + UserMgmtRestAPI.BASE_PATH;
 
     /**
      * Authorize returns a bearer token that can be reused by the consuming application.
@@ -49,7 +49,7 @@ public interface UserManagementAdminRestAPI {
      * @return list of users
      */
     @ApiOperation(value = "Lists users by role", notes = "Lists users by roles.", authorizations = @Authorization(value = "apiKey"))
-    @GetMapping("/user/{userId}")
+    @GetMapping
     ResponseEntity<CustomPageImpl<UserTO>> getUsers(@RequestParam("role") UserRoleTO role,
                                                     @RequestParam(value = "queryParam", defaultValue = "", required = false) String queryParam,
                                                     @RequestParam("page") int page,
