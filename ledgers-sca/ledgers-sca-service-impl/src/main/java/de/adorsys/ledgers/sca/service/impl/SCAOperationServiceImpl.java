@@ -232,7 +232,7 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
             scaOperation.setScaMethodId(data.getScaUserDataId());
         }
 
-        if (user.getScaUserData() == null) {
+        if (user.getScaUserData().isEmpty()) {
             throw ScaModuleException.builder()
                           .errorCode(SCA_OPERATION_VALIDATION_FAILED)
                           .devMsg(String.format("User with login %s has no sca data", user.getLogin()))
