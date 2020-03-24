@@ -96,9 +96,7 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
 
     @Override
     public Optional<DepositAccountBO> getOptionalAccountByIbanAndCurrency(String iban, Currency currency) {
-        return depositAccountRepository.findByIbanAndCurrency(iban, Optional.ofNullable(currency)
-                                                                            .map(Currency::getCurrencyCode)
-                                                                            .orElse(""))
+        return depositAccountRepository.findByIbanAndCurrency(iban, getCurrencyOrEmpty(currency))
                        .map(depositAccountMapper::toDepositAccountBO);
     }
 
@@ -254,7 +252,7 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
     }
 
     private void checkDepositAccountAlreadyExist(DepositAccountBO depositAccountBO) {
-        boolean isExistingAccount = depositAccountRepository.findByIbanAndCurrency(depositAccountBO.getIban(), depositAccountBO.getCurrency().getCurrencyCode())
+        boolean isExistingAccount = depositAccountRepository.findByIbanAndCurrency(depositAccountBO.getIban(), getCurrencyOrEmpty(depositAccountBO.getCurrency()))
                                             .isPresent();
         if (isExistingAccount) {
             String message = format("Deposit account already exists. IBAN %s. Currency %s",
@@ -265,6 +263,12 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
                           .devMsg(message)
                           .build();
         }
+    }
+
+    private String getCurrencyOrEmpty(Currency currency) {
+        return Optional.ofNullable(currency)
+                       .map(Currency::getCurrencyCode)
+                       .orElse("");
     }
 
     private List<BalanceBO> getBalancesList(DepositAccountBO d, boolean withBalances, LocalDateTime refTime) {
