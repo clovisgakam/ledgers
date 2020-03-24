@@ -96,7 +96,9 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
 
     @Override
     public Optional<DepositAccountBO> getOptionalAccountByIbanAndCurrency(String iban, Currency currency) {
-        return depositAccountRepository.findByIbanAndCurrency(iban, currency.getCurrencyCode())
+        return depositAccountRepository.findByIbanAndCurrency(iban, Optional.ofNullable(currency)
+                                                                            .map(Currency::getCurrencyCode)
+                                                                            .orElse(""))
                        .map(depositAccountMapper::toDepositAccountBO);
     }
 
@@ -256,7 +258,7 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
                                             .isPresent();
         if (isExistingAccount) {
             String message = format("Deposit account already exists. IBAN %s. Currency %s",
-                    depositAccountBO.getIban(), depositAccountBO.getCurrency().getCurrencyCode());
+                                    depositAccountBO.getIban(), depositAccountBO.getCurrency().getCurrencyCode());
             log.error(message);
             throw DepositModuleException.builder()
                           .errorCode(DEPOSIT_ACCOUNT_EXISTS)
