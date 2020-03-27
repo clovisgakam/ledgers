@@ -104,8 +104,10 @@ public class BearerTokenServiceTest {
     public void toAccessTokenObject() {
         Whitebox.setInternalState(service, "objectMapper", new ObjectMapper());
         AccessTokenBO result = service.toAccessTokenObject(getClaimSet(FIXED_DAY));
-        assertThat(result).isEqualToIgnoringGivenFields(getExpectedAccessToken(), "jti");
+        assertThat(result).isEqualToIgnoringGivenFields(getExpectedAccessToken(), "jti","exp","iat");
         assertThat(result.getJti()).isNotEmpty();
+        assertThat(result.getExp()).isEqualToIgnoringHours(getExpectedAccessToken().getExp());
+        assertThat(result.getIat()).isEqualToIgnoringHours(getExpectedAccessToken().getIat());
     }
 
     private AccessTokenBO getExpectedAccessToken() {
