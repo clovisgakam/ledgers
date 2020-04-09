@@ -67,13 +67,14 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
     private final SCAOperationService scaOperationService;
     private final SCAUtils scaUtils;
     private final AccessService accessService;
-    @Value("${default.token.lifetime.seconds:600}")
-    private int defaultLoginTokenExpireInSeconds;
     private final AmountMapper amountMapper;
     private final ScaInfoMapper scaInfoMapper;
     private final AuthorizationService authorizationService;
     private final PageMapper pageMapper;
     private final ScaResponseResolver scaResponseResolver;
+
+    @Value("${default.token.lifetime.seconds:600}")
+    private int defaultLoginTokenExpireInSeconds;
 
     @Value("${sca.multilevel.enabled:false}")
     private boolean multilevelScaEnable;
@@ -336,7 +337,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         if (!scaValidationBO.isValidAuthCode()) {
             throw MiddlewareModuleException.builder()
                           .errorCode(AUTHENTICATION_FAILURE)
-                          .devMsg("Wrong auth code")
+                          .devMsg(String.format("Wrong auth code, You have %s attempts to enter valid credentials", scaValidationBO.getAttemptsLeft()))
                           .build();
         }
         UserTO userTO = scaUtils.user(userBO);

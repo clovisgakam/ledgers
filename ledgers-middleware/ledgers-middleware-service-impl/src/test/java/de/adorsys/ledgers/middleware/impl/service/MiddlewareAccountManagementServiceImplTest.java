@@ -653,7 +653,7 @@ public class MiddlewareAccountManagementServiceImplTest {
     }
 
     private ScaValidationBO getScaValidationBO(boolean validAuthCode) {
-        return new ScaValidationBO("authConfirmationCode", validAuthCode, ScaStatusBO.FINALISED);
+        return new ScaValidationBO("authConfirmationCode", validAuthCode, ScaStatusBO.FINALISED,0);
     }
 
     private SCAOperationBO getSCAOperationBO() {

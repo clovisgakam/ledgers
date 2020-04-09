@@ -293,6 +293,6 @@ public class MiddlewareOnlineBankingServiceImplTest {
     }
 
     private ScaValidationBO getScaValidationBO() {
-        return new ScaValidationBO(AUTH_CODE, true, ScaStatusBO.FINALISED);
+        return new ScaValidationBO(AUTH_CODE, true, ScaStatusBO.FINALISED,0);
     }
 }
