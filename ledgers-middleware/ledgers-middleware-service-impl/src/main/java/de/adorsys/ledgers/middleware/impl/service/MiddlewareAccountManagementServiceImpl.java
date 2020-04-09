@@ -337,7 +337,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         if (!scaValidationBO.isValidAuthCode()) {
             throw MiddlewareModuleException.builder()
                           .errorCode(AUTHENTICATION_FAILURE)
-                          .devMsg(String.format("Wrong auth code, You have %s attempts to enter valid credentials", scaValidationBO.getAttemptsLeft()))
+                          .devMsg(format("Wrong auth code, You have %s attempts to enter valid credentials", scaValidationBO.getAttemptsLeft()))
                           .build();
         }
         UserTO userTO = scaUtils.user(userBO);

@@ -66,7 +66,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
         UserBO user = user(login);
         SCAOperationBO scaOperation = scaOperationService.checkIfExistsOrNew(new AuthCodeDataBO(user.getLogin(), null, consentId, null, NO_USER_MESSAGE,
                                                                                                 defaultLoginTokenExpireInSeconds, opTypeBO, authorisationId, 0));
-        if (scaOperation.getStatus() == AuthCodeStatusBO.FAILED) {
+        if (scaOperation.getScaStatus() == ScaStatusBO.FAILED) {
             log.error("Login failed due to sca operation {} has FAILED status", authorisationId);
             throw MiddlewareModuleException.builder()
                           .devMsg(String.format("Your authorization for %s id: %s and authorization id: %s is failed please create a new one", opType.name(), consentId, authorisationId))
@@ -104,7 +104,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
             return authorizeResponse(loginTokenBO);
         } else {
             AuthCodeDataBO authCodeData = new AuthCodeDataBO(user.getLogin(), null, consentId, null, NO_USER_MESSAGE,
-                    defaultLoginTokenExpireInSeconds, opTypeBO, authorisationId, 0);
+                                                             defaultLoginTokenExpireInSeconds, opTypeBO, authorisationId, 0);
             SCAOperationBO scaOperationBO = scaOperationService.createAuthCode(authCodeData, ScaStatusBO.PSUIDENTIFIED);
             SCALoginResponseTO response = toScaResponse(user, NO_USER_MESSAGE, scaOperationBO);
             BearerTokenBO scaTokenBO = authorizationService.scaToken(loginTokenBO.getAccessTokenObject().buildScaInfoBO());
@@ -113,7 +113,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
         }
     }
 
-    private BearerTokenBO proceedToLogin(ScaInfoBO scaInfo, String authorisationId){
+    private BearerTokenBO proceedToLogin(ScaInfoBO scaInfo, String authorisationId) {
         return Optional.ofNullable(authorizationService.authorizeNewAuthorizationId(scaInfo, authorisationId))
                        .orElseThrow(() -> MiddlewareModuleException.builder()
                                                   .errorCode(INSUFFICIENT_PERMISSION)
