@@ -64,6 +64,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
     }
 
     @Override
+    @Transactional(noRollbackFor = MiddlewareModuleException.class)
     public SCALoginResponseTO authoriseForConsent(String login, String pin, String consentId, String authorisationId, OpTypeTO opType) {
         OpTypeBO opTypeBO = OpTypeBO.valueOf(opType.name());
         UserBO user = user(login);
