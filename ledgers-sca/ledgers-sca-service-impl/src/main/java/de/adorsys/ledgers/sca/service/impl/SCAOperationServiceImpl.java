@@ -44,8 +44,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -210,7 +208,6 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public SCAOperationBO checkIfExistsOrNew(AuthCodeDataBO data) {
         Optional<SCAOperationEntity> scaOperation = repository.findById(data.getAuthorisationId());
         scaOperation.ifPresent(o -> {
@@ -222,7 +219,6 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public int updateFailedCount(String authorisationId) {
         SCAOperationEntity operationEntity = getScaOperationEntityById(authorisationId);
         failed(operationEntity, true);
