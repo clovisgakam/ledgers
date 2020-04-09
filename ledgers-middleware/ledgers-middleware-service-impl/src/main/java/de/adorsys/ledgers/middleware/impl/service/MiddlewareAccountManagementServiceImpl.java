@@ -334,12 +334,8 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         int scaWeight = accessService.resolveMinimalScaWeightForConsent(consent.getAccess(), userBO.getAccountAccesses());
         ScaValidationBO scaValidationBO = scaOperationService.validateAuthCode(scaInfoTO.getAuthorisationId(), consentId,
                                                                                consentKeyData.template(), scaInfoTO.getAuthCode(), scaWeight);
-        if (!scaValidationBO.isValidAuthCode()) {
-            throw MiddlewareModuleException.builder()
-                          .errorCode(AUTHENTICATION_FAILURE)
-                          .devMsg(format("Wrong auth code, You have %s attempts to enter valid credentials", scaValidationBO.getAttemptsLeft()))
-                          .build();
-        }
+        scaUtils.checkScaResult(scaValidationBO);
+
         UserTO userTO = scaUtils.user(userBO);
         SCAOperationBO scaOperationBO = scaUtils.loadAuthCode(scaInfoTO.getAuthorisationId());
         SCAConsentResponseTO response = toScaConsentResponse(userTO, consent, consentKeyData.template(), scaOperationBO);
