@@ -34,6 +34,14 @@ public interface UserMgmtStaffResourceAPI {
     @PostMapping("/register")
     ResponseEntity<UserTO> register(@RequestParam(BRANCH) String branch, @RequestBody UserTO branchStaff);
 
+    @ApiOperation(tags = UnprotectedEndpoint.UNPROTECTED_ENDPOINT, value = "Login fo user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, response = UserTO.class, message = "The user data record without the pin."),
+            @ApiResponse(code = 404, message = "User not found.")
+    })
+    @PostMapping("/admin/authorize/user")
+    ResponseEntity<SCALoginResponseTO> authoriseForUser(@RequestParam("login") String login, @RequestParam("pin") String pin, @RequestParam("userLogin") String userLogin);
+
     /**
      * Modify a user within a given branch.
      *
