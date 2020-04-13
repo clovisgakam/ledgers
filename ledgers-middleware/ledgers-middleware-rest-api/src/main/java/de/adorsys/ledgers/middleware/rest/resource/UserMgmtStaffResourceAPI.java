@@ -1,5 +1,6 @@
 package de.adorsys.ledgers.middleware.rest.resource;
 
+import de.adorsys.ledgers.middleware.api.domain.oauth.AuthoriseForUserTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCALoginResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.um.*;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
@@ -40,7 +41,7 @@ public interface UserMgmtStaffResourceAPI {
             @ApiResponse(code = 404, message = "User not found.")
     })
     @PostMapping("/admin/authorize/user")
-    ResponseEntity<SCALoginResponseTO> authoriseForUser(@RequestParam("login") String login, @RequestParam("pin") String pin, @RequestParam("userLogin") String userLogin);
+    ResponseEntity<SCALoginResponseTO> authoriseForUser(@RequestBody AuthoriseForUserTO authorise);
 
     /**
      * Modify a user within a given branch.

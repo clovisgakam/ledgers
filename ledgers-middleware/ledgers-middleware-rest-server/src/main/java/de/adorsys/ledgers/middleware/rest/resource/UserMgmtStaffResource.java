@@ -7,6 +7,7 @@ import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareOnlineBankingService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareUserResource;
+import de.adorsys.ledgers.middleware.api.domain.oauth.AuthoriseForUserTO;
 import de.adorsys.ledgers.middleware.rest.security.ScaInfoHolder;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
@@ -53,8 +54,8 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
     }
 
     @Override
-    public ResponseEntity<SCALoginResponseTO> authoriseForUser(String login, String pin, String userLogin) {
-        return ResponseEntity.ok(onlineBankingService.authorizeForUser(login, pin, userLogin));
+    public ResponseEntity<SCALoginResponseTO> authoriseForUser(AuthoriseForUserTO authorise) {
+        return ResponseEntity.ok(onlineBankingService.authorizeForUser(authorise.getLogin(), authorise.getPin(), authorise.getUserLogin()));
     }
 
     @Override
