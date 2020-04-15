@@ -169,7 +169,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
         if (!isValid) {
             throw MiddlewareModuleException.builder()
                           .devMsg("Your credentials or role does not comply to request you're executing!")
-                          .errorCode(MiddlewareErrorCode.AUTHENTICATION_FAILURE)
+                          .errorCode(AUTHENTICATION_FAILURE)
                           .build();
         }
 
