@@ -8,8 +8,7 @@ import pro.javatar.commons.reader.YamlReader;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AuthCodeDataConverterTest {
 
@@ -24,10 +23,10 @@ class AuthCodeDataConverterTest {
         AuthCodeDataBO bo = mapper.toAuthCodeDataBO(to);
 
         // Then
-        assertThat(bo.getOpId(), is(to.getOpId()));
-        assertThat(bo.getUserLogin(), is(to.getUserLogin()));
-        assertThat(bo.getOpData(), is(to.getOpData()));
-        assertThat(bo.getScaUserDataId(), is(to.getScaUserDataId()));
+        assertEquals(to.getOpId(), bo.getOpId());
+        assertEquals(to.getUserLogin(), bo.getUserLogin());
+        assertEquals(to.getOpData(), bo.getOpData());
+        assertEquals(to.getScaUserDataId(), bo.getScaUserDataId());
     }
 
     private <T> T readYml() {

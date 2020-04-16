@@ -19,7 +19,7 @@ import pro.javatar.commons.reader.YamlReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

@@ -42,12 +42,7 @@ import java.util.Currency;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -199,7 +194,7 @@ class MiddlewareAccountManagementServiceImplTest {
 
         // Then
         assertNotNull(details);
-        assertThat(details, is(accountDetailsTO));
+        assertEquals(accountDetailsTO, details);
         verify(depositAccountService, times(1)).getDetailsByIban(IBAN, TIME, false);
         verify(accountDetailsMapper, times(1)).toAccountDetailsTO(accountBO);
     }
@@ -229,8 +224,8 @@ class MiddlewareAccountManagementServiceImplTest {
         List<AccountDetailsTO> details = middlewareService.getAllAccountDetailsByUserLogin(userLogin);
 
         // Then
-        assertThat(details.size(), is(1));
-        assertThat(details.get(0), is(account));
+        assertEquals(1, details.size());
+        assertEquals(account, details.get(0));
         verify(userService, times(1)).findByLogin(userLogin);
         verify(depositAccountService, times(1)).getAccountByIbanAndCurrency(any(), any());
         verify(accountDetailsMapper, times(1)).toAccountDetailsList(any());
@@ -598,7 +593,7 @@ class MiddlewareAccountManagementServiceImplTest {
 
         // Then
         assertThat(accountAccesses).isNotEmpty();
-        assertThat(accountAccesses, hasSize(1));
+        assertEquals(1, accountAccesses.size());
 
         AccountAccessTO accountAccess = getFirstAccountAccess(accountAccesses);
 
@@ -657,7 +652,7 @@ class MiddlewareAccountManagementServiceImplTest {
     }
 
     private ScaValidationBO getScaValidationBO(boolean validAuthCode) {
-        return new ScaValidationBO("authConfirmationCode", validAuthCode, ScaStatusBO.FINALISED,0);
+        return new ScaValidationBO("authConfirmationCode", validAuthCode, ScaStatusBO.FINALISED, 0);
     }
 
     private SCAOperationBO getSCAOperationBO() {

@@ -13,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,11 +38,11 @@ class PaymentConverterTest {
         PaymentResultTO to = converter.toPaymentResultTO(bo);
 
         // Then
-        assertThat(to.getResponseStatus(), is(ResultStatusTO.SUCCESS));
-        assertThat(to.getPaymentResult(), is(TransactionStatusTO.RCVD.name()));
-        assertThat(to.getMessages().size(), is(2));
-        assertThat(to.getMessages().get(0), is("message1"));
-        assertThat(to.getMessages().get(1), is("message2"));
+        assertEquals(ResultStatusTO.SUCCESS, to.getResponseStatus());
+        assertEquals(TransactionStatusTO.RCVD.name(), to.getPaymentResult());
+        assertEquals(2, to.getMessages().size());
+        assertEquals("message1", to.getMessages().get(0));
+        assertEquals("message2", to.getMessages().get(1));
     }
 
     @Test
@@ -54,11 +52,11 @@ class PaymentConverterTest {
 
         PaymentResultBO bo = converter.toPaymentResultBO(to);
 
-        assertThat(bo.getResponseStatus(), is(ResultStatusBO.SUCCESS));
-        assertThat(bo.getPaymentResult(), is(TransactionStatusBO.RCVD.name()));
-        assertThat(bo.getMessages().size(), is(2));
-        assertThat(bo.getMessages().get(0), is("message1"));
-        assertThat(bo.getMessages().get(1), is("message2"));
+        assertEquals(ResultStatusBO.SUCCESS, bo.getResponseStatus());
+        assertEquals(TransactionStatusBO.RCVD.name(), bo.getPaymentResult());
+        assertEquals(2, bo.getMessages().size());
+        assertEquals("message1", bo.getMessages().get(0));
+        assertEquals("message2", bo.getMessages().get(1));
     }
 
     @Test

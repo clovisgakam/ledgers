@@ -3,7 +3,7 @@ package de.adorsys.ledgers.um.db.repository;
 import de.adorsys.ledgers.um.db.domain.AisConsentEntity;
 import de.adorsys.ledgers.um.db.test.UmRepositoryApplication;
 import de.adorsys.ledgers.util.Ids;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ class AisConsentRepositoryIT {
         AisConsentEntity save = repo.save(bo);
 
         // Then
-        Assert.assertNotNull(save.getAccounts());
-        Assert.assertEquals(1, save.getAccounts().size());
+        Assertions.assertNotNull(save.getAccounts());
+        Assertions.assertEquals(1, save.getAccounts().size());
     }
 }

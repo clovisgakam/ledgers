@@ -11,7 +11,8 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 
 @ExtendWith(MockitoExtension.class)
 class ExceptionAdvisorTest {

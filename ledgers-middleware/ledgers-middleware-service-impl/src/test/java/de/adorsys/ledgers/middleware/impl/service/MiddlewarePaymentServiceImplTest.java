@@ -27,7 +27,6 @@ import de.adorsys.ledgers.um.api.domain.UserBO;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -43,10 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.deposit.api.domain.TransactionStatusBO.ACSP;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -117,7 +113,7 @@ class MiddlewarePaymentServiceImplTest {
         TransactionStatusTO paymentResult = middlewareService.getPaymentStatusById(PAYMENT_ID);
 
         // Then
-        assertThat(paymentResult.getName(), is(TransactionStatusBO.RJCT.getName()));
+        assertEquals(TransactionStatusBO.RJCT.getName(), paymentResult.getName());
         verify(paymentService, times(1)).getPaymentStatusById(PAYMENT_ID);
     }
 
@@ -147,7 +143,7 @@ class MiddlewarePaymentServiceImplTest {
         SCAPaymentResponseTO responseTO = middlewareService.selectSCAMethodForPayment(buildScaInfoTO(), paymentId);
 
         // Then
-        assertThat(responseTO.getPaymentId(), is(paymentId));
+        assertEquals(paymentId, responseTO.getPaymentId());
     }
 
     @Test
@@ -160,7 +156,7 @@ class MiddlewarePaymentServiceImplTest {
         SinglePaymentTO result = (SinglePaymentTO) middlewareService.getPaymentById(PAYMENT_ID);
 
         // Then
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
@@ -337,7 +333,7 @@ class MiddlewarePaymentServiceImplTest {
         BearerTokenBO bearerTokenBO = new BearerTokenBO();
         when(paymentService.getPaymentById(PAYMENT_ID)).thenReturn(paymentBO);
         when(coreDataPolicy.getPaymentCoreData(any(), eq(paymentBO))).thenReturn(PaymentCoreDataPolicyHelper.getPaymentCoreDataInternal(paymentBO));
-        when(operationService.validateAuthCode(anyString(), anyString(), anyString(), anyString(), anyInt())).thenReturn(new ScaValidationBO("authCode", true, ScaStatusBO.FINALISED,0));
+        when(operationService.validateAuthCode(anyString(), anyString(), anyString(), anyString(), anyInt())).thenReturn(new ScaValidationBO("authCode", true, ScaStatusBO.FINALISED, 0));
         when(authorizationService.consentToken(any(), any())).thenReturn(bearerTokenBO);
         when(operationService.authenticationCompleted(PAYMENT_ID, OpTypeBO.PAYMENT)).thenReturn(Boolean.TRUE);
         when(bearerTokenMapper.toBearerTokenTO(bearerTokenBO)).thenReturn(new BearerTokenTO());
@@ -362,7 +358,7 @@ class MiddlewarePaymentServiceImplTest {
         doThrow(MiddlewareModuleException.class).when(scaUtils).checkScaResult(any());
         when(paymentService.getPaymentById(PAYMENT_ID)).thenReturn(payment);
         when(coreDataPolicy.getPaymentCoreData(any(), eq(payment))).thenReturn(PaymentCoreDataPolicyHelper.getPaymentCoreDataInternal(payment));
-        when(operationService.validateAuthCode(any(), any(), any(), any(), anyInt())).thenReturn(new ScaValidationBO("authCode", false, ScaStatusBO.FAILED,0));
+        when(operationService.validateAuthCode(any(), any(), any(), any(), anyInt())).thenReturn(new ScaValidationBO("authCode", false, ScaStatusBO.FAILED, 0));
 
         // Then
         assertThrows(MiddlewareModuleException.class, () -> middlewareService.authorizePayment(buildScaInfoTO(), PAYMENT_ID));
@@ -435,7 +431,7 @@ class MiddlewarePaymentServiceImplTest {
         List<PaymentTO> result = middlewareService.getPendingPeriodicPayments(buildScaInfoTO());
 
         // Then
-        assertThat(result.size() > 0, is(true));
+        assertTrue(result.size() > 0);
     }
 
     @Test
@@ -456,7 +452,7 @@ class MiddlewarePaymentServiceImplTest {
         SCAPaymentResponseTO response = middlewareService.loadSCAForPaymentData(buildScaInfoTO(), PAYMENT_ID);
 
         // Then
-        assertThat(response, is(new SCAPaymentResponseTO()));
+        assertEquals(new SCAPaymentResponseTO(), response);
     }
 
     private PaymentCoreDataTO getPaymentCoreData() {

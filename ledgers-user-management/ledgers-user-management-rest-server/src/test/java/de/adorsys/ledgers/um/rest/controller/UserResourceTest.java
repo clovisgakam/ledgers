@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -51,7 +51,7 @@ public class UserResourceTest {
         ResponseEntity actual = userResource.createUser(userBO);
 
         // Then
-        assertThat(actual.getHeaders().get("Location").get(0), is("/users/vne_ua"));
+        assertEquals("/users/vne_ua", actual.getHeaders().get("Location").get(0));
         verify(userService, times(1)).create(any());
     }
 
@@ -103,7 +103,7 @@ public class UserResourceTest {
         ResponseEntity actual = userResource.updateUserScaData(USER_ID, scaUserData);
 
         // Then
-        assertThat(actual.getHeaders().get("Location").get(0), is("/users/" + USER_ID));
+        assertEquals("/users/" + USER_ID, actual.getHeaders().get("Location").get(0));
         verify(userService, times(1)).findById(USER_ID);
         verify(userService, times(1)).updateScaData(any(), anyString());
     }
