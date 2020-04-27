@@ -208,8 +208,8 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     private String resolvePsuMessage(boolean isScaRequired, PaymentBO payment, OpTypeBO opType) {
         PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
         return isScaRequired
-                       ? paymentKeyData.tanTemplate()
-                       : paymentKeyData.exemptedTemplate();
+                       ? paymentKeyData.getTanTemplate()
+                       : paymentKeyData.getExemptedTemplate();
     }
 
     private PaymentBO persist(PaymentBO paymentBO, TransactionStatusBO status) {
@@ -258,7 +258,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
 
         String authorisationId = opType == PAYMENT ? scaInfoTO.getAuthorisationId() : cancellationId;
-        ScaValidationBO scaValidationBO = validateAuthCode(scaInfoTO.getUserId(), payment, authorisationId, scaInfoTO.getAuthCode(), paymentKeyData.tanTemplate());
+        ScaValidationBO scaValidationBO = validateAuthCode(scaInfoTO.getUserId(), payment, authorisationId, scaInfoTO.getAuthCode(), paymentKeyData.getTanTemplate());
         scaUtils.checkScaResult(scaValidationBO);
         if (scaOperationService.authenticationCompleted(paymentId, opType)) {
             if (opType == PAYMENT) {
@@ -275,7 +275,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         SCAPaymentResponseTO response = new SCAPaymentResponseTO();
         response.setAuthConfirmationCode(scaValidationBO.getAuthConfirmationCode());
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
-        scaResponseResolver.updateScaResponseFields(userBO, response, authorisationId, paymentKeyData.tanTemplate(), bearerToken, ScaStatusTO.valueOf(scaValidationBO.getScaStatus().toString()), scaWeight);
+        scaResponseResolver.updateScaResponseFields(userBO, response, authorisationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaValidationBO.getScaStatus().toString()), scaWeight);
         return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
     }
 
@@ -295,7 +295,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
 
         PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
-        String template = paymentKeyData.tanTemplate();
+        String template = paymentKeyData.getTanTemplate();
         String authorisationId = opType == PAYMENT ? scaInfoTO.getAuthorisationId() : cancellationId;
         SCAPaymentResponseTO response = new SCAPaymentResponseTO();
         scaResponseResolver.generateCodeAndUpdateResponse(paymentId, response, authorisationId, template, scaWeight, userBO, opType, scaInfoTO.getScaMethodId());
@@ -324,7 +324,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(user.getAccountAccesses(), payment.getDebtorAccount().getIban());
 
         SCAPaymentResponseTO response = new SCAPaymentResponseTO();
-        scaResponseResolver.updateScaResponseFields(user, response, operationId, paymentKeyData.tanTemplate(), bearerToken, ScaStatusTO.valueOf(scaOperation.getScaStatus().name()), scaWeight);
+        scaResponseResolver.updateScaResponseFields(user, response, operationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaOperation.getScaStatus().name()), scaWeight);
         scaResponseResolver.updateScaUserDataInResponse(user, scaOperation, response);
         return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
     }

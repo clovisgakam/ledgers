@@ -3,7 +3,6 @@ package de.adorsys.ledgers.middleware.impl.policies;
 import de.adorsys.ledgers.deposit.api.domain.AmountBO;
 import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
 import de.adorsys.ledgers.deposit.api.domain.PaymentTargetBO;
-import de.adorsys.ledgers.deposit.api.domain.PaymentTypeBO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentCoreDataTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
@@ -20,6 +19,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
+import static de.adorsys.ledgers.deposit.api.domain.PaymentTypeBO.*;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.NO_SUCH_ALGORITHM;
 
 public class PaymentCoreDataPolicyHelper {
@@ -32,7 +32,7 @@ public class PaymentCoreDataPolicyHelper {
             data.setPaymentType(payment.getPaymentType().name());
             data.setPaymentId(payment.getPaymentId());
             checkPaymentType(payment);
-            if (EnumSet.of(PaymentTypeBO.SINGLE, PaymentTypeBO.PERIODIC).contains(payment.getPaymentType())) {
+            if (EnumSet.of(SINGLE, PERIODIC).contains(payment.getPaymentType())) {
                 updateSingleTargetedPaymentData(payment, data);
             } else {
                 updateBulkTargetedPaymentData(payment, data);
@@ -89,7 +89,7 @@ public class PaymentCoreDataPolicyHelper {
         }
         data.setAmount(formatAmount(t.getInstructedAmount().getAmount()));
         data.setPaymentProduct(payment.getPaymentProduct());
-        if (PaymentTypeBO.PERIODIC.equals(payment.getPaymentType())) {
+        if (PERIODIC.equals(payment.getPaymentType())) {
             data.setDayOfExecution("" + payment.getDayOfExecution());
             data.setExecutionRule(payment.getExecutionRule());
             data.setFrequency("" + payment.getFrequency());
@@ -97,13 +97,17 @@ public class PaymentCoreDataPolicyHelper {
     }
 
     private static void checkPaymentType(PaymentBO payment) {
-        if (PaymentTypeBO.BULK == payment.getPaymentType() && payment.getTargets().size() < 2
-                    || EnumSet.of(PaymentTypeBO.SINGLE, PaymentTypeBO.PERIODIC).contains(payment.getPaymentType()) && payment.getTargets().size() != 1) {
+        if (isIncompatiblePaymentType(payment)) {
             throw MiddlewareModuleException.builder()
                           .devMsg("Malformed payment body, incompatible payment type")
                           .errorCode(MiddlewareErrorCode.PAYMENT_PROCESSING_FAILURE)
                           .build();
         }
+    }
+
+    private static boolean isIncompatiblePaymentType(PaymentBO payment) {
+        return BULK == payment.getPaymentType() && payment.getTargets().size() < 2
+                       || EnumSet.of(SINGLE, PERIODIC).contains(payment.getPaymentType()) && payment.getTargets().size() != 1;
     }
 
     private static String resolveExecutionDate(LocalDate requestedExecutionDate) {

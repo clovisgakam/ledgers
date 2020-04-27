@@ -34,15 +34,15 @@ public class PaymentCoreDataTO {
 
     private String paymentProduct;
 
-    public String tanTemplate() {
-        return template(false);
+    public String getTanTemplate() {
+        return getTemplate(false);
     }
 
-    public String exemptedTemplate() {
-        return template(true);
+    public String getExemptedTemplate() {
+        return getTemplate(true);
     }
 
-    private String template(boolean isExempted) {
+    private String getTemplate(boolean isExempted) {
         String paymentTyp = cancellation
                                     ? ""
                                     : paymentType;
