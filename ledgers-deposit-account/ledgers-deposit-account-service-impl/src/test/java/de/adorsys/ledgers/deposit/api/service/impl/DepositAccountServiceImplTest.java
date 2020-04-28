@@ -347,16 +347,16 @@ class DepositAccountServiceImplTest {
         assertEquals("DE123456789", result);
     }
 
-    @Test
-    void findByAccountNumberPrefix() {
-        // Given
-        when(depositAccountRepository.findByIbanStartingWith(anyString())).thenReturn(Collections.singletonList(new DepositAccount()));
-        // When
-        List<DepositAccountBO> result = depositAccountService.findByAccountNumberPrefix("DE123");
-
-        // Then
-        assertEquals(Collections.singletonList(DepositAccountBO.builder().build()), result);
-    }
+//    @Test
+//    void findByAccountNumberPrefix() {
+//        // Given
+//        when(depositAccountRepository.findByIbanStartingWith(anyString())).thenReturn(Collections.singletonList(new DepositAccount()));
+//        // When
+//        List<DepositAccountBO> result = depositAccountService.findByAccountNumberPrefix("DE123");
+//
+//        // Then
+//        assertEquals(Collections.singletonList(DepositAccountBO.builder().build()), result);
+//    }
 
     @Test
     void getDetailsByIban() {

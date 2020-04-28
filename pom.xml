@@ -470,6 +470,7 @@
 							<goal>verify</goal>
 						</goals>
 					</execution>
+
 				</executions>
 			</plugin>
 

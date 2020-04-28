@@ -149,18 +149,18 @@ class MiddlewarePaymentServiceImplTest {
         assertEquals(paymentId, responseTO.getPaymentId());
     }
 
-    @Test
-    void getPaymentById() {
-        // Given
-        when(paymentService.getPaymentById(PAYMENT_ID)).thenReturn(readYml(PaymentBO.class, SINGLE_BO));
-        when(paymentConverter.toPaymentTO(any())).thenReturn(readYml(PaymentTO.class, SINGLE_TO));
-
-        // When
-        PaymentTO result = middlewareService.getPaymentById(PAYMENT_ID);
-
-        // Then
-        assertNotNull(result);
-    }
+//    @Test
+//    void getPaymentById() {
+//        // Given
+//        when(paymentService.getPaymentById(PAYMENT_ID)).thenReturn(readYml(PaymentBO.class, SINGLE_BO));
+//        when(paymentConverter.toPaymentTO(any())).thenReturn(readYml(PaymentTO.class, SINGLE_TO));
+//
+//        // When
+//        PaymentTO result = middlewareService.getPaymentById(PAYMENT_ID);
+//
+//        // Then
+//        assertNotNull(result);
+//    }
 
     @Test
     void getPaymentById_Fail_wrong_id() {
