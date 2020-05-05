@@ -37,8 +37,8 @@ public class UserBO {
     private List<AccountAccessBO> accountAccesses = new ArrayList<>();
     private Collection<UserRoleBO> userRoles = new ArrayList<>();
     private String branch;
-    private boolean block;
-    private boolean systemBlock;
+    private boolean blocked;
+    private boolean systemBlocked;
 
     public UserBO(@NotNull String login,
                   @NotNull String email,
@@ -65,13 +65,13 @@ public class UserBO {
                        Objects.equals(getAccountAccesses(), userBO.getAccountAccesses()) &&
                        Objects.equals(getUserRoles(), userBO.getUserRoles()) &&
                        Objects.equals(getBranch(), userBO.getBranch()) &&
-                       Objects.equals(isBlock(), userBO.isBlock()) &&
-                       Objects.equals(isSystemBlock(), userBO.isSystemBlock());
+                       Objects.equals(isBlocked(), userBO.isBlocked()) &&
+                       Objects.equals(isSystemBlocked(), userBO.isSystemBlocked());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), isBlock(), isSystemBlock());
+        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), isBlocked(), isSystemBlocked());
     }
 
     @Override
@@ -85,8 +85,8 @@ public class UserBO {
                        ", accountAccesses=" + accountAccesses +
                        ", userRoles=" + userRoles +
                        ", branch='" + branch + '\'' +
-                       ", block='" + block + '\'' +
-                       ", systemBlock='" + systemBlock + '\'' +
+                       ", blocked='" + blocked + '\'' +
+                       ", systemBlocked='" + systemBlocked + '\'' +
                        '}';
     }
 

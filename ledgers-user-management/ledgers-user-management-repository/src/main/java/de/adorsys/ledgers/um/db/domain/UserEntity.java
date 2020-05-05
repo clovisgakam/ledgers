@@ -67,10 +67,10 @@ public class UserEntity {
     private String branch;
 
     @Column(name = "block")
-    private boolean block;
+    private boolean blocked;
 
     @Column(name = "system_block")
-    private boolean systemBlock;
+    private boolean systemBlocked;
 
     @Override
     public boolean equals(Object o) {
@@ -89,12 +89,12 @@ public class UserEntity {
                        Objects.equals(getAccountAccesses(), that.getAccountAccesses()) &&
                        Objects.equals(getUserRoles(), that.getUserRoles()) &&
                        Objects.equals(getBranch(), that.getBranch()) &&
-                       Objects.equals(isBlock(), that.isBlock()) &&
-                       Objects.equals(isSystemBlock(), that.isSystemBlock());
+                       Objects.equals(isBlocked(), that.isBlocked()) &&
+                       Objects.equals(isSystemBlocked(), that.isSystemBlocked());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), isBlock(), isSystemBlock());
+        return Objects.hash(getId(), getLogin(), getEmail(), getPin(), getScaUserData(), getAccountAccesses(), getUserRoles(), getBranch(), isBlocked(), isSystemBlocked());
     }
 }
