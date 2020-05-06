@@ -1,5 +1,6 @@
 package de.adorsys.ledgers.deposit.api.service.impl;
 
+import de.adorsys.ledgers.deposit.db.domain.AccountReference;
 import de.adorsys.ledgers.deposit.db.domain.DepositAccount;
 import de.adorsys.ledgers.deposit.db.domain.Payment;
 import de.adorsys.ledgers.deposit.db.domain.PaymentTarget;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -42,21 +42,19 @@ public class PaymentExecutionScheduler {
 
     private boolean isDebtorAccountEnabled(String accountId) {
         return accountRepository.findById(accountId)
-                       .map(this::isDepositAccountEnabled)
+                       .map(DepositAccount::isEnabled)
                        .orElse(false);
     }
 
     private boolean areTargetsEnabled(List<PaymentTarget> targets) {
         return targets.stream()
                        .map(PaymentTarget::getCreditorAccount)
-                       .map(ar -> accountRepository.findByIbanAndCurrency(ar.getIban(), ar.getCurrency())
-                                          .orElse(null))
-                       .anyMatch(this::isDepositAccountEnabled);
+                       .allMatch(this::isEnabledCreditorAccount);
     }
 
-    private boolean isDepositAccountEnabled(DepositAccount depositAccount) {
-        return Optional.ofNullable(depositAccount)
+    private boolean isEnabledCreditorAccount(AccountReference reference) {
+        return accountRepository.findByIbanAndCurrency(reference.getIban(), reference.getCurrency())
                        .map(DepositAccount::isEnabled)
-                       .orElse(false);
+                       .orElse(true);
     }
 }
