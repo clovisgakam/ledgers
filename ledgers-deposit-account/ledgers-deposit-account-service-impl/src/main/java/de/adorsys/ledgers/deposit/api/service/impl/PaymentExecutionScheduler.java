@@ -1,6 +1,5 @@
 package de.adorsys.ledgers.deposit.api.service.impl;
 
-import de.adorsys.ledgers.deposit.api.domain.TransactionStatusBO;
 import de.adorsys.ledgers.deposit.db.domain.DepositAccount;
 import de.adorsys.ledgers.deposit.db.domain.Payment;
 import de.adorsys.ledgers.deposit.db.domain.PaymentTarget;
@@ -33,31 +32,31 @@ public class PaymentExecutionScheduler {
     }
 
     private void executeIfNotBlocked(Payment payment) {
-        boolean debtorIsBlocked = isDebtorAccountBlocked(payment.getAccountId());
-        boolean creditorsAreBlocked = areTargetsBlocked(payment.getTargets());
+        boolean debtorIsEnabled = isDebtorAccountEnabled(payment.getAccountId());
+        boolean creditorsAreEnabled = areTargetsEnabled(payment.getTargets());
 
-        if (!debtorIsBlocked && !creditorsAreBlocked) {
+        if (debtorIsEnabled && creditorsAreEnabled) {
             executionService.executePayment(payment, SCHEDULER);
         }
     }
 
-    private boolean isDebtorAccountBlocked(String accountId) {
+    private boolean isDebtorAccountEnabled(String accountId) {
         return accountRepository.findById(accountId)
-                       .map(this::isDepositAccountBlocked)
+                       .map(this::isDepositAccountEnabled)
                        .orElse(false);
     }
 
-    private boolean areTargetsBlocked(List<PaymentTarget> targets) {
+    private boolean areTargetsEnabled(List<PaymentTarget> targets) {
         return targets.stream()
                        .map(PaymentTarget::getCreditorAccount)
                        .map(ar -> accountRepository.findByIbanAndCurrency(ar.getIban(), ar.getCurrency())
                                           .orElse(null))
-                       .anyMatch(this::isDepositAccountBlocked);
+                       .anyMatch(this::isDepositAccountEnabled);
     }
 
-    private boolean isDepositAccountBlocked(DepositAccount depositAccount) {
+    private boolean isDepositAccountEnabled(DepositAccount depositAccount) {
         return Optional.ofNullable(depositAccount)
-                       .map(da -> da.isBlocked() || da.isSystemBlocked())
+                       .map(DepositAccount::isEnabled)
                        .orElse(false);
     }
 }
