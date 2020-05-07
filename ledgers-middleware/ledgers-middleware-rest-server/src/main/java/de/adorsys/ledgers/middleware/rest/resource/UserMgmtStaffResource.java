@@ -65,7 +65,11 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
 
     @Override
     public ResponseEntity<SCALoginResponseTO> login(UserCredentialsTO userCredentials) {
-        return ResponseEntity.ok(onlineBankingService.authorise(userCredentials.getLogin(), userCredentials.getPin(), UserRoleTO.STAFF));
+        try{
+            return ResponseEntity.ok(onlineBankingService.authorise(userCredentials.getLogin(), userCredentials.getPin(), UserRoleTO.SYSTEM));
+        } catch (MiddlewareModuleException e){
+            return ResponseEntity.ok(onlineBankingService.authorise(userCredentials.getLogin(), userCredentials.getPin(), UserRoleTO.STAFF));
+        }
     }
 
     @Override
