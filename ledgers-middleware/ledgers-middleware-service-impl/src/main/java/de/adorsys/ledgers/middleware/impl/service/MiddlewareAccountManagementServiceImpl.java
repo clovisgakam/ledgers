@@ -100,12 +100,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         checkPresentAccountsAndOwner(depositAccount.getIban(), user);
         DepositAccountBO accountToCreate = accountDetailsMapper.toDepositAccountBO(depositAccount);
         DepositAccountBO createdAccount = depositAccountService.createNewAccount(accountToCreate, user.getLogin(), user.getBranch());
-
-        if (user.getUserRoles().stream().anyMatch(r -> UserRoleBO.STAFF == r)) {
-            accessService.updateAccountAccessNewAccount(createdAccount, user, user.getLogin());
-        } else {
-            accessService.updateAccountAccessNewAccount(createdAccount, user, scaInfoTO.getUserLogin());
-        }
+        accessService.updateAccountAccessNewAccount(createdAccount, user);
     }
 
     @Override
