@@ -30,8 +30,6 @@ import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
-import de.adorsys.ledgers.util.exception.UserManagementErrorCode;
-import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -421,8 +419,8 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
 
     private void checkPresentAccountsAndOwner(String iban, UserBO user) {
         if (!user.isEnabled()) {
-            throw UserManagementModuleException.builder()
-                          .errorCode(UserManagementErrorCode.USER_IS_BLOCKED)
+            throw MiddlewareModuleException.builder()
+                          .errorCode(USER_IS_BLOCKED)
                           .devMsg("User is blocked, cannot create new account.")
                           .build();
         }
