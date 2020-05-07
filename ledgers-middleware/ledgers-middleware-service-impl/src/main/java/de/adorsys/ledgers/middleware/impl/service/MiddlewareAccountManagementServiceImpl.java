@@ -30,6 +30,8 @@ import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
+import de.adorsys.ledgers.util.exception.UserManagementErrorCode;
+import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -96,20 +98,15 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
                           .build();
         }
         UserBO user = userService.findById(userId);
-        checkPresentAccountsAndOwner(depositAccount.getIban(), user.getLogin());
+
+        checkPresentAccountsAndOwner(depositAccount.getIban(), user);
         DepositAccountBO accountToCreate = accountDetailsMapper.toDepositAccountBO(depositAccount);
         DepositAccountBO createdAccount = depositAccountService.createNewAccount(accountToCreate, user.getLogin(), user.getBranch());
-        accessService.updateAccountAccessNewAccount(createdAccount, user, scaInfoTO.getUserLogin());
-    }
 
-    private void checkPresentAccountsAndOwner(String iban, String userLogin) {
-        List<DepositAccountBO> accountsPresentByIban = depositAccountService.getAccountsByIbanAndParamCurrency(iban, "");
-
-        if (CollectionUtils.isNotEmpty(accountsPresentByIban) && !userLogin.equals(accountsPresentByIban.get(0).getName())) {
-            throw MiddlewareModuleException.builder()
-                          .errorCode(ACCOUNT_CREATION_VALIDATION_FAILURE)
-                          .devMsg("The IBAN you''e trying to create account for is already busy by another user")
-                          .build();
+        if (user.getUserRoles().stream().anyMatch(r -> UserRoleBO.STAFF == r)) {
+            accessService.updateAccountAccessNewAccount(createdAccount, user, user.getLogin());
+        } else {
+            accessService.updateAccountAccessNewAccount(createdAccount, user, scaInfoTO.getUserLogin());
         }
     }
 
@@ -420,6 +417,24 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         List<UserTO> users = userMapper.toUserTOList(userService.findUsersByIban(details.getIban()));
         log.info("Loaded users in {} seconds", TimeUnit.SECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS));
         return new AccountReportTO(details, users);
+    }
+
+    private void checkPresentAccountsAndOwner(String iban, UserBO user) {
+        if (!user.isEnabled()) {
+            throw UserManagementModuleException.builder()
+                          .errorCode(UserManagementErrorCode.USER_IS_BLOCKED)
+                          .devMsg("User is blocked, cannot create new account.")
+                          .build();
+        }
+
+        List<DepositAccountBO> accountsPresentByIban = depositAccountService.getAccountsByIbanAndParamCurrency(iban, "");
+
+        if (CollectionUtils.isNotEmpty(accountsPresentByIban) && !user.getLogin().equals(accountsPresentByIban.get(0).getName())) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(ACCOUNT_CREATION_VALIDATION_FAILURE)
+                          .devMsg("The IBAN you''e trying to create account for is already busy by another user")
+                          .build();
+        }
     }
 
     /*
