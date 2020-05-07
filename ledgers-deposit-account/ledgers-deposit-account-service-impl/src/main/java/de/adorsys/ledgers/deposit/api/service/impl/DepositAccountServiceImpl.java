@@ -238,6 +238,14 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
 
     @Override
     public DepositAccountBO createNewAccount(DepositAccountBO depositAccountBO, String userName, String branch) {
+
+        if (!depositAccountBO.isEnabled()) {
+            throw DepositModuleException.builder()
+                          .errorCode(DEPOSIT_OPERATION_FAILURE)
+                          .devMsg("Deposited account is blocked, cannot create new account.")
+                          .build();
+        }
+
         checkDepositAccountAlreadyExist(depositAccountBO);
         DepositAccount depositAccount = depositAccountMapper.toDepositAccount(depositAccountBO);
         LedgerBO ledgerBO = loadLedger();
