@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.CUSTOMER;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.STAFF;
-import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
 import static de.adorsys.ledgers.middleware.rest.resource.UserMgmtStaffResourceAPI.USER_CANNOT_REGISTER_IN_BRANCH;
 
 
@@ -73,7 +72,7 @@ public class AdminResource implements AdminResourceAPI {
     public ResponseEntity<UserTO> register(UserTO user) {
         if (user.getUserRoles().contains(STAFF) && middlewareUserService.countUsersByBranch(user.getBranch()) > 0) {
             throw MiddlewareModuleException.builder()
-                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .errorCode(MiddlewareErrorCode.INSUFFICIENT_PERMISSION)
                           .devMsg(USER_CANNOT_REGISTER_IN_BRANCH)
                           .build();
         }
