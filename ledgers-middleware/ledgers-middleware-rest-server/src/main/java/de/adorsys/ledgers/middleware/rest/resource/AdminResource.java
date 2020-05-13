@@ -8,6 +8,8 @@ import de.adorsys.ledgers.middleware.api.service.AppManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareAccountManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareResetResource;
+import de.adorsys.ledgers.um.api.domain.UserBO;
+import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.Optional;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.CUSTOMER;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.STAFF;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
+import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.USER_IS_BLOCKED;
 import static de.adorsys.ledgers.middleware.rest.resource.UserMgmtStaffResourceAPI.USER_CANNOT_REGISTER_IN_BRANCH;
 
 
@@ -35,6 +38,7 @@ public class AdminResource implements AdminResourceAPI {
     private final MiddlewareUserManagementService middlewareUserService;
     private final MiddlewareAccountManagementService accountManagementService;
     private final AppManagementService appManagementService;
+    private final UserService userService;
 
     @Override
     @PreAuthorize("hasRole('SYSTEM')")
@@ -77,4 +81,34 @@ public class AdminResource implements AdminResourceAPI {
         createdUser.setPin(null);
         return ResponseEntity.ok(createdUser);
     }
+
+    @Override
+    public ResponseEntity<CustomPageImpl<UserTO>> user(UserTO user) {
+        checkUpdateData(user);
+        middlewareUserService.updateUser(user.getBranch(), user);
+        return ResponseEntity.accepted().build();
+    }
+
+    private void checkUpdateData(UserTO user) {
+        UserBO userStored = userService.findById(user.getId());
+        if (userStored.isBlocked() || userStored.isSystemBlocked()) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(USER_IS_BLOCKED)
+                          .devMsg("You are not allowed to modify a blocked user!")
+                          .build();
+        }
+        if (!userStored.getUserRoles().containsAll(user.getUserRoles())) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .devMsg("You are not allowed to modify users roles!")
+                          .build();
+        }
+        if (!userStored.getBranch().equals(user.getBranch())) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .devMsg("User are not allowed to modify users TPP relation!")
+                          .build();
+        }
+    }
+
 }
