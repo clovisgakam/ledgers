@@ -83,6 +83,7 @@ public class AdminResource implements AdminResourceAPI {
     }
 
     @Override
+    @PreAuthorize("hasRole('SYSTEM')")
     public ResponseEntity<CustomPageImpl<UserTO>> user(UserTO user) {
         checkUpdateData(user);
         middlewareUserService.updateUser(user.getBranch(), user);
