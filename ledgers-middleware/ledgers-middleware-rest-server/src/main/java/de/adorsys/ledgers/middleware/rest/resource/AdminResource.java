@@ -3,6 +3,7 @@ package de.adorsys.ledgers.middleware.rest.resource;
 import de.adorsys.ledgers.middleware.api.domain.account.AccountDetailsTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
+import de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.AppManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareAccountManagementService;
@@ -26,7 +27,6 @@ import java.util.Optional;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.CUSTOMER;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.STAFF;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
-import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.USER_IS_BLOCKED;
 import static de.adorsys.ledgers.middleware.rest.resource.UserMgmtStaffResourceAPI.USER_CANNOT_REGISTER_IN_BRANCH;
 
 
@@ -84,7 +84,7 @@ public class AdminResource implements AdminResourceAPI {
 
     @Override
     @PreAuthorize("hasRole('SYSTEM')")
-    public ResponseEntity<CustomPageImpl<UserTO>> user(UserTO user) {
+    public ResponseEntity<Void> user(UserTO user) {
         checkUpdateData(user);
         middlewareUserService.updateUser(user.getBranch(), user);
         return ResponseEntity.accepted().build();
@@ -94,19 +94,19 @@ public class AdminResource implements AdminResourceAPI {
         UserBO userStored = userService.findById(user.getId());
         if (userStored.isBlocked() || userStored.isSystemBlocked()) {
             throw MiddlewareModuleException.builder()
-                          .errorCode(USER_IS_BLOCKED)
+                          .errorCode(MiddlewareErrorCode.USER_IS_BLOCKED)
                           .devMsg("You are not allowed to modify a blocked user!")
                           .build();
         }
         if (!userStored.getUserRoles().containsAll(user.getUserRoles())) {
             throw MiddlewareModuleException.builder()
-                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .errorCode(MiddlewareErrorCode.INSUFFICIENT_PERMISSION)
                           .devMsg("You are not allowed to modify users roles!")
                           .build();
         }
         if (!userStored.getBranch().equals(user.getBranch())) {
             throw MiddlewareModuleException.builder()
-                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .errorCode(MiddlewareErrorCode.INSUFFICIENT_PERMISSION)
                           .devMsg("User are not allowed to modify users TPP relation!")
                           .build();
         }

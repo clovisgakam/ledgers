@@ -71,6 +71,6 @@ public interface AdminResourceAPI {
             notes = "Update user",
             authorizations = @Authorization(value = "apiKey"))
     @PutMapping("/users")
-    ResponseEntity<CustomPageImpl<UserTO>> user(@RequestBody UserTO user);
+    ResponseEntity<Void> user(@RequestBody UserTO user);
 
 }
