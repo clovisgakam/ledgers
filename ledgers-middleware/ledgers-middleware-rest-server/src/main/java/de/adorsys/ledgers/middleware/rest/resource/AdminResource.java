@@ -92,6 +92,7 @@ public class AdminResource implements AdminResourceAPI {
         return ResponseEntity.accepted().build();
     }
 
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     private void checkUpdateData(UserTO user) {
         UserBO userStored = userService.findById(user.getId());
         if (userStored.isBlocked() || userStored.isSystemBlocked()) {
