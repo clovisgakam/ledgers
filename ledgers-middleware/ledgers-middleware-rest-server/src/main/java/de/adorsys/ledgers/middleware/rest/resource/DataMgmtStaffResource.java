@@ -55,6 +55,6 @@ public class DataMgmtStaffResource implements DataMgmtStaffAPI {
 
     @Override
     public ResponseEntity<String> branchId(BbanStructure bbanStructure) {
-        return ResponseEntity.ok(appManagementService.nextBban(bbanStructure));
+        return ResponseEntity.ok(appManagementService.generateNextBban(bbanStructure));
     }
 }

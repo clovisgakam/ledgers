@@ -63,7 +63,7 @@ class AppManagementServiceImplTest {
         structure.setEntryType(BbanStructure.EntryType.N);
         structure.setLength(8);
         structure.setCountryPrefix("DE");
-        String result = service.nextBban(structure);
+        String result = service.generateNextBban(structure);
         String regex = "^([0-9]{8})";
         assertTrue(isValid(regex, result));
     }
@@ -78,7 +78,7 @@ class AppManagementServiceImplTest {
         structure.setEntryType(BbanStructure.EntryType.N);
         structure.setLength(8);
         structure.setCountryPrefix("DE");
-        String result = service.nextBban(structure);
+        String result = service.generateNextBban(structure);
         String regex = "^([0-9]{8})";
         assertTrue(isValid(regex, result));
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);

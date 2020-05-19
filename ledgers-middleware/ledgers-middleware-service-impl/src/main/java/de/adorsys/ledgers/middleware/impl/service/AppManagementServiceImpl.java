@@ -92,7 +92,7 @@ public class AppManagementServiceImpl implements AppManagementService {
     }
 
     @Override
-    public String nextBban(BbanStructure structure) {
+    public String generateNextBban(BbanStructure structure) {
         String bban = structure.generateRandomBban();
         while (userService.isPresentBranchCode(structure.getCountryPrefix() + "_" + bban)) {
             bban = structure.generateRandomBban();

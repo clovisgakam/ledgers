@@ -35,5 +35,5 @@ public interface AppManagementService {
      */
     boolean changeBlockedStatus(String userId, boolean isSystemBlock);
 
-    String nextBban(BbanStructure structure);
+    String generateNextBban(BbanStructure structure);
 }
