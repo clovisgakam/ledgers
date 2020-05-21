@@ -9,6 +9,7 @@ import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.AppManagementService;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import de.adorsys.ledgers.middleware.impl.service.upload.UploadBalanceService;
 import de.adorsys.ledgers.middleware.impl.service.upload.UploadDepositAccountService;
 import de.adorsys.ledgers.middleware.impl.service.upload.UploadPaymentService;
@@ -44,6 +45,7 @@ public class AppManagementServiceImpl implements AppManagementService {
     private final UploadDepositAccountService uploadDepositAccountService;
     private final UploadBalanceService uploadBalanceService;
     private final UploadPaymentService uploadPaymentService;
+    private final MiddlewareUserManagementService middlewareUserManagementService;
 
     @Override
     @Transactional
@@ -79,13 +81,6 @@ public class AppManagementServiceImpl implements AppManagementService {
     @Override
     public boolean changeBlockedStatus(String userId, boolean isSystemBlock) {
         UserBO branch = userService.findById(userId);
-        if (!branch.getUserRoles().contains(UserRoleBO.STAFF)) {
-            throw MiddlewareModuleException.builder()
-                          .devMsg("You're trying to block a user which is not STAFF!")
-                          .errorCode(INSUFFICIENT_PERMISSION)
-                          .build();
-        }
-
         boolean lockStatusToSet = isSystemBlock ? !branch.isSystemBlocked() : !branch.isBlocked();
 
         // TPP cases.
@@ -96,10 +91,7 @@ public class AppManagementServiceImpl implements AppManagementService {
         }
 
         // Cases for customers and admins
-        userService.setUserBlockedStatus(userId, isSystemBlock, lockStatusToSet);
-        depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet);
-
-        return lockStatusToSet;
+        return middlewareUserManagementService.changeStatus(userId, isSystemBlock);
     }
 
     @Override
