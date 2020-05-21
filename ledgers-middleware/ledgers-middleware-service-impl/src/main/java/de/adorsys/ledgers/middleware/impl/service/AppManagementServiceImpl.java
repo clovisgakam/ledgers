@@ -88,17 +88,17 @@ public class AppManagementServiceImpl implements AppManagementService {
 
         boolean lockStatusToSet = isSystemBlock ? !branch.isSystemBlocked() : !branch.isBlocked();
 
-        // Cases for customers and admins.
-        if (branch.getUserRoles().contains(UserRoleBO.CUSTOMER) ||
-                    branch.getUserRoles().contains(UserRoleBO.SYSTEM)) {
-            userService.setUserBlockedStatus(userId, isSystemBlock, lockStatusToSet);
-            depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet);
+        // TPP cases.
+        if (branch.getUserRoles().contains(UserRoleBO.STAFF)) {
+            CompletableFuture.runAsync(() -> userService.setBranchBlockedStatus(userId, isSystemBlock, lockStatusToSet), FIXED_THREAD_POOL)
+                    .thenRunAsync(() -> depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet));
             return lockStatusToSet;
         }
 
-        // TPP cases.
-        CompletableFuture.runAsync(() -> userService.setBranchBlockedStatus(userId, isSystemBlock, lockStatusToSet), FIXED_THREAD_POOL)
-                .thenRunAsync(() -> depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet));
+        // Cases for customers and admins
+        userService.setUserBlockedStatus(userId, isSystemBlock, lockStatusToSet);
+        depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet);
+
         return lockStatusToSet;
     }
 

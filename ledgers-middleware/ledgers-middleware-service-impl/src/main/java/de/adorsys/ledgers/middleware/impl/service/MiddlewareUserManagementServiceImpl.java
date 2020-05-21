@@ -243,14 +243,14 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
                           .build();
         }
 
-        Set<String> depositAccountIdsToChangeStatus = user.getAccountAccesses()
-                                                              .stream()
-                                                              .map(AccountAccessBO::getAccountId)
-                                                              .collect(Collectors.toSet());
-
         boolean lockStatusToSet = isSystemBlock ? !user.isSystemBlocked() : !user.isBlocked();
 
         userService.setUserBlockedStatus(userId, isSystemBlock, lockStatusToSet);
+
+        Set<String> depositAccountIdsToChangeStatus = user.getAccountAccesses().stream()
+                                                              .map(AccountAccessBO::getAccountId)
+                                                              .collect(Collectors.toSet());
+
         depositAccountService.changeAccountsBlockedStatus(depositAccountIdsToChangeStatus, isSystemBlock, lockStatusToSet);
 
         return lockStatusToSet;
