@@ -80,11 +80,11 @@ public class AppManagementServiceImpl implements AppManagementService {
 
     @Override
     public boolean changeBlockedStatus(String userId, boolean isSystemBlock) {
-        UserBO branch = userService.findById(userId);
-        boolean lockStatusToSet = isSystemBlock ? !branch.isSystemBlocked() : !branch.isBlocked();
+        UserBO user = userService.findById(userId);
+        boolean lockStatusToSet = isSystemBlock ? !user.isSystemBlocked() : !user.isBlocked();
 
         // TPP cases.
-        if (branch.getUserRoles().contains(UserRoleBO.STAFF)) {
+        if (user.getUserRoles().contains(UserRoleBO.STAFF)) {
             CompletableFuture.runAsync(() -> userService.setBranchBlockedStatus(userId, isSystemBlock, lockStatusToSet), FIXED_THREAD_POOL)
                     .thenRunAsync(() -> depositAccountService.changeAccountsBlockedStatus(userId, isSystemBlock, lockStatusToSet));
             return lockStatusToSet;
