@@ -29,7 +29,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.REQUEST_VALIDATION_FAILURE;
@@ -240,10 +243,10 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
                           .build();
         }
 
-        List<AccountAccessBO> accountAccesses = user.getAccountAccesses();
-        Set<String> depositAccountIdsToChangeStatus = new HashSet<>();
-
-        accountAccesses.forEach(a -> depositAccountIdsToChangeStatus.add(a.getAccountId()));
+        Set<String> depositAccountIdsToChangeStatus = user.getAccountAccesses()
+                                                              .stream()
+                                                              .map(AccountAccessBO::getAccountId)
+                                                              .collect(Collectors.toSet());
 
         boolean lockStatusToSet = isSystemBlock ? !user.isSystemBlocked() : !user.isBlocked();
 
