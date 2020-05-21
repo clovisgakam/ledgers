@@ -125,7 +125,7 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('STAFF','SYSTEM')")
+    @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<Boolean> changeStatus(String userId) {
         return ResponseEntity.ok(middlewareUserService.changeStatus(userId, false));
     }
