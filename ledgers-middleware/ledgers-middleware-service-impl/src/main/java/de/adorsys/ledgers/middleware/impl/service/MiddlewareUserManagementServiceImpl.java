@@ -15,10 +15,7 @@ import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService
 import de.adorsys.ledgers.middleware.impl.converter.AdditionalAccountInformationMapper;
 import de.adorsys.ledgers.middleware.impl.converter.PageMapper;
 import de.adorsys.ledgers.middleware.impl.converter.UserMapper;
-import de.adorsys.ledgers.um.api.domain.AccountAccessBO;
-import de.adorsys.ledgers.um.api.domain.AccountIdentifierTypeBO;
-import de.adorsys.ledgers.um.api.domain.AdditionalAccountInfoBO;
-import de.adorsys.ledgers.um.api.domain.UserBO;
+import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.UserService;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
@@ -235,6 +232,13 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
     @Override
     public boolean changeStatus(String userId, boolean isSystemBlock) {
         UserBO user = userService.findById(userId);
+
+        if (!user.getUserRoles().contains(UserRoleBO.CUSTOMER)) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .devMsg("Only customers can be blocked or unblocked.")
+                          .build();
+        }
 
         List<AccountAccessBO> accountAccesses = user.getAccountAccesses();
         Set<String> depositAccountIdsToChangeStatus = new HashSet<>();
