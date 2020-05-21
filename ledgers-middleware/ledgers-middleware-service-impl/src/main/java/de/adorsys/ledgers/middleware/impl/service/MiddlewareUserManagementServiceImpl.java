@@ -32,8 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.INSUFFICIENT_PERMISSION;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.REQUEST_VALIDATION_FAILURE;
@@ -231,6 +230,23 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
     public List<AdditionalAccountInformationTO> getAdditionalInformation(ScaInfoTO scaInfoHolder, AccountIdentifierTypeTO accountIdentifierType, String accountIdentifier) {
         List<AdditionalAccountInfoBO> info = AccountIdentifierTypeBO.valueOf(accountIdentifierType.name()).getAdditionalAccountInfo(accountIdentifier, userService::findOwnersByIban, userService::findOwnersByAccountId);
         return additionalInfoMapper.toAdditionalAccountInformationTOs(info);
+    }
+
+    @Override
+    public boolean changeStatus(String userId, boolean isSystemBlock) {
+        UserBO user = userService.findById(userId);
+
+        List<AccountAccessBO> accountAccesses = user.getAccountAccesses();
+        Set<String> depositAccountIdsToChangeStatus = new HashSet<>();
+
+        accountAccesses.forEach(a -> depositAccountIdsToChangeStatus.add(a.getAccountId()));
+
+        boolean lockStatusToSet = isSystemBlock ? !user.isSystemBlocked() : !user.isBlocked();
+
+        userService.setUserBlockedStatus(userId, isSystemBlock, lockStatusToSet);
+        depositAccountService.changeAccountsBlockedStatus(depositAccountIdsToChangeStatus, isSystemBlock, lockStatusToSet);
+
+        return lockStatusToSet;
     }
 
     private boolean contained(AccountAccessBO access, List<AccountReferenceTO> references) {
