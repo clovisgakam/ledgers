@@ -16,10 +16,8 @@
 
 package de.adorsys.ledgers.um.api.service;
 
-import com.google.common.io.Files;
 import de.adorsys.ledgers.um.api.domain.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
