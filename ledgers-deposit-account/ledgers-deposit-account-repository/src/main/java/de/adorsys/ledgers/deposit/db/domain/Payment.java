@@ -121,12 +121,12 @@ public class Payment {
     @Column
     private LocalDateTime updated;
 
+    @Transient
+    private TransactionStatus previousTransactionStatus;
+
     public boolean isLastExecuted(LocalDate nextPossibleExecutionDate) {
         return endDate != null && nextPossibleExecutionDate.isAfter(endDate);
     }
-
-    @Transient
-    private TransactionStatus previousTransactionStatus;
 
     @PostLoad
     public void paymentPostLoad() {
