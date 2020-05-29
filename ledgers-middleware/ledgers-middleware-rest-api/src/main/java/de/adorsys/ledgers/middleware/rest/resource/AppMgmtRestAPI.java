@@ -24,10 +24,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDateTime;
 
 @Api(tags = "LDG005 - Application Management", description = "Application management")
 public interface AppMgmtRestAPI {
     String BASE_PATH = "/management/app";
+
+    String DATABASE_STATE_DATE_TIME = "dateTime";
 
     @GetMapping("/ping")
     @ApiOperation(tags = UnprotectedEndpoint.UNPROTECTED_ENDPOINT, value = "Echo the server")
@@ -40,5 +45,9 @@ public interface AppMgmtRestAPI {
     @PostMapping("/admin")
     @ApiOperation(tags = UnprotectedEndpoint.UNPROTECTED_ENDPOINT, value = "Creates the admin account. This is only done if the application has no account yet. Returns a bearer token admin can use to proceed with further operations.")
     ResponseEntity<BearerTokenTO> admin(@RequestBody(required = true) UserTO adminUser);
+
+    @PostMapping("/revert")
+    @ApiOperation("Reverts DB state to the given date and time.")
+    ResponseEntity<Void> revertDatabase(@RequestParam(name = DATABASE_STATE_DATE_TIME) LocalDateTime databaseStateDateTime);
 
 }
