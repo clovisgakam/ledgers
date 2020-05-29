@@ -265,6 +265,20 @@ public class MiddlewareUserManagementServiceImpl implements MiddlewareUserManage
         return lockStatusToSet;
     }
 
+    @Override
+    public boolean getStatus(String userId) {
+        UserBO user = userService.findById(userId);
+
+        if (!user.getUserRoles().contains(UserRoleBO.CUSTOMER)) {
+            throw MiddlewareModuleException.builder()
+                          .errorCode(INSUFFICIENT_PERMISSION)
+                          .devMsg("Only customers can check system blocking.")
+                          .build();
+        }
+
+        return user.isSystemBlocked();
+    }
+
     private boolean contained(AccountAccessBO access, List<AccountReferenceTO> references) {
         return references.stream()
                        .anyMatch(r -> Optional.ofNullable(r.getCurrency())
