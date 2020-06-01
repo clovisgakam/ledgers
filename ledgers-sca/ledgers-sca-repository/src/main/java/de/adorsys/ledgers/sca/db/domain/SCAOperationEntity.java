@@ -106,29 +106,10 @@ public class SCAOperationEntity {
 	@Column
 	private LocalDateTime updated;
 
-	@Transient
-	private AuthCodeStatus previousStatus;
-
-	@PostLoad
-	public void paymentPostLoad() {
-		previousStatus = status;
-	}
-
-	@PreUpdate
-	public void paymentPreUpdate() {
-		if (previousStatus != status) {
-			updated = LocalDateTime.now();
-		}
-	}
-
 	@PrePersist
 	public void prePersist() {
 		if(created==null) {
 			created = LocalDateTime.now();
-		}
-
-		if (updated == null) {
-			updated = created;
 		}
 	}
 

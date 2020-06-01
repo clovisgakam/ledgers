@@ -171,16 +171,4 @@ public interface UserMgmtStaffResourceAPI {
             authorizations = @Authorization(value = "apiKey"))
     @PostMapping("/{userId}/status")
     ResponseEntity<Boolean> changeStatus(@PathVariable(USER_ID) String userId);
-
-    /**
-     * Checks if the given user (TPP) is internally (system) blocked or not.
-     *
-     * @param userId user ID
-     * @return true if user is internally blocked, false otherwise.
-     */
-    @ApiOperation(value = "Get status of system blocking for user",
-            authorizations = @Authorization(value = "apiKey"))
-    @GetMapping("/{userId}/status")
-    ResponseEntity<Boolean> getSystemBlocked(@PathVariable(USER_ID) String userId);
-
 }

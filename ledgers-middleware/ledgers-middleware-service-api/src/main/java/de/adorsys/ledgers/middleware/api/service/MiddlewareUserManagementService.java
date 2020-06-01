@@ -101,7 +101,4 @@ public interface MiddlewareUserManagementService {
     List<AdditionalAccountInformationTO> getAdditionalInformation(ScaInfoTO scaInfoHolder, AccountIdentifierTypeTO accountIdentifierType, String accountIdentifier);
 
     boolean changeStatus(String userId, boolean systemBlock);
-
-    boolean getStatus(String userId);
-
 }
