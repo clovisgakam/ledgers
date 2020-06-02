@@ -6,8 +6,7 @@
     <changeSet author="hhe@adorsys.com.ua" id="28-05-2020-01">
         <comment>Add timestamp to account_accesses table</comment>
         <addColumn tableName="account_accesses">
-            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
-                <!--<constraints nullable="false"/>-->
+            <column name="created" type="DATETIME" defaultValueComputed="now()">
             </column>
         </addColumn>
     </changeSet>
@@ -15,8 +14,7 @@
     <changeSet author="hhe@adorsys.com.ua" id="28-05-2020-02">
         <comment>Add timestamp to deposit_account table</comment>
         <addColumn tableName="deposit_account">
-            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
-                <!--<constraints nullable="false"/>-->
+            <column name="created" type="DATETIME" defaultValueComputed="now()">
             </column>
         </addColumn>
     </changeSet>
@@ -24,8 +22,7 @@
     <changeSet author="hhe@adorsys.com.ua" id="28-05-2020-03">
         <comment>Add timestamp to payment table</comment>
         <addColumn tableName="payment">
-            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
-                <!--<constraints nullable="false"/>-->
+            <column name="updated" type="DATETIME" defaultValueComputed="now()">
             </column>
         </addColumn>
     </changeSet>
@@ -33,8 +30,7 @@
     <changeSet author="hhe@adorsys.com.ua" id="28-05-2020-04">
         <comment>Add timestamp to sca_operation table</comment>
         <addColumn tableName="sca_operation">
-            <column name="updated" type="TIMESTAMP WITHOUT TIME ZONE">
-                <!--<constraints nullable="false"/>-->
+            <column name="updated" type="DATETIME" defaultValueComputed="now()">
             </column>
         </addColumn>
 
@@ -43,8 +39,7 @@
     <changeSet author="hhe@adorsys.com.ua" id="28-05-2020-05">
         <comment>Add timestamp to users table</comment>
         <addColumn tableName="users">
-            <column name="created" type="TIMESTAMP WITHOUT TIME ZONE">
-                <!--<constraints nullable="false"/>-->
+            <column name="created" type="DATETIME" defaultValueComputed="now()">
             </column>
         </addColumn>
     </changeSet>

@@ -37,7 +37,7 @@ public class AccountAccess {
     private String accountId;
 
     @Column
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
 
     @PrePersist
     public void prePersist() {
