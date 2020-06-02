@@ -397,6 +397,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         log.info("Deleting account: {} Successful, in {} seconds", accountId, (double) (System.nanoTime() - start) / NANO_TO_SECOND);
     }
 
+    @SuppressWarnings("PMD.PrematureDeclaration")
     private long checkPermissionAndStartCount(String userId, UserRoleTO userRole, String accountId) {
         long start = System.nanoTime();
         if (userRole == STAFF && !hasAccess(userId, accountId)) {
