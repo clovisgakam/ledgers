@@ -82,9 +82,4 @@ public class AppMgmtResource implements AppMgmtRestAPI {
         SCALoginResponseTO scaLoginResponseTO = middlewareUserService.authorise(adminUser.getLogin(), adminUser.getPin(), UserRoleTO.SYSTEM);
         return ResponseEntity.ok(scaLoginResponseTO.getBearerToken());
     }
-
-    @Override
-    public ResponseEntity<Void> revertDatabase(LocalDateTime databaseStateDateTime) {
-        return null;
-    }
 }
