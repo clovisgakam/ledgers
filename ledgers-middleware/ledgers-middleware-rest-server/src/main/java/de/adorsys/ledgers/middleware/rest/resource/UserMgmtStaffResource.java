@@ -132,7 +132,7 @@ public class UserMgmtStaffResource implements UserMgmtStaffResourceAPI {
     }
 
     @Override
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasAnyRole('STAFF','SYSTEM')")
     public ResponseEntity<Void> revertDatabase(String userId, LocalDateTime databaseStateDateTime) {
         return null;
     }
