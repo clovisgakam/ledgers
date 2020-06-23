@@ -17,8 +17,10 @@
 package de.adorsys.ledgers.middleware.rest.resource;
 
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAConsentResponseTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import de.adorsys.ledgers.middleware.api.domain.um.AisConsentTO;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareAccountManagementService;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareScaService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareUserResource;
 import de.adorsys.ledgers.middleware.rest.security.ScaInfoHolder;
 import lombok.RequiredArgsConstructor;
@@ -36,28 +38,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConsentResource implements ConsentRestAPI {
     private final ScaInfoHolder scaInfoHolder;
     private final MiddlewareAccountManagementService middlewareAccountService;
+    private final MiddlewareScaService middlewareScaService;
 
     @Override
-    public ResponseEntity<SCAConsentResponseTO> startSCA(String consentId, AisConsentTO aisConsent) {
-        return ResponseEntity.ok(middlewareAccountService.startSCA(scaInfoHolder.getScaInfo(), consentId, aisConsent));
+    public ResponseEntity<ScaResponse> startSCA(String consentId, AisConsentTO aisConsent) {
+        return ResponseEntity.ok(middlewareScaService.startScaAis(scaInfoHolder.getScaInfo(), consentId, aisConsent));
     }
 
     // TODO: Bearer token must contain autorization id
     @Override
-    public ResponseEntity<SCAConsentResponseTO> getSCA(String consentId, String authorisationId) {
-        return ResponseEntity.ok(middlewareAccountService.loadSCAForAisConsent(scaInfoHolder.getUserId(), consentId, authorisationId));
+    public ResponseEntity<ScaResponse> getSCA(String consentId, String authorisationId) {
+        return ResponseEntity.ok(middlewareScaService.getScaAis(scaInfoHolder.getUserId(), consentId, authorisationId));
     }
 
     // TODO: Bearer token must contain autorization id
     @Override
-    public ResponseEntity<SCAConsentResponseTO> selectMethod(String consentId, String authorisationId, String scaMethodId) {
-        return ResponseEntity.ok(middlewareAccountService.selectSCAMethodForAisConsent(scaInfoHolder.getUserId(), consentId, authorisationId, scaMethodId));
+    public ResponseEntity<ScaResponse> selectMethod(String consentId, String authorisationId, String scaMethodId) {
+        return ResponseEntity.ok(middlewareScaService.selectScaMethodAis(scaInfoHolder.getUserId(), consentId, authorisationId, scaMethodId));
     }
 
     // TODO: Bearer token must contain autorization id
     @Override
-    public ResponseEntity<SCAConsentResponseTO> authorizeConsent(String consentId, String authorisationId, String authCode) {
-        return ResponseEntity.ok(middlewareAccountService.authorizeConsent(scaInfoHolder.getScaInfoWithAuthCode(authCode), consentId));
+    public ResponseEntity<ScaResponse> authorizeConsent(String consentId, String authorisationId, String authCode) {
+        return ResponseEntity.ok(middlewareScaService.authorizeConsent(scaInfoHolder.getScaInfoWithAuthCode(authCode), consentId));
     }
 
     @Override

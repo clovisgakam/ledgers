@@ -130,30 +130,6 @@ public interface MiddlewareAccountManagementService {
 
     String iban(String id);
 
-    // ======================= CONSENT ======================//
-
-    /**
-     * Start an account consent process.
-     *
-     * @param scaInfoTO  SCA information
-     * @param consentId  : the cosent id.
-     * @param aisConsent : the consent details
-     * @return the corresponding access token describing the account access
-     */
-    SCAConsentResponseTO startSCA(ScaInfoTO scaInfoTO, String consentId, AisConsentTO aisConsent);
-
-    SCAConsentResponseTO loadSCAForAisConsent(String userId, String consentId, String authorisationId);
-
-    SCAConsentResponseTO selectSCAMethodForAisConsent(String userId, String consentId, String authorisationId, String scaMethodId);
-
-    /**
-     * Authorizes a consent request. If the authentication is completed, the returned response will contain a valid bearer token.
-     *
-     * @param scaInfoTO : SCA information
-     * @param consentId : the cosent id
-     * @return SCAConsentResponseTO : the consent response.
-     */
-    SCAConsentResponseTO authorizeConsent(ScaInfoTO scaInfoTO, String consentId);
 
     /**
      * Provide a third party provider with necessary permission to read accounts and

@@ -3,10 +3,7 @@ package de.adorsys.ledgers.middleware.impl.converter;
 import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
-import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
-import de.adorsys.ledgers.middleware.api.domain.sca.SCAResponseTO;
-import de.adorsys.ledgers.middleware.api.domain.sca.ScaDataInfoTO;
-import de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.*;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.ScaUserDataTO;
 import de.adorsys.ledgers.middleware.api.domain.um.TokenUsageTO;
@@ -37,7 +34,7 @@ public class ScaResponseResolver {
     @Value("${default.token.lifetime.seconds:600}")
     private int defaultLoginTokenExpireInSeconds;
 
-    public <T extends SCAResponseTO> void completeResponse(T response, SCAOperationBO operation, UserTO user, String template, BearerTokenTO token) {
+    public <T extends ScaResponse> void completeResponse(T response, SCAOperationBO operation, UserTO user, String template, BearerTokenTO token) {
         response.setScaStatus(ScaStatusTO.valueOf(operation.getScaStatus().name()));
         response.setAuthorisationId(operation.getId());
         response.setScaMethods(user.getScaUserData());

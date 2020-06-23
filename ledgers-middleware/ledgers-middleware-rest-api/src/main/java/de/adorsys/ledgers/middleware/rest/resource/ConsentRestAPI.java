@@ -17,6 +17,7 @@
 package de.adorsys.ledgers.middleware.rest.resource;
 
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAConsentResponseTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import de.adorsys.ledgers.middleware.api.domain.um.AisConsentTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,24 +41,24 @@ public interface ConsentRestAPI {
     @PostMapping(value = "/{consentId}/authorisations")
     @ApiOperation(value = "Start SCA", notes = "Starts an authorisation process for establishing account information consent data on the server.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAConsentResponseTO> startSCA(@PathVariable("consentId") String consentId, @RequestBody AisConsentTO aisConsent);
+    ResponseEntity<ScaResponse> startSCA(@PathVariable("consentId") String consentId, @RequestBody AisConsentTO aisConsent);
 
     @GetMapping(value = "/{consentId}/authorisations/{authorisationId}")
     @ApiOperation(value = "Get SCA", notes = "Get the authorization response object eventually containing the list of selected sca methods.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAConsentResponseTO> getSCA(@PathVariable("consentId") String consentId,
+    ResponseEntity<ScaResponse> getSCA(@PathVariable("consentId") String consentId,
                                                 @PathVariable("authorisationId") String authorisationId);
 
     @PutMapping(value = "/{consentId}/authorisations/{authorisationId}/scaMethods/{scaMethodId}")
     @ApiOperation(value = "Select SCA Method", notes = "Select teh given sca method and request for authentication code generation.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAConsentResponseTO> selectMethod(@PathVariable("consentId") String consentId,
+    ResponseEntity<ScaResponse> selectMethod(@PathVariable("consentId") String consentId,
                                                       @PathVariable("authorisationId") String authorisationId,
                                                       @PathVariable("scaMethodId") String scaMethodId);
 
     @PutMapping(value = "/{consentId}/authorisations/{authorisationId}/authCode")
     @ApiOperation(value = "Send an authentication code for validation", notes = "Validate an authetication code and returns the cosent token", authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAConsentResponseTO> authorizeConsent(@PathVariable("consentId") String consentId,
+    ResponseEntity<ScaResponse> authorizeConsent(@PathVariable("consentId") String consentId,
                                                           @PathVariable("authorisationId") String authorisationId,
                                                           @RequestParam(name = "authCode") String authCode);
 
