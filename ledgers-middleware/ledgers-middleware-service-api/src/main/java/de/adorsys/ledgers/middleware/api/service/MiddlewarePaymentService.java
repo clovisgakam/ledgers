@@ -21,6 +21,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public interface MiddlewarePaymentService {
      * @param paymentType : the payment type
      * @return : the sca response object.
      */
-    SCAPaymentResponseTO initiatePayment(ScaInfoTO scaInfoTO, PaymentTO payment, PaymentTypeTO paymentType);
+    ScaResponse initiatePayment(ScaInfoTO scaInfoTO, PaymentTO payment, PaymentTypeTO paymentType);
 
     /**
      * Executes a payment
@@ -81,7 +82,7 @@ public interface MiddlewarePaymentService {
      * @param paymentId : the payment id
      * @return : the auth response object.
      */
-    SCAPaymentResponseTO initiatePaymentCancellation(ScaInfoTO scaInfoTO, String paymentId);
+    ScaResponse initiatePaymentCancellation(ScaInfoTO scaInfoTO, String paymentId);
 
     String iban(String paymentId);
 

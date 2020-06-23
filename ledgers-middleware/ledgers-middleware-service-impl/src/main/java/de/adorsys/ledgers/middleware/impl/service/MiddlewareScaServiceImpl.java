@@ -4,7 +4,10 @@ import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
 import de.adorsys.ledgers.deposit.api.service.DepositAccountPaymentService;
 import de.adorsys.ledgers.middleware.api.domain.payment.ConsentKeyDataTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentCoreDataTO;
-import de.adorsys.ledgers.middleware.api.domain.sca.*;
+import de.adorsys.ledgers.middleware.api.domain.sca.AuthorisationType;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.um.AisConsentTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
@@ -194,37 +197,37 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
      */
     @Override
     @Transactional(noRollbackFor = ScaModuleException.class)
-    public SCAPaymentResponseTO authorizePayment(ScaInfoTO scaInfoTO, String paymentId) {
+    public ScaResponse authorizePayment(ScaInfoTO scaInfoTO, String paymentId) {
         return authorizeOperation(scaInfoTO, paymentId, null, PAYMENT);
     }
 
     @Override
-    public SCAPaymentResponseTO loadSCAForPaymentData(ScaInfoTO scaInfoTO, String paymentId) {
+    public ScaResponse getScaPis(ScaInfoTO scaInfoTO, String paymentId) {
         return loadSca(scaInfoTO, paymentId, scaInfoTO.getAuthorisationId(), PAYMENT);
     }
 
     @Override
-    public SCAPaymentResponseTO loadSCAForCancelPaymentData(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
+    public ScaResponse getScaPisCancel(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
         return loadSca(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
     }
 
     @Override
-    public SCAPaymentResponseTO selectSCAMethodForPayment(ScaInfoTO scaInfoTO, String paymentId) {
+    public ScaResponse selectScaMethodPis(ScaInfoTO scaInfoTO, String paymentId) {
         return selectSCAMethod(scaInfoTO, paymentId, null, PAYMENT);
     }
 
     @Override
-    public SCAPaymentResponseTO selectSCAMethodForCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
+    public ScaResponse selectScaMethodPisCancel(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
         return selectSCAMethod(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
     }
 
     @Override
     @Transactional(noRollbackFor = ScaModuleException.class)
-    public SCAPaymentResponseTO authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
+    public ScaResponse authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
         return authorizeOperation(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
     }
 
-    private SCAPaymentResponseTO selectSCAMethod(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
+    private ScaResponse selectSCAMethod(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
         UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
         PaymentBO payment = paymentService.getPaymentById(paymentId);
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
@@ -232,7 +235,7 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
         PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
         String template = paymentKeyData.getTanTemplate();
         String authorisationId = opType == PAYMENT ? scaInfoTO.getAuthorisationId() : cancellationId;
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
+        ScaResponse response = new ScaResponse();
         scaResponseResolver.generateCodeAndUpdateResponse(paymentId, response, authorisationId, template, scaWeight, userBO, opType, scaInfoTO.getScaMethodId());
 
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
@@ -240,7 +243,7 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
         return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
     }
 
-    private SCAPaymentResponseTO loadSca(ScaInfoTO scaInfoTO, String paymentId, String operationId, OpTypeBO opType) {
+    private ScaResponse loadSca(ScaInfoTO scaInfoTO, String paymentId, String operationId, OpTypeBO opType) {
         SCAOperationBO scaOperation = scaOperationService.loadAuthCode(operationId);
         UserBO user = scaUtils.userBO(scaInfoTO.getUserId());
         PaymentBO payment = paymentService.getPaymentById(paymentId);
@@ -248,7 +251,7 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(user.getAccountAccesses(), payment.getDebtorAccount().getIban());
 
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
+        ScaResponse response = new ScaResponse();
         scaResponseResolver.updateScaResponseFields(user, response, operationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaOperation.getScaStatus().name()), scaWeight);
         scaResponseResolver.updateScaUserDataInResponse(user, scaOperation, response);
         return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
@@ -270,7 +273,7 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
         return bearerTokenMapper.toBearerTokenTO(authorizationService.consentToken(scaInfoMapper.toScaInfoBO(scaInfoTO), aisConsent));
     }
 
-    private SCAPaymentResponseTO authorizeOperation(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
+    private ScaResponse authorizeOperation(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
         PaymentBO payment = paymentService.getPaymentById(paymentId);
         PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
 
@@ -288,7 +291,7 @@ public class MiddlewareScaServiceImpl implements MiddlewareScaService {
         }
         BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
         UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
+        ScaResponse response = new ScaResponse();
         response.setAuthConfirmationCode(scaValidationBO.getAuthConfirmationCode());
         int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
         scaResponseResolver.updateScaResponseFields(userBO, response, authorisationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaValidationBO.getScaStatus().toString()), scaWeight);

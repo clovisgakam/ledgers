@@ -59,19 +59,19 @@ public class ScaResponseResolver {
         return ScaStatusTO.EXEMPTED;
     }
 
-    public void prepareScaAndUpdateResponse(String paymentId, SCAPaymentResponseTO response, String authorisationId, String psuMessage, int scaWeight, UserBO user, OpTypeBO opType) {
+    public void prepareScaAndUpdateResponse(String paymentId, ScaResponse response, String authorisationId, String psuMessage, int scaWeight, UserBO user, OpTypeBO opType) {
         AuthCodeDataBO authCodeData = new AuthCodeDataBO(user.getLogin(), null, paymentId, psuMessage, psuMessage, defaultLoginTokenExpireInSeconds, opType, authorisationId, scaWeight);
         SCAOperationBO operation = scaOperationService.createAuthCode(authCodeData, ScaStatusBO.valueOf(response.getScaStatus().name()));
         updateScaUserDataInResponse(user, operation, response);
     }
 
-    public void generateCodeAndUpdateResponse(String paymentId, SCAPaymentResponseTO response, String authorisationId, String psuMessage, int scaWeight, UserBO user, OpTypeBO opType, String scaMethodId) {
+    public void generateCodeAndUpdateResponse(String paymentId, ScaResponse response, String authorisationId, String psuMessage, int scaWeight, UserBO user, OpTypeBO opType, String scaMethodId) {
         AuthCodeDataBO authCodeData = new AuthCodeDataBO(user.getLogin(), scaMethodId, paymentId, psuMessage, psuMessage, defaultLoginTokenExpireInSeconds, opType, authorisationId, scaWeight);
         SCAOperationBO operation = scaOperationService.generateAuthCode(authCodeData, user, ScaStatusBO.SCAMETHODSELECTED);
         updateScaUserDataInResponse(user, operation, response);
     }
 
-    public void updateScaUserDataInResponse(UserBO user, SCAOperationBO operation, SCAResponseTO response) {
+    public void updateScaUserDataInResponse(UserBO user, SCAOperationBO operation, ScaResponse response) {
         ScaUserDataTO userData = scaUtils.getScaMethod(user, operation.getScaMethodId());
         response.setChosenScaMethod(userData);
         response.setStatusDate(operation.getStatusTime());
@@ -82,7 +82,7 @@ public class ScaResponseResolver {
         }
     }
 
-    public void updateScaResponseFields(UserBO user, SCAPaymentResponseTO response, String authorisationId, String psuMessage, BearerTokenTO token, ScaStatusTO scaStatus, int scaWeight) {
+    public void updateScaResponseFields(UserBO user, ScaResponse response, String authorisationId, String psuMessage, BearerTokenTO token, ScaStatusTO scaStatus, int scaWeight) {
         response.setScaStatus(scaStatus);
         response.setAuthorisationId(authorisationId);
         response.setScaMethods(userMapper.toScaUserDataListTO(user.getScaUserData()));
@@ -91,8 +91,8 @@ public class ScaResponseResolver {
         response.setMultilevelScaRequired(multilevelScaEnable && scaWeight < 100);
     }
 
-    public SCAPaymentResponseTO updatePaymentRelatedResponseFields(SCAPaymentResponseTO response, PaymentBO payment) {
-        response.setPaymentId(payment.getPaymentId());
+    public ScaResponse updatePaymentRelatedResponseFields(ScaResponse response, PaymentBO payment) {
+        response.setParentId(payment.getPaymentId());
         response.setTransactionStatus(TransactionStatusTO.valueOf(payment.getTransactionStatus().name()));
         response.setPaymentType(PaymentTypeTO.valueOf(payment.getPaymentType().name()));
         response.setPaymentProduct(payment.getPaymentProduct());

@@ -11,6 +11,15 @@ public interface MiddlewareScaService {
     // AIS
 
     /**
+     * Authorizes a consent request. If the authentication is completed, the returned response will contain a valid bearer token.
+     *
+     * @param scaInfoTO : SCA information
+     * @param consentId : the cosent id
+     * @return SCAConsentResponseTO : the consent response.
+     */
+    ScaResponse authorizeConsent(ScaInfoTO scaInfoTO, String consentId);
+
+    /**
      * Start an account consent process.
      *
      * @param scaInfoTO  SCA information
@@ -24,15 +33,6 @@ public interface MiddlewareScaService {
 
     ScaResponse selectScaMethodAis(String userId, String consentId, String authorisationId, String scaMethodId);
 
-    /**
-     * Authorizes a consent request. If the authentication is completed, the returned response will contain a valid bearer token.
-     *
-     * @param scaInfoTO : SCA information
-     * @param consentId : the cosent id
-     * @return SCAConsentResponseTO : the consent response.
-     */
-    ScaResponse authorizeConsent(ScaInfoTO scaInfoTO, String consentId);
-
 
     // PIS
 
@@ -45,16 +45,16 @@ public interface MiddlewareScaService {
      * @param paymentId : the payment id
      * @return : auth response.
      */
-    SCAPaymentResponseTO authorizePayment(ScaInfoTO scaInfoTO, String paymentId);
+    ScaResponse authorizePayment(ScaInfoTO scaInfoTO, String paymentId);
 
-    SCAPaymentResponseTO loadSCAForPaymentData(ScaInfoTO scaInfoTO, String paymentId);
+    ScaResponse authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
 
-    SCAPaymentResponseTO selectSCAMethodForPayment(ScaInfoTO scaInfoTO, String paymentId);
+    ScaResponse getScaPis(ScaInfoTO scaInfoTO, String paymentId);
 
-    SCAPaymentResponseTO loadSCAForCancelPaymentData(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
+    ScaResponse getScaPisCancel(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
 
-    SCAPaymentResponseTO selectSCAMethodForCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
+    ScaResponse selectScaMethodPis(ScaInfoTO scaInfoTO, String paymentId);
 
-    SCAPaymentResponseTO authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
+    ScaResponse selectScaMethodPisCancel(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
 
 }

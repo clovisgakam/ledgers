@@ -20,6 +20,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public interface PaymentRestAPI {
             @ApiResponse(code = 403, message = "Not authorized to execute payment on this account"),
             @ApiResponse(code = 409, message = "Payment with specified paymentId exists. Either leaved it blank or generate a new one.")
     })
-    ResponseEntity<SCAPaymentResponseTO> initiatePayment(
+    ResponseEntity<ScaResponse> initiatePayment(
             @RequestParam("paymentType") PaymentTypeTO paymentType,
             @RequestBody PaymentTO payment);
 
@@ -68,43 +69,43 @@ public interface PaymentRestAPI {
     @GetMapping(value = "/{paymentId}/authorisations/{authorisationId}")
     @ApiOperation(value = "Get SCA", notes = "Get the authorization response object eventually containing the list of selected sca methods.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> getSCA(@PathVariable("paymentId") String paymentId,
+    ResponseEntity<ScaResponse> getSCA(@PathVariable("paymentId") String paymentId,
                                                 @PathVariable("authorisationId") String authorisationId);
 
     @PutMapping(value = "/{paymentId}/authorisations/{authorisationId}/scaMethods/{scaMethodId}")
     @ApiOperation(value = "Select SCA Method", notes = "Select teh given sca method and request for authentication code generation.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> selectMethod(@PathVariable("paymentId") String paymentId,
+    ResponseEntity<ScaResponse> selectMethod(@PathVariable("paymentId") String paymentId,
                                                       @PathVariable("authorisationId") String authorisationId,
                                                       @PathVariable("scaMethodId") String scaMethodId);
 
     @PutMapping(value = "/{paymentId}/authorisations/{authorisationId}/authCode")
     @ApiOperation(value = "Send an authentication code for validation", notes = "Validate an authentication code and returns the consent token", authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> authorizePayment(@PathVariable("paymentId") String paymentId,
-                                                          @PathVariable("authorisationId") String authorisationId,
-                                                          @RequestParam(name = "authCode") String authCode);
+    ResponseEntity<ScaResponse> authorizePayment(@PathVariable("paymentId") String paymentId,
+                                                 @PathVariable("authorisationId") String authorisationId,
+                                                 @RequestParam(name = "authCode") String authCode);
 
     // =======
     @PostMapping(value = "/{paymentId}/cancellation-authorisations")
     @ApiOperation(value = "Initiates a Payment Cancellation", notes = "Initiates a Payment Cancellation", authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> initiatePmtCancellation(@PathVariable("paymentId") String paymentId);
+    ResponseEntity<ScaResponse> initiatePmtCancellation(@PathVariable("paymentId") String paymentId);
 
     @GetMapping(value = "/{paymentId}/cancellation-authorisations/{cancellationId}")
     @ApiOperation(value = "Get SCA", notes = "Get the authorization response object eventually containing the list of selected sca methods.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> getCancelSCA(@PathVariable("paymentId") String paymentId,
+    ResponseEntity<ScaResponse> getCancelSCA(@PathVariable("paymentId") String paymentId,
                                                       @PathVariable("cancellationId") String cancellationId);
 
     @PutMapping(value = "/{paymentId}/cancellation-authorisations/{cancellationId}/scaMethods/{scaMethodId}")
     @ApiOperation(value = "Select SCA Method", notes = "Select teh given sca method and request for authentication code generation.",
             authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> selecCancelPaymentSCAtMethod(@PathVariable("paymentId") String paymentId,
+    ResponseEntity<ScaResponse> selecCancelPaymentSCAtMethod(@PathVariable("paymentId") String paymentId,
                                                                       @PathVariable("cancellationId") String cancellationId,
                                                                       @PathVariable("scaMethodId") String scaMethodId);
 
     @PutMapping(value = "/{paymentId}/cancellation-authorisations/{cancellationId}/authCode")
     @ApiOperation(value = "Send an authentication code for validation", notes = "Validate an authentication code and returns the consent token", authorizations = @Authorization(value = "apiKey"))
-    ResponseEntity<SCAPaymentResponseTO> authorizeCancelPayment(@PathVariable("paymentId") String paymentId,
+    ResponseEntity<ScaResponse> authorizeCancelPayment(@PathVariable("paymentId") String paymentId,
                                                                 @PathVariable("cancellationId") String cancellationId,
                                                                 @RequestParam(name = "authCode") String authCode);
 }

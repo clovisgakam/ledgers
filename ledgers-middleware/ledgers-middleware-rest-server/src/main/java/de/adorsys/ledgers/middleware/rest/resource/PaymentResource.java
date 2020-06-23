@@ -20,6 +20,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import de.adorsys.ledgers.middleware.api.service.MiddlewarePaymentService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareScaService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareUserResource;
@@ -62,7 +63,7 @@ public class PaymentResource implements PaymentRestAPI {
     }
 
     @Override
-    public ResponseEntity<SCAPaymentResponseTO> initiatePayment(PaymentTypeTO paymentType, PaymentTO payment) {
+    public ResponseEntity<ScaResponse> initiatePayment(PaymentTypeTO paymentType, PaymentTO payment) {
         return new ResponseEntity<>(paymentService.initiatePayment(scaInfoHolder.getScaInfo(), payment, paymentType), HttpStatus.CREATED);
     }
 
@@ -73,43 +74,43 @@ public class PaymentResource implements PaymentRestAPI {
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> getSCA(String paymentId, String authorisationId) {
-        return ResponseEntity.ok(middlewareScaService.loadSCAForPaymentData(scaInfoHolder.getScaInfo(), paymentId));
+    public ResponseEntity<ScaResponse> getSCA(String paymentId, String authorisationId) {
+        return ResponseEntity.ok(middlewareScaService.getScaPis(scaInfoHolder.getScaInfo(), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> selectMethod(String paymentId, String authorisationId, String scaMethodId) {
-        return ResponseEntity.ok(middlewareScaService.selectSCAMethodForPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, authorisationId), paymentId));
+    public ResponseEntity<ScaResponse> selectMethod(String paymentId, String authorisationId, String scaMethodId) {
+        return ResponseEntity.ok(middlewareScaService.selectScaMethodPis(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, authorisationId), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> authorizePayment(String paymentId, String authorisationId, String authCode) {
+    public ResponseEntity<ScaResponse> authorizePayment(String paymentId, String authorisationId, String authCode) {
         return ResponseEntity.ok(middlewareScaService.authorizePayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInitById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> initiatePmtCancellation(String paymentId) {
+    public ResponseEntity<ScaResponse> initiatePmtCancellation(String paymentId) {
         return ResponseEntity.ok(paymentService.initiatePaymentCancellation(scaInfoHolder.getScaInfo(), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> getCancelSCA(String paymentId, String cancellationId) {
-        return ResponseEntity.ok(middlewareScaService.loadSCAForCancelPaymentData(scaInfoHolder.getScaInfo(), paymentId, cancellationId));
+    public ResponseEntity<ScaResponse> getCancelSCA(String paymentId, String cancellationId) {
+        return ResponseEntity.ok(middlewareScaService.getScaPisCancel(scaInfoHolder.getScaInfo(), paymentId, cancellationId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> selecCancelPaymentSCAtMethod(String paymentId, String cancellationId, String scaMethodId) {
-        return ResponseEntity.ok(middlewareScaService.selectSCAMethodForCancelPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, cancellationId), paymentId, cancellationId));
+    public ResponseEntity<ScaResponse> selecCancelPaymentSCAtMethod(String paymentId, String cancellationId, String scaMethodId) {
+        return ResponseEntity.ok(middlewareScaService.selectScaMethodPisCancel(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, cancellationId), paymentId, cancellationId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
-    public ResponseEntity<SCAPaymentResponseTO> authorizeCancelPayment(String paymentId, String cancellationId, String authCode) {
+    public ResponseEntity<ScaResponse> authorizeCancelPayment(String paymentId, String cancellationId, String authCode) {
         return ResponseEntity.ok(middlewareScaService.authorizeCancelPayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId, cancellationId));
     }
 }

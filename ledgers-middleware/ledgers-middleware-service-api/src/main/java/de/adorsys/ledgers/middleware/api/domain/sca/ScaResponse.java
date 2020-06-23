@@ -1,5 +1,7 @@
 package de.adorsys.ledgers.middleware.api.domain.sca;
 
+import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
+import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.ScaUserDataTO;
 import lombok.Data;
@@ -23,4 +25,10 @@ public class ScaResponse {
 	private boolean multilevelScaRequired;
 	private String authConfirmationCode;
 	private BearerTokenTO bearerToken;
+
+
+	private TransactionStatusTO transactionStatus;
+	private String paymentProduct;
+	private PaymentTypeTO paymentType;
+
 }

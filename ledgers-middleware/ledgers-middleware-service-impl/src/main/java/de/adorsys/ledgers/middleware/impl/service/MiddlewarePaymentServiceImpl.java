@@ -25,6 +25,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
+import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode;
@@ -88,7 +89,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     }
 
     @Override
-    public SCAPaymentResponseTO initiatePaymentCancellation(ScaInfoTO scaInfoTO, String paymentId) {
+    public ScaResponse initiatePaymentCancellation(ScaInfoTO scaInfoTO, String paymentId) {
         UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
         PaymentBO paymentBO = loadPayment(paymentId);
         paymentBO.setRequestedExecutionTime(LocalTime.now().plusMinutes(10));
@@ -97,11 +98,11 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     }
 
     @Override
-    public SCAPaymentResponseTO initiatePayment(ScaInfoTO scaInfoTO, PaymentTO payment, PaymentTypeTO paymentType) {
+    public ScaResponse initiatePayment(ScaInfoTO scaInfoTO, PaymentTO payment, PaymentTypeTO paymentType) {
         return checkPaymentAndPrepareResponse(scaInfoTO, paymentConverter.toPaymentBO(payment, paymentType));
     }
 
-    private SCAPaymentResponseTO checkPaymentAndPrepareResponse(ScaInfoTO scaInfoTO, PaymentBO paymentBO) {
+    private ScaResponse checkPaymentAndPrepareResponse(ScaInfoTO scaInfoTO, PaymentBO paymentBO) {
         validatePayment(paymentBO);
         paymentBO.updateDebtorAccountCurrency(getCheckedAccount(paymentBO).getCurrency());
         UserBO user = scaUtils.userBO(scaInfoTO.getUserId());
@@ -175,9 +176,9 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         }
     }
 
-    private SCAPaymentResponseTO prepareScaAndResolveResponse(ScaInfoTO scaInfoTO, PaymentBO payment, UserBO user, OpTypeBO opType) {
+    private ScaResponse prepareScaAndResolveResponse(ScaInfoTO scaInfoTO, PaymentBO payment, UserBO user, OpTypeBO opType) {
         boolean isScaRequired = scaRequired(user);
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
+        ScaResponse response = new ScaResponse();
         String authorisationId = scaUtils.authorisationId(scaInfoTO);
         String psuMessage = resolvePsuMessage(isScaRequired, payment, opType);
         BearerTokenTO token = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
