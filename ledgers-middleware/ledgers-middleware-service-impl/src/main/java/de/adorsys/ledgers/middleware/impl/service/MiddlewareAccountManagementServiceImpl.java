@@ -399,26 +399,4 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         aisConsentTo.getAccess().setTransactions(Collections.emptyList());
         return aisConsentTo;
     }
-
-    /*
-     * Returns a bearer token matching the consent if user has enougth permission
-     * to execute the operation.
-     */
-
-    private BearerTokenBO checkAisConsent(ScaInfoBO scaInfoBO, AisConsentTO aisConsent) {
-        AisConsentBO consentBO = aisConsentMapper.toAisConsentBO(aisConsent);
-        return authorizationService.consentToken(scaInfoBO, consentBO);
-
-    }
-    /*
-     * The SCA requirement shall be added as property of a deposit account permission.
-     *
-     * For now we will assume there is no sca requirement, when the user having access
-     * to the account does not habe any sca data configured.
-     */
-
-    private boolean scaRequired(UserBO user) {
-        return scaUtils.hasSCA(user);
-    }
-
 }

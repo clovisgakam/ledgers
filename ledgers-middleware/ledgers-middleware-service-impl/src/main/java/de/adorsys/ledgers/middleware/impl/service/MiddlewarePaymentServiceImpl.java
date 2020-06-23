@@ -35,14 +35,11 @@ import de.adorsys.ledgers.middleware.impl.converter.*;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCancelPolicy;
 import de.adorsys.ledgers.middleware.impl.policies.PaymentCoreDataPolicy;
 import de.adorsys.ledgers.sca.domain.OpTypeBO;
-import de.adorsys.ledgers.sca.domain.SCAOperationBO;
-import de.adorsys.ledgers.sca.domain.ScaValidationBO;
 import de.adorsys.ledgers.sca.service.SCAOperationService;
 import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.util.Ids;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
-import de.adorsys.ledgers.util.exception.ScaModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,7 +53,6 @@ import java.time.LocalTime;
 import java.util.*;
 
 import static de.adorsys.ledgers.deposit.api.domain.TransactionStatusBO.*;
-import static de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO.SCAMETHODSELECTED;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.*;
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException.blockedSupplier;
 import static de.adorsys.ledgers.sca.domain.OpTypeBO.CANCEL_PAYMENT;
@@ -232,104 +228,12 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         return paymentService.readIbanByPaymentId(paymentId);
     }
 
-    /*
-     * Authorizes a payment. Schedule the payment for execution if no further authorization is required.
-     *
-     */
-
-    @Override
-    @Transactional(noRollbackFor = ScaModuleException.class)
-    public SCAPaymentResponseTO authorizePayment(ScaInfoTO scaInfoTO, String paymentId) {
-        return authorizeOperation(scaInfoTO, paymentId, null, PAYMENT);
-    }
-
-    @Override
-    @Transactional(noRollbackFor = ScaModuleException.class)
-    public SCAPaymentResponseTO authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
-        return authorizeOperation(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
-    }
-
     @Override
     public List<PaymentTO> getPendingPeriodicPayments(ScaInfoTO scaInfoTO) {
         List<AccountReferenceBO> referenceList = detailsMapper.toAccountReferenceList(scaUtils.userBO(scaInfoTO.getUserId()).getAccountAccesses());
         List<PaymentBO> payments = paymentService.getPaymentsByTypeStatusAndDebtor(PaymentTypeBO.PERIODIC, ACSP, referenceList);
 
         return paymentConverter.toPaymentTOList(payments);
-    }
-
-    private SCAPaymentResponseTO authorizeOperation(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
-        PaymentBO payment = loadPayment(paymentId);
-        PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
-
-        String authorisationId = opType == PAYMENT ? scaInfoTO.getAuthorisationId() : cancellationId;
-        ScaValidationBO scaValidationBO = validateAuthCode(scaInfoTO.getUserId(), payment, authorisationId, scaInfoTO.getAuthCode(), paymentKeyData.getTanTemplate());
-        if (scaOperationService.authenticationCompleted(paymentId, opType)) {
-            if (opType == PAYMENT) {
-                paymentService.updatePaymentStatus(paymentId, ACTC);
-                payment.setTransactionStatus(paymentService.executePayment(paymentId, scaInfoTO.getUserLogin()));
-            } else {
-                payment.setTransactionStatus(paymentService.cancelPayment(paymentId));
-            }
-        } else if (multilevelScaEnable) {
-            payment.setTransactionStatus(paymentService.updatePaymentStatus(paymentId, PATC));
-        }
-        BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
-        UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
-        response.setAuthConfirmationCode(scaValidationBO.getAuthConfirmationCode());
-        int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
-        scaResponseResolver.updateScaResponseFields(userBO, response, authorisationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaValidationBO.getScaStatus().toString()), scaWeight);
-        return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
-    }
-
-    @Override
-    public SCAPaymentResponseTO selectSCAMethodForPayment(ScaInfoTO scaInfoTO, String paymentId) {
-        return selectSCAMethod(scaInfoTO, paymentId, null, PAYMENT);
-    }
-
-    @Override
-    public SCAPaymentResponseTO selectSCAMethodForCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
-        return selectSCAMethod(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
-    }
-
-    private SCAPaymentResponseTO selectSCAMethod(ScaInfoTO scaInfoTO, String paymentId, String cancellationId, OpTypeBO opType) {
-        UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
-        PaymentBO payment = loadPayment(paymentId);
-        int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
-
-        PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
-        String template = paymentKeyData.getTanTemplate();
-        String authorisationId = opType == PAYMENT ? scaInfoTO.getAuthorisationId() : cancellationId;
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
-        scaResponseResolver.generateCodeAndUpdateResponse(paymentId, response, authorisationId, template, scaWeight, userBO, opType, scaInfoTO.getScaMethodId());
-
-        BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
-        scaResponseResolver.updateScaResponseFields(userBO, response, authorisationId, template, bearerToken, SCAMETHODSELECTED, scaWeight);
-        return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
-    }
-
-    @Override
-    public SCAPaymentResponseTO loadSCAForPaymentData(ScaInfoTO scaInfoTO, String paymentId) {
-        return loadSca(scaInfoTO, paymentId, scaInfoTO.getAuthorisationId(), PAYMENT);
-    }
-
-    @Override
-    public SCAPaymentResponseTO loadSCAForCancelPaymentData(ScaInfoTO scaInfoTO, String paymentId, String cancellationId) {
-        return loadSca(scaInfoTO, paymentId, cancellationId, CANCEL_PAYMENT);
-    }
-
-    private SCAPaymentResponseTO loadSca(ScaInfoTO scaInfoTO, String paymentId, String operationId, OpTypeBO opType) {
-        SCAOperationBO scaOperation = scaOperationService.loadAuthCode(operationId);
-        UserBO user = scaUtils.userBO(scaInfoTO.getUserId());
-        PaymentBO payment = loadPayment(paymentId);
-        PaymentCoreDataTO paymentKeyData = coreDataPolicy.getPaymentCoreData(opType, payment);
-        BearerTokenTO bearerToken = paymentAccountAccessToken(scaInfoTO, payment.getDebtorAccount().getIban());
-        int scaWeight = accessService.resolveScaWeightByDebtorAccount(user.getAccountAccesses(), payment.getDebtorAccount().getIban());
-
-        SCAPaymentResponseTO response = new SCAPaymentResponseTO();
-        scaResponseResolver.updateScaResponseFields(user, response, operationId, paymentKeyData.getTanTemplate(), bearerToken, ScaStatusTO.valueOf(scaOperation.getScaStatus().name()), scaWeight);
-        scaResponseResolver.updateScaUserDataInResponse(user, scaOperation, response);
-        return scaResponseResolver.updatePaymentRelatedResponseFields(response, payment);
     }
 
     private BearerTokenTO paymentAccountAccessToken(ScaInfoTO scaInfoTO, String iban) {
@@ -346,12 +250,6 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
         // This is the user login for psd2 and not the technical id.
         aisConsent.setUserId(scaInfoTO.getUserLogin());
         return bearerTokenMapper.toBearerTokenTO(authorizationService.consentToken(scaInfoMapper.toScaInfoBO(scaInfoTO), aisConsent));
-    }
-
-    private ScaValidationBO validateAuthCode(String userId, PaymentBO payment, String authorisationId, String authCode, String template) {
-        UserBO userBO = scaUtils.userBO(userId);
-        int scaWeight = accessService.resolveScaWeightByDebtorAccount(userBO.getAccountAccesses(), payment.getDebtorAccount().getIban());
-        return scaOperationService.validateAuthCode(authorisationId, payment.getPaymentId(), template, authCode, scaWeight);
     }
 
     private PaymentBO loadPayment(String paymentId) {

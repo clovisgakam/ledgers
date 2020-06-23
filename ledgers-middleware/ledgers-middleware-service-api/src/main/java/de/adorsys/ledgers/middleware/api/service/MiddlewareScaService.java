@@ -1,11 +1,14 @@
 package de.adorsys.ledgers.middleware.api.service;
 
+import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaResponse;
 import de.adorsys.ledgers.middleware.api.domain.um.AisConsentTO;
 
 public interface MiddlewareScaService {
 
+
+    // AIS
 
     /**
      * Start an account consent process.
@@ -29,5 +32,29 @@ public interface MiddlewareScaService {
      * @return SCAConsentResponseTO : the consent response.
      */
     ScaResponse authorizeConsent(ScaInfoTO scaInfoTO, String consentId);
+
+
+    // PIS
+
+    /**
+     * PROC: 02c
+     * <p>
+     * This is called when the user enters the received code.
+     *
+     * @param scaInfoTO : SCA information
+     * @param paymentId : the payment id
+     * @return : auth response.
+     */
+    SCAPaymentResponseTO authorizePayment(ScaInfoTO scaInfoTO, String paymentId);
+
+    SCAPaymentResponseTO loadSCAForPaymentData(ScaInfoTO scaInfoTO, String paymentId);
+
+    SCAPaymentResponseTO selectSCAMethodForPayment(ScaInfoTO scaInfoTO, String paymentId);
+
+    SCAPaymentResponseTO loadSCAForCancelPaymentData(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
+
+    SCAPaymentResponseTO selectSCAMethodForCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
+
+    SCAPaymentResponseTO authorizeCancelPayment(ScaInfoTO scaInfoTO, String paymentId, String cancellationId);
 
 }

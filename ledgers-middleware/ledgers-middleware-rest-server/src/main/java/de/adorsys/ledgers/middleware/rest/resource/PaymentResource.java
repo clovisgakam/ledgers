@@ -21,6 +21,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.TransactionStatusTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAPaymentResponseTO;
 import de.adorsys.ledgers.middleware.api.service.MiddlewarePaymentService;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareScaService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareUserResource;
 import de.adorsys.ledgers.middleware.rest.security.ScaInfoHolder;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import java.util.List;
 public class PaymentResource implements PaymentRestAPI {
     private final MiddlewarePaymentService paymentService;
     private final ScaInfoHolder scaInfoHolder;
+    private final MiddlewareScaService middlewareScaService;
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
@@ -72,19 +74,19 @@ public class PaymentResource implements PaymentRestAPI {
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> getSCA(String paymentId, String authorisationId) {
-        return ResponseEntity.ok(paymentService.loadSCAForPaymentData(scaInfoHolder.getScaInfo(), paymentId));
+        return ResponseEntity.ok(middlewareScaService.loadSCAForPaymentData(scaInfoHolder.getScaInfo(), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> selectMethod(String paymentId, String authorisationId, String scaMethodId) {
-        return ResponseEntity.ok(paymentService.selectSCAMethodForPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, authorisationId), paymentId));
+        return ResponseEntity.ok(middlewareScaService.selectSCAMethodForPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, authorisationId), paymentId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> authorizePayment(String paymentId, String authorisationId, String authCode) {
-        return ResponseEntity.ok(paymentService.authorizePayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId));
+        return ResponseEntity.ok(middlewareScaService.authorizePayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId));
     }
 
     @Override
@@ -96,18 +98,18 @@ public class PaymentResource implements PaymentRestAPI {
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> getCancelSCA(String paymentId, String cancellationId) {
-        return ResponseEntity.ok(paymentService.loadSCAForCancelPaymentData(scaInfoHolder.getScaInfo(), paymentId, cancellationId));
+        return ResponseEntity.ok(middlewareScaService.loadSCAForCancelPaymentData(scaInfoHolder.getScaInfo(), paymentId, cancellationId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> selecCancelPaymentSCAtMethod(String paymentId, String cancellationId, String scaMethodId) {
-        return ResponseEntity.ok(paymentService.selectSCAMethodForCancelPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, cancellationId), paymentId, cancellationId));
+        return ResponseEntity.ok(middlewareScaService.selectSCAMethodForCancelPayment(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, cancellationId), paymentId, cancellationId));
     }
 
     @Override
     @PreAuthorize("paymentInfoById(#paymentId)")
     public ResponseEntity<SCAPaymentResponseTO> authorizeCancelPayment(String paymentId, String cancellationId, String authCode) {
-        return ResponseEntity.ok(paymentService.authorizeCancelPayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId, cancellationId));
+        return ResponseEntity.ok(middlewareScaService.authorizeCancelPayment(scaInfoHolder.getScaInfoWithAuthCode(authCode), paymentId, cancellationId));
     }
 }
