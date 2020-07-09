@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.*;
+import static de.adorsys.ledgers.util.exception.UserManagementErrorCode.EXPIRED_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                                            scaUserDataBO.getMethodValue(),
                                            emailVerificationBO.formatMessage(
                                                    configProperties.getTemplate().getMessage(),
-                                                   configProperties.getBasePath(),
+                                                   configProperties.getExtBasePath(),
                                                    configProperties.getEndPoint(),
                                                    emailVerificationBO.getToken(),
                                                    emailVerificationBO.getExpiredDateTime())
