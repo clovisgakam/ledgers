@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface IdpUserRepository extends PagingAndSortingRepository<UserEntity, Long> {
     @NotNull
+    @Override
     List<UserEntity> findAll();
 
     Optional<UserEntity> findByLogin(String login);
