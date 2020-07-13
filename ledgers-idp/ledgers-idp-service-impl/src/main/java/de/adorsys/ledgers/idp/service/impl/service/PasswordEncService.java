@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.adorsys.ledgers.util;
+package de.adorsys.ledgers.idp.service.impl.service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PasswordEnc {
+public class PasswordEncService {
     private final PasswordEncoder pe = new BCryptPasswordEncoder();
 
     public String encode(String userId, String password) {
