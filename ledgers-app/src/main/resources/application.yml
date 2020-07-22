@@ -59,6 +59,17 @@ logging:
       hibernate: WARN
 
 ledgers:
+  gluu:
+    client-id: 1101.d9488b87-8817-4f6e-a39d-b185157336b5
+    client-secret: SB2uPxPQtUQS
+    client-authentication-method: basic
+    scope: openid
+    authorization-grant-type: authorization_code
+    redirect-uri: http://localhost:8080
+    authorization_uri: https://demoexample.gluu.org/oxauth/restv1/authorize
+    token-uri: https://demoexample.gluu.org/oxauth/restv1/token
+    user-info-uri: https://demoexample.gluu.org/oxauth/restv1/userinfo
+
   paymentScheduler:
     initialDelay: 3000
     delay: 300000      #300 000 = 5 minutes delay between execution/rescheduling operations
