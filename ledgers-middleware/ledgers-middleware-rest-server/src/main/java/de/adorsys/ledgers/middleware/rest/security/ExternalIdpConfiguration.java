@@ -13,8 +13,5 @@ public class ExternalIdpConfiguration {
     private String clientAuthenticationMethod;
     private String scope;
     private String authorizationGrantType;
-    private String redirectUri;
-    private String authorizationUri;
-    private String tokenUri;
-    private String userInfoUri;
+    private String authBasePath;
 }

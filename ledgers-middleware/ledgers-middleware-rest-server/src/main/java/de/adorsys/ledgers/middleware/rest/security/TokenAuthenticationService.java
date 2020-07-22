@@ -4,8 +4,11 @@ package de.adorsys.ledgers.middleware.rest.security;
 import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
+import de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode;
+import de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleException;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareOnlineBankingService;
-import de.adorsys.ledgers.util.exception.UserManagementModuleException;
+import feign.FeignException;
+import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +31,8 @@ public class TokenAuthenticationService {
     private static final String HEADER_KEY = "Authorization";
 
     private final MiddlewareOnlineBankingService onlineBankingService;
+    private final GluuRestClient gluuRestClient;
+    private final ExternalIdpConfiguration configuration;
 
     public Authentication getAuthentication(HttpServletRequest request) {
         String headerValue = request.getHeader(HEADER_KEY);
@@ -44,11 +51,19 @@ public class TokenAuthenticationService {
         String accessToken = StringUtils.substringAfterLast(headerValue, " ");
 
         BearerTokenTO bearerToken;
+
+        //TODO Тут будет вызов Gluu validate Token;
         try {
-            bearerToken = onlineBankingService.validate(accessToken);
-        } catch (UserManagementModuleException e) {
-            debug("User with token not found.", e);
-            return null;
+            String basic = Base64.getEncoder().encodeToString((configuration.getClientId() + ":" + configuration.getClientSecret()).getBytes());
+            HashMap<String, String> map = new HashMap<>();
+            map.put("token", accessToken);
+            Response.Body body = gluuRestClient.validate(basic, map).body();
+            bearerToken = (BearerTokenTO) body; //TODO Mapping here
+        } catch (FeignException e) {
+            throw MiddlewareModuleException.builder()
+                          .devMsg("ERROR")
+                          .errorCode(MiddlewareErrorCode.NO_SUCH_ALGORITHM)
+                          .build();
         }
 
         if (bearerToken == null) {

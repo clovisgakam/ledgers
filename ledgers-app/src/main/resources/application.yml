@@ -65,10 +65,7 @@ ledgers:
     client-authentication-method: basic
     scope: openid
     authorization-grant-type: authorization_code
-    redirect-uri: http://localhost:8080
-    authorization_uri: https://demoexample.gluu.org/oxauth/restv1/authorize
-    token-uri: https://demoexample.gluu.org/oxauth/restv1/token
-    user-info-uri: https://demoexample.gluu.org/oxauth/restv1/userinfo
+    auth-base-path: https://demoexample.gluu.org /oxauth/restv1
 
   paymentScheduler:
     initialDelay: 3000
@@ -140,7 +137,7 @@ ledgers:
     ext_base_path: http://localhost:8088
     endpoint: /emails/email
 
-#Supported currencies
+  #Supported currencies
   currency:
     default: EUR
     currencies:
@@ -149,13 +146,13 @@ ledgers:
       - CHF
       - GBP
 
-#TanEncryption
+  #TanEncryption
   application:
     security:
       masterPassword: $VoL973@sd
       encryptorAlgorithm: PBEWITHSHA1ANDDESEDE
 
-# Oauth properties
+  # Oauth properties
   oauth:
     ext_base_path: http://localhost:4400
     lifetime:
