@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(value = "gluuRestClien", url = "${ledgers.gluu.auth-base-path")
+@FeignClient(value = "gluuRestClien", url = "${ledgers.gluu.auth-base-path}", configuration = CustomFeignConfiguration.class)
 public interface GluuRestClient {
 
     @PostMapping(value = "/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

@@ -22,6 +22,7 @@ import de.adorsys.ledgers.deposit.api.service.EnableDepositAccountService;
 import de.adorsys.ledgers.middleware.client.rest.AccountRestClient;
 import de.adorsys.ledgers.middleware.impl.EnableLedgersMiddlewareService;
 import de.adorsys.ledgers.middleware.rest.EnableLedgersMiddlewareRest;
+import de.adorsys.ledgers.middleware.rest.security.GluuRestClient;
 import de.adorsys.ledgers.postings.impl.EnablePostingService;
 import de.adorsys.ledgers.sca.mock.MockSmtpServer;
 import de.adorsys.ledgers.sca.service.EnableSCAService;
@@ -50,7 +51,7 @@ import java.util.Arrays;
 @EnableLedgersMiddlewareService
 @EnableLedgersMiddlewareRest
 @EnableUtils
-@EnableFeignClients(basePackageClasses = {AccountRestClient.class, ExchangeRateClient.class})
+@EnableFeignClients(basePackageClasses = {AccountRestClient.class, ExchangeRateClient.class, GluuRestClient.class})
 public class LedgersApplication implements ApplicationListener<ApplicationReadyEvent> {
     private final BankInitService bankInitService;
     private final Environment env;

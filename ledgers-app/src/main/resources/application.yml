@@ -60,12 +60,12 @@ logging:
 
 ledgers:
   gluu:
-    client-id: 1101.d9488b87-8817-4f6e-a39d-b185157336b5
-    client-secret: SB2uPxPQtUQS
+    client-id: 5a13e093-c112-4410-8264-e5a180f1f266
+    client-secret: QWERTY
     client-authentication-method: basic
-    scope: openid
+    scope: openid+profile
     authorization-grant-type: authorization_code
-    auth-base-path: https://demoexample.gluu.org /oxauth/restv1
+    auth-base-path: https://dra.gluu.org/oxauth/restv1
 
   paymentScheduler:
     initialDelay: 3000

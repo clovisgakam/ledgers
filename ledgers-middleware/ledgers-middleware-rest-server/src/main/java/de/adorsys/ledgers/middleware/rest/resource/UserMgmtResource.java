@@ -29,6 +29,8 @@ import de.adorsys.ledgers.middleware.api.service.MiddlewareAuthConfirmationServi
 import de.adorsys.ledgers.middleware.api.service.MiddlewareOnlineBankingService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import de.adorsys.ledgers.middleware.rest.annotation.MiddlewareUserResource;
+import de.adorsys.ledgers.middleware.rest.security.ExternalIdpConfiguration;
+import de.adorsys.ledgers.middleware.rest.security.GluuRestClient;
 import de.adorsys.ledgers.middleware.rest.security.ScaInfoHolder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -38,10 +40,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.AUTHENTICATION_FAILURE;
@@ -56,6 +62,8 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     private final MiddlewareUserManagementService middlewareUserService;
     private final MiddlewareAuthConfirmationService authConfirmationService;
     private final ScaInfoHolder scaInfoHolder;
+    private final GluuRestClient client;
+    private final ExternalIdpConfiguration conf;
 
     @Override
     public ResponseEntity<Boolean> multilevel(String login, String iban) {
@@ -76,6 +84,14 @@ public class UserMgmtResource implements UserMgmtRestAPI {
 
     @Override
     public ResponseEntity<SCALoginResponseTO> authorise(String login, String pin, UserRoleTO role) {
+        String basic = Base64.getEncoder().encodeToString((conf.getClientId() + ":" + conf.getClientSecret()).getBytes());
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.put("grant_type", Collections.singletonList("password"));
+        map.put("username", Collections.singletonList("anton.brueckner"));
+        map.put("password", Collections.singletonList("12345"));
+        map.put("scope", Collections.singletonList("openid+profile"));
+        client.token("Basic " + basic, map);
+
         return ResponseEntity.ok(onlineBankingService.authorise(login, pin, role));
     }
 
