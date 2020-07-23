@@ -33,6 +33,7 @@ public class TokenAuthenticationService {
     private final MiddlewareOnlineBankingService onlineBankingService;
     private final GluuRestClient gluuRestClient;
     private final ExternalIdpConfiguration configuration;
+    private final GluuAuthenticationService authenticationService;
 
     public Authentication getAuthentication(HttpServletRequest request) {
         String headerValue = request.getHeader(HEADER_KEY);
@@ -50,21 +51,7 @@ public class TokenAuthenticationService {
         // Strip prefix
         String accessToken = StringUtils.substringAfterLast(headerValue, " ");
 
-        BearerTokenTO bearerToken;
-
-        //TODO Тут будет вызов Gluu validate Token;
-        try {
-            String basic = Base64.getEncoder().encodeToString((configuration.getClientId() + ":" + configuration.getClientSecret()).getBytes());
-            HashMap<String, String> map = new HashMap<>();
-            map.put("token", accessToken);
-            Response.Body body = gluuRestClient.validate(basic, map).body();
-            bearerToken = (BearerTokenTO) body; //TODO Mapping here
-        } catch (FeignException e) {
-            throw MiddlewareModuleException.builder()
-                          .devMsg("ERROR")
-                          .errorCode(MiddlewareErrorCode.NO_SUCH_ALGORITHM)
-                          .build();
-        }
+        BearerTokenTO bearerToken = authenticationService.verify(accessToken);
 
         if (bearerToken == null) {
             debug("Token is not valid.");
