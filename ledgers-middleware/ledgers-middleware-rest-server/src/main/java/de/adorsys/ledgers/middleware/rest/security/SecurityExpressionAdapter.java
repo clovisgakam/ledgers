@@ -2,6 +2,7 @@ package de.adorsys.ledgers.middleware.rest.security;
 
 import de.adorsys.ledgers.middleware.api.service.MiddlewareAccountManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewarePaymentService;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -9,15 +10,17 @@ import org.springframework.security.core.Authentication;
 public class SecurityExpressionAdapter extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
     protected final MiddlewareAccountManagementService accountService;
     protected final MiddlewarePaymentService paymentService;
+    protected final MiddlewareUserManagementService userManagementService;
 
     private Object filterObject;
     private Object returnObject;
     private Object target;
 
-    public SecurityExpressionAdapter(Authentication authentication, MiddlewareAccountManagementService accountService, MiddlewarePaymentService paymentService) {
+    public SecurityExpressionAdapter(Authentication authentication, MiddlewareAccountManagementService accountService, MiddlewarePaymentService paymentService, MiddlewareUserManagementService userManagementService) {
         super(authentication);
         this.accountService = accountService;
         this.paymentService = paymentService;
+        this.userManagementService = userManagementService;
     }
 
     @Override

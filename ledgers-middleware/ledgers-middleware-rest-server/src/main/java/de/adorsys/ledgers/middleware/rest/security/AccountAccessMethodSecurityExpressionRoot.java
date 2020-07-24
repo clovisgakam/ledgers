@@ -4,6 +4,7 @@ import de.adorsys.ledgers.middleware.api.domain.account.AccountIdentifierTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.um.*;
 import de.adorsys.ledgers.middleware.api.service.MiddlewareAccountManagementService;
 import de.adorsys.ledgers.middleware.api.service.MiddlewarePaymentService;
+import de.adorsys.ledgers.middleware.api.service.MiddlewareUserManagementService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
@@ -15,8 +16,8 @@ import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.*;
 
 public class AccountAccessMethodSecurityExpressionRoot extends SecurityExpressionAdapter {
 
-    public AccountAccessMethodSecurityExpressionRoot(Authentication authentication, MiddlewareAccountManagementService accountService, MiddlewarePaymentService paymentService) {
-        super(authentication, accountService, paymentService);
+    public AccountAccessMethodSecurityExpressionRoot(Authentication authentication, MiddlewareAccountManagementService accountService, MiddlewarePaymentService paymentService, MiddlewareUserManagementService userManagementService) {
+        super(authentication, accountService, paymentService, userManagementService);
     }
 
     public boolean accountInfoByIdentifier(AccountIdentifierTypeTO type, String accountIdentifier) {
@@ -74,14 +75,14 @@ public class AccountAccessMethodSecurityExpressionRoot extends SecurityExpressio
         AccessTokenTO token = getAccessTokenTO();
         // Customer must have explicit permission
         if (EnumSet.of(CUSTOMER, STAFF).contains(token.getRole())) {
-            return getAccountAccesses(token.getSub()).stream()
+            return getAccountAccesses(token.getLogin()).stream()
                            .anyMatch(a -> a.hasPaymentAccess(iban));
         }
         return SYSTEM == token.getRole();
     }
 
-    private List<AccountAccessTO> getAccountAccesses(String userId) {
-        return accountService.getAccountAccesses(userId);
+    private List<AccountAccessTO> getAccountAccesses(String login) {
+        return userManagementService.findByUserLogin(login).getAccountAccesses();
     }
 
     private boolean checkAccountInfoAccess(String iban) {
@@ -96,20 +97,20 @@ public class AccountAccessMethodSecurityExpressionRoot extends SecurityExpressio
         }
         // Customer and Staff must have explicit permission
         if (EnumSet.of(CUSTOMER, STAFF).contains(token.getRole())) {
-            return getAccountAccesses(token.getSub()).stream()
-                           .anyMatch(a -> a.hasIban(iban))
-                           || checkConsentAccess(token, iban);
+            return getAccountAccesses(token.getLogin()).stream()
+                           .anyMatch(a -> a.hasIban(iban));
         }
         return false;
     }
 
-    private boolean checkConsentAccess(AccessTokenTO token, String iban) {
-        return token.hasValidConsent() && checkConsentAccess(iban, token.getConsent().getAccess());
-    }
+   /* private boolean checkConsentAccess(AccessTokenTO token, String iban) {
 
-    private boolean checkConsentAccess(String iban, AisAccountAccessInfoTO access) {
+        return token.hasValidConsent() && checkConsentAccess(iban, token.getConsent().getAccess());
+    }*/
+
+   /* private boolean checkConsentAccess(String iban, AisAccountAccessInfoTO access) {
         return access != null && access.hasIbanInAccess(iban);
-    }
+    }*/
 
     private boolean accountInfoByIbanList(List<String> ibanList) {
         if (CollectionUtils.isEmpty(ibanList)) {
