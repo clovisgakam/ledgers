@@ -139,7 +139,7 @@ deactivate CMS
 SPI->Core_banking: GetPaymentStatusById using Token stored in ASPSP ConsentData
 activate Core_banking
 |||
-Core_banking-->Keycloak: validate Token
+Core_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Core_banking: OK/NOK
 deactivate Keycloak
@@ -178,7 +178,7 @@ deactivate CMS
 SPI->Core_banking: GetPaymentById using Token stored in ASPSP ConsentData
 activate Core_banking
 |||
-Core_banking-->Keycloak: validate Token
+Core_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Core_banking: OK/NOK
 deactivate Keycloak
