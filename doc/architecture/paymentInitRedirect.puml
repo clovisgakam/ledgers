@@ -39,11 +39,14 @@ deactivate XS2A
 TPP-->PSU: Feedback to the customer\nAuthorise the transaction
 deactivate TPP
 |||
-PSU->Online_banking: PSU re-direct to an authorisation webpage of the ASPSP
 group Authorisation process
+PSU->Online_banking: PSU re-direct to an authorisation webpage of the ASPSP
 activate Online_banking
 |||
-PSU->Online_banking: Pass user Credentials using Online_banking login webpage
+Online_banking-->PSU: Display Login webpage
+deactivate Online_banking
+PSU->Online_banking: Pass user Credentials (login/email and password)
+activate Online_banking
 |||
 Online_banking->Keycloak: Perform user login (grant_type: password)
 activate Keycloak
@@ -56,18 +59,18 @@ CMS-->Online_banking: CmsPaymentResponse
 deactivate CMS
 Online_banking->Core_banking: Initiate Payment call using Login Token
 activate Core_banking
-Core_banking-->Keycloak: validate Token
+Core_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Core_banking: OK/NOK
 deactivate Keycloak
 Core_banking-->Online_banking: Initiate Payment Response (Listing SCA Methods)
 deactivate Core_banking
-Online_banking-->PSU: Display SCA Methods to select from
+Online_banking-->PSU: Display webpage with payment initiation \nStart Authorisation button \nDisplay SCA Methods to select from
 deactivate Online_banking
 |||
 PSU->Online_banking: Select method
 activate Online_banking
-Online_banking-->Keycloak: validate Token
+Online_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Online_banking: OK/NOK
 deactivate Keycloak
@@ -77,7 +80,7 @@ CMS-->Online_banking: CmsPaymentResponse
 deactivate CMS
 Online_banking->Core_banking:Select Method Rest call
 activate Core_banking
-Core_banking-->Keycloak: validate Token
+Core_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Core_banking: OK/NOK
 deactivate Keycloak
@@ -90,7 +93,7 @@ deactivate Online_banking
 |||
 PSU->Online_banking: Validate TAN Request
 activate Online_banking
-Online_banking-->Keycloak: validate Token
+Online_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Online_banking: OK/NOK
 deactivate Keycloak
@@ -100,7 +103,7 @@ CMS-->Online_banking: CmsPaymentResponse
 deactivate CMS
 Online_banking->Core_banking: Validate TAN and confirm Payment
 activate Core_banking
-Core_banking-->Keycloak: validate Token
+Core_banking->Keycloak: validate Token
 activate Keycloak
 Keycloak-->Core_banking: OK/NOK
 Core_banking->Keycloak: Exchange LoginToken for FullAccess Token
