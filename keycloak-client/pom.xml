@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <ruleset.basedir>../..</ruleset.basedir>
+        <ruleset.basedir>..</ruleset.basedir>
     </properties>
 
     <artifactId>keycloak-client</artifactId>
