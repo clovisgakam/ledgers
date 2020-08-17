@@ -1,4 +1,4 @@
-package de.adorsys.ledgers.keycloak;
+package de.adorsys.ledgers.keycloak.client;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package de.adorsys.ledgers.keycloak.mapper;
+package de.adorsys.ledgers.keycloak.client.mapper;
 
 import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;

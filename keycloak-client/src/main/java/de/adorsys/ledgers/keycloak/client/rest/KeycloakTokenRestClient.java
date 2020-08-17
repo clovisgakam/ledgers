@@ -1,4 +1,4 @@
-package de.adorsys.ledgers.keycloak.rest;
+package de.adorsys.ledgers.keycloak.client.rest;
 
 import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
