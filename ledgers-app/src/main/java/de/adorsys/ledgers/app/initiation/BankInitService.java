@@ -101,7 +101,7 @@ public class BankInitService {
     public void uploadTestData() {
         createAccounts();
         createUsers();
-        performTransactions();
+        //performTransactions();
     }
 
     private void createAdmin() {
