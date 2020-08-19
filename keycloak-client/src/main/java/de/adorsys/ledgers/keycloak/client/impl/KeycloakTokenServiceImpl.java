@@ -3,6 +3,7 @@ package de.adorsys.ledgers.keycloak.client.impl;
 import de.adorsys.ledgers.keycloak.client.api.KeycloakTokenService;
 import de.adorsys.ledgers.keycloak.client.rest.KeycloakTokenRestClient;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class KeycloakTokenServiceImpl implements KeycloakTokenService {
 
@@ -42,7 +44,7 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
 
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
-            throw new RuntimeException(); //todo: throw specific exception
+            log.error("Could not obtain token by user credentials [{}]", username); //todo: throw specific exception
         }
         Map<String, ?> body = Objects.requireNonNull(resp).getBody();
         BearerTokenTO bearerTokenTO = new BearerTokenTO();
@@ -66,7 +68,7 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
 
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
-            throw new RuntimeException(); //todo: throw specific exception
+            log.error("Could not validate token for user [{}]", token.getAccessTokenObject().getLogin()); //todo: throw specific exception
         }
         Map<String, ?> body = Objects.requireNonNull(resp).getBody();
         return BooleanUtils.isTrue((Boolean) Objects.requireNonNull(body).get("active"));
