@@ -101,6 +101,8 @@ public class BankInitService {
     public void uploadTestData() {
         createAccounts();
         createUsers();
+        // TODO: fix bearer token flushing after initial payments creation.
+        // https://git.adorsys.de/adorsys/xs2a/psd2-dynamic-sandbox/-/issues/789
         //performTransactions();
     }
 
