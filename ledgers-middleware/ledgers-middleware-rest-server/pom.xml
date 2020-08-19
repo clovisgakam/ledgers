@@ -210,12 +210,6 @@
             <artifactId>ledgers-middleware-service-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.adorsys.ledgers</groupId>
-            <artifactId>keycloak-client</artifactId>
-            <version>3.11-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
 	<!--build>
