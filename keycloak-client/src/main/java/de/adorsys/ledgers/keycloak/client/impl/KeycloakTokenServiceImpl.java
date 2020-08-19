@@ -1,11 +1,11 @@
 package de.adorsys.ledgers.keycloak.client.impl;
 
 import de.adorsys.ledgers.keycloak.client.api.KeycloakTokenService;
-import de.adorsys.ledgers.keycloak.client.rest.KeycloakTokenRestClient;
 import de.adorsys.ledgers.keycloak.client.mapper.KeycloakAuthMapper;
 import de.adorsys.ledgers.keycloak.client.model.TokenConfiguration;
 import de.adorsys.ledgers.keycloak.client.rest.KeycloakTokenRestClient;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
+import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
@@ -64,7 +61,7 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
     @Override
     public BearerTokenBO exchangeToken(String oldToken, Integer timeToLive) {
         return authMapper.toBearerTokenBO(
-                tokenRestClient.exchangeToken("Bearer " + oldToken, new TokenConfiguration(timeToLive)).getBody()
+                keycloakTokenRestClient.exchangeToken("Bearer " + oldToken, new TokenConfiguration(timeToLive)).getBody()
         );
     }
 
