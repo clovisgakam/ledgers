@@ -7,7 +7,6 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +29,7 @@ public class TestKeycloakService {
     }
 
     public void createClient(String realm, String clientName, String clientSecret) {
-        var resp = keycloak.realm(realm).clients().create(createClientRepresentation(clientName, clientSecret));
-        if (resp.getStatus() != HttpStatus.CREATED.value()) {
-            throw new RuntimeException(resp.getStatusInfo().getReasonPhrase());
-        }
+        keycloak.realm(realm).clients().create(createClientRepresentation(clientName, clientSecret));
     }
 
     public void createUser(String realm, String login, String password) {

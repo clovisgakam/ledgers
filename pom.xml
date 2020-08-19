@@ -91,7 +91,7 @@
 		<dependency.locations.enabled>false</dependency.locations.enabled>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>11</java.version>
+		<java.version>1.8</java.version>
 		<pmd.version>6.5.0</pmd.version>
 		<pmd.plugin.version>3.10.0</pmd.plugin.version>
 		<apache.commons.collections>4.3</apache.commons.collections>
