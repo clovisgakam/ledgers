@@ -115,7 +115,7 @@ public class BankInitService {
         }
     }
 
-    private void performTransactions() {
+    private void performTransactions() {//NOPMD
         List<UserTO> users = mockbankInitData.getUsers();
         performSinglePayments(users);
         performBulkPayments(users);
