@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@EnableFeignClients(basePackageClasses = {KeycloakTokenRestClient.class})
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @ContextConfiguration(classes = TestConfiguration.class, initializers = KeycloakContainerTest.Initializer.class)
 class KeycloakTokenServiceImplIT extends KeycloakContainerTest {
