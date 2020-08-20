@@ -26,7 +26,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -38,6 +37,7 @@ import static org.keycloak.services.util.DefaultClientSessionContext.fromClientS
 /**
  * @author Lorent Lempereur
  */
+@SuppressWarnings("PMD")
 public class ConfigurableTokenResourceProvider implements RealmResourceProvider {
 
     static final String ID = "configurable-token";
@@ -188,9 +188,9 @@ public class ConfigurableTokenResourceProvider implements RealmResourceProvider 
     }
 
     private void updateTokenExpiration(AccessToken token, TokenConfiguration tokenConfiguration, UserModel user) {
-        boolean longLivedTokenAllowed = ofNullable(session.getContext().getRealm().getRole(this.configuration.getLongLivedTokenRole()))
-                                                .map(user::hasRole)
-                                                .orElse(false);
+//        boolean longLivedTokenAllowed = ofNullable(session.getContext().getRealm().getRole(this.configuration.getLongLivedTokenRole()))
+//                                                .map(user::hasRole)
+//                                                .orElse(false);
         token.expiration(tokenConfiguration.computeTokenExpiration(token.getExpiration(), true));
     }
 

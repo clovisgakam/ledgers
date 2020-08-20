@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>keycloak-token-exchange</artifactId>
+
+    <properties>
+        <ruleset.basedir>..</ruleset.basedir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
