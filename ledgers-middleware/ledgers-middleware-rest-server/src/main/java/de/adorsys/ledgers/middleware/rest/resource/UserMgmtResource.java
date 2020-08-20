@@ -16,6 +16,7 @@
 
 package de.adorsys.ledgers.middleware.rest.resource;
 
+import de.adorsys.ledgers.keycloak.client.api.KeycloakTokenService;
 import de.adorsys.ledgers.middleware.api.domain.account.AccountReferenceTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.AuthConfirmationTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.OpTypeTO;
@@ -43,11 +44,6 @@ import java.util.List;
 
 import static de.adorsys.ledgers.middleware.api.exception.MiddlewareErrorCode.AUTHENTICATION_FAILURE;
 
-//import io.swagger.annotations.ApiOperation;
-//import io.swagger.annotations.ApiResponse;
-//import io.swagger.annotations.ApiResponses;
-//import io.swagger.annotations.Authorization;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -58,6 +54,7 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     private final MiddlewareUserManagementService middlewareUserService;
     private final MiddlewareAuthConfirmationService authConfirmationService;
     private final ScaInfoHolder scaInfoHolder;
+    private final KeycloakTokenService tokenService;
 
     @Override
     public ResponseEntity<Boolean> multilevel(String login, String iban) {
@@ -77,36 +74,13 @@ public class UserMgmtResource implements UserMgmtRestAPI {
     }
 
     @Override
-    public ResponseEntity<SCALoginResponseTO> authorise(String login, String pin, UserRoleTO role) {
-        return ResponseEntity.ok(onlineBankingService.authorise(login, pin, role));
-    }
-
-    @Override
-    public ResponseEntity<SCALoginResponseTO> authoriseForConsent(String login, String pin,
-                                                                  String consentId, String authorisationId, OpTypeTO opType) {
-        return ResponseEntity.ok(onlineBankingService.authoriseForConsent(login, pin, consentId, authorisationId, opType));
-    }
-
-    @Override
     public ResponseEntity<SCALoginResponseTO> authoriseForConsent(String consentId, String authorisationId, OpTypeTO opType) {
         return ResponseEntity.ok(onlineBankingService.authoriseForConsentWithToken(scaInfoHolder.getScaInfo(), consentId, authorisationId, opType));
     }
 
     @Override
-    @PreAuthorize("loginToken(#scaId,#authorisationId)")
-    public ResponseEntity<SCALoginResponseTO> selectMethod(String scaId, String authorisationId, String scaMethodId) {
-        return ResponseEntity.ok(onlineBankingService.generateLoginAuthCode(scaInfoHolder.getScaInfoWithScaMethodIdAndAuthorisationId(scaMethodId, authorisationId), null, 1800));
-    }
-
-    @Override
-    @PreAuthorize("loginToken(#scaId,#authorisationId)")
-    public ResponseEntity<SCALoginResponseTO> authorizeLogin(String scaId, String authorisationId, String authCode) {
-        return ResponseEntity.ok(onlineBankingService.authenticateForLogin(scaInfoHolder.getScaInfoWithAuthCode(authCode)));
-    }
-
-    @Override
     public ResponseEntity<BearerTokenTO> validate(String token) {
-        BearerTokenTO tokenTO = onlineBankingService.validate(token);
+        BearerTokenTO tokenTO = new BearerTokenTO();//tokenService.validate(token); //TODO FIX HERE!!!!!
         if (tokenTO != null) {
             return ResponseEntity.ok(tokenTO);
         } else {

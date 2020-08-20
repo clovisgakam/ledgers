@@ -15,7 +15,7 @@ public class ScaInfoHolderImpl implements ScaInfoHolder {
 
     @Override
     public String getUserId() {
-        return userService.findByLogin(accessTokenTO.getLogin()/*getSub()*/).getId();
+        return userService.findByLogin(accessTokenTO.getLogin()).getId();
     }
 
     @Override
@@ -37,9 +37,10 @@ public class ScaInfoHolderImpl implements ScaInfoHolder {
     }
 
     @Override
-    public ScaInfoTO getScaInfoWithAuthCode(String authCode) {
+    public ScaInfoTO getScaInfoWithAuthCodeAndAuthorisationId(String authCode, String authorizationId) {
         ScaInfoTO info = buildScaInfo();
         info.setAuthCode(authCode);
+        info.setAuthorisationId(authorizationId);
         return info;
     }
 
@@ -50,6 +51,7 @@ public class ScaInfoHolderImpl implements ScaInfoHolder {
         info.setScaId(accessTokenTO.getScaId());
         info.setUserRole(accessTokenTO.getRole());
         info.setUserLogin(accessTokenTO.getLogin());
+        info.setAccessToken(accessTokenTO.getAccessToken());
         return info;
     }
 

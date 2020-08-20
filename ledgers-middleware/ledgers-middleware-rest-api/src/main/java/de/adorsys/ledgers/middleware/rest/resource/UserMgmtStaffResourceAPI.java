@@ -58,7 +58,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Modify user",
             description = "Modify existing user within the same branch as creator.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. Updated user is provided in the response."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -91,7 +92,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Create user",
             description = "Create new user with the same branch as creator.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. Created user in provided in the response."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -108,7 +110,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Lists users by branch and role",
             description = "Lists users by branch and roles.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. Created user in provided in the response."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -129,7 +132,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Lists user logins by branch",
             description = "Lists user logins by branch.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. List of logins received."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -146,7 +150,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Gets user by ID if it's within the branch",
             description = "Gets user by ID if it's within the branch.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. Created user in provided in the response."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -164,7 +169,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Updates SCA Data for user if it's within the branch.",
             description = "Updates SCA Data for user if it's within the branch.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = UserTO.class)), description = "Success. Created user in provided in the response."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -180,7 +186,8 @@ public interface UserMgmtStaffResourceAPI {
      */
     @Operation(summary = "Grants/Updates Account Access for user.",
             description = "Grants/Updates Account Access for user.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success. Account Access Successfully updated."),
             @ApiResponse(responseCode = "401", description = "Wrong authentication credential."),
@@ -191,14 +198,16 @@ public interface UserMgmtStaffResourceAPI {
 
     @Operation(summary = "Block/Unblock user",
             description = "Changes block state for given user, returns status being set to the block")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     @PostMapping("/{userId}/status")
     ResponseEntity<Boolean> changeStatus(@PathVariable(USER_ID) String userId);
 
 
     @PostMapping("/revert")
     @Operation(summary = "Reverts DB state for given user to the given date and time.")
-    @SecurityRequirement(name = "Authorization")
+    @SecurityRequirement(name = "apiKey")
+    @SecurityRequirement(name = "oAuth2")
     ResponseEntity<Void> revertDatabase(@RequestBody RevertRequestTO revertRequest);
 
 }

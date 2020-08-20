@@ -522,7 +522,7 @@ class MiddlewareUserManagementServiceImplTest {
     }
 
     private ScaInfoTO buildScaInfoTO(UserRoleTO role) {
-        return new ScaInfoTO(USER_ID, SCA_ID, AUTHORIZATION_ID, role, SCA_METHOD_ID, AUTH_CODE, TokenUsageTO.DELEGATED_ACCESS, USER_LOGIN);
+        return new ScaInfoTO(USER_ID, SCA_ID, AUTHORIZATION_ID, role, SCA_METHOD_ID, AUTH_CODE, TokenUsageTO.DELEGATED_ACCESS, USER_LOGIN,null);
     }
 
     private DepositAccountDetailsBO getDepositAccountDetailsBO() {

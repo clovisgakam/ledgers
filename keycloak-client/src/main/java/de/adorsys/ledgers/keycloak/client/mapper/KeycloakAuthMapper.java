@@ -5,26 +5,45 @@ import de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO;
 import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
 import de.adorsys.ledgers.um.api.domain.UserRoleBO;
 import org.apache.commons.collections4.CollectionUtils;
+import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessTokenResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface KeycloakAuthMapper {
 
-    @Mapping(target = "sub", source = "subject")
+    @Mapping(target = "act", ignore = true)
+    @Mapping(target = "scaId", ignore = true)
+    @Mapping(target = "consent", ignore = true)
+    @Mapping(target = "authorisationId", ignore = true)
+    @Mapping(target = "iat", source = "source.token.issuedAt")
+    @Mapping(target = "role", expression = "java(getLedgersUserRoles(source.getToken()))")
+    @Mapping(target = "sub", source = "source.token.subject")
+    @Mapping(target = "scopes", source = "source.token.scope")
+    @Mapping(target = "login", source = "source.token.preferredUsername")
+    @Mapping(target = "exp", source = "source.token.exp")
+    @Mapping(target = "jti", source = "source.token.id")
+    @Mapping(target = "accessToken", source = "source.tokenString")
     @Mapping(target = "tokenUsage", expression = "java(de.adorsys.ledgers.middleware.api.domain.um.TokenUsageTO.DIRECT_ACCESS)")
-    @Mapping(target = "login", source = "preferredUsername")
-    @Mapping(target = "role", expression = "java(getLedgersUserRoles(source))")
-    @Mapping(target = "jti", source = "id")
-    AccessTokenTO toAccessToken(AccessToken source);
+//TODO This is a stub!!!
+    AccessTokenTO toAccessToken(RefreshableKeycloakSecurityContext source);
+
+    @Mapping(target = "accessTokenObject", ignore = true)
+    @Mapping(target = "token_type", source = "source.tokenType")
+    @Mapping(target = "refresh_token", source = "source.refreshToken")
+    @Mapping(target = "expires_in", source = "source.expiresIn")
+    @Mapping(target = "access_token", source = "source.token")
+    @Mapping(target = "scopes", source = "source.scope")
+    BearerTokenBO toBearerBO(AccessTokenResponse source);
+
+    default Set<String> toScopes(String scope) {
+        return new HashSet<>(Arrays.asList(scope.split(" ")));
+    }
 
     @Mapping(target = "access_token", source = "token")
     @Mapping(target = "expires_in", source = "expiresIn")
@@ -37,14 +56,17 @@ public interface KeycloakAuthMapper {
     }
 
     default UserRoleTO getLedgersUserRoles(AccessToken token) {
-
+        Set<String> tokenizedRoles = Optional.ofNullable(token.getRealmAccess())
+                                             .map(AccessToken.Access::getRoles)
+                                             .orElseGet(Collections::emptySet);
         Collection<UserRoleBO> roles = CollectionUtils.intersection(
-                token.getRealmAccess().getRoles()
+                tokenizedRoles
                         .stream()
                         .map(UserRoleBO::getByValue)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .collect(Collectors.toList()), Arrays.asList(UserRoleBO.values()));
+                        .collect(Collectors.toList()), Arrays.asList(UserRoleBO.values())
+        );
 
         return roles.isEmpty()
                        ? null

@@ -1,7 +1,7 @@
 package de.adorsys.ledgers.app.server.auth;
 
+import de.adorsys.ledgers.keycloak.client.mapper.KeycloakAuthMapper;
 import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
-import de.adorsys.ledgers.middleware.rest.mapper.AuthMapper;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
@@ -37,7 +37,7 @@ import static de.adorsys.ledgers.app.server.auth.PermittedResources.*;
 @KeycloakConfiguration
 @RequiredArgsConstructor
 public class WebSecurityConfigKeycloak extends KeycloakWebSecurityConfigurerAdapter {
-    private final AuthMapper authMapper;
+    private final KeycloakAuthMapper authMapper;
     private final Environment environment;
 
     @Bean
@@ -63,8 +63,8 @@ public class WebSecurityConfigKeycloak extends KeycloakWebSecurityConfigurerAdap
         super.configure(http);
         http
                 .csrf().disable()
-                .cors()
-                .and()
+                .cors().disable()
+                // .and()
                 .authorizeRequests().antMatchers(APP_WHITELIST).permitAll()
                 .and()
                 .authorizeRequests().antMatchers(INDEX_WHITELIST).permitAll()
@@ -117,7 +117,6 @@ public class WebSecurityConfigKeycloak extends KeycloakWebSecurityConfigurerAdap
 
     private AccessTokenTO extractToken(Authentication authentication) {
         RefreshableKeycloakSecurityContext credentials = (RefreshableKeycloakSecurityContext) authentication.getCredentials();
-        AccessToken token = credentials.getToken();
-        return authMapper.toAccessToken(token);
+        return authMapper.toAccessToken(credentials);
     }
 }

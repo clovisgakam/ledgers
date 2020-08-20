@@ -8,5 +8,5 @@ public interface KeycloakTokenService {
 
     BearerTokenBO exchangeToken(String oldToken, Integer timeToLive, String scope);
 
-    boolean validate(BearerTokenBO token);
+    boolean validate(String token, String login);
 }

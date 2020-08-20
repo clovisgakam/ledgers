@@ -65,6 +65,6 @@ class KeycloakTokenServiceImplIT extends KeycloakContainerTest {
         AccessTokenBO accessTokenObject = new AccessTokenBO();
         accessTokenObject.setLogin(USERNAME);
         bearerTokenBO.setAccessTokenObject(accessTokenObject);
-        assertTrue(keycloakTokenService.validate(bearerTokenBO));
+        assertTrue(keycloakTokenService.validate(bearerTokenBO.getAccess_token(),bearerTokenBO.getAccessTokenObject().getLogin()));
     }
 }

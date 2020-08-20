@@ -18,7 +18,6 @@ import de.adorsys.ledgers.sca.service.SCAOperationService;
 import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.AuthorizationService;
 import de.adorsys.ledgers.um.api.service.UserService;
-import de.adorsys.ledgers.util.exception.ScaModuleException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -59,20 +58,6 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
         String opId = keyData.toOpId();
         BearerTokenBO loginTokenBO = proceedToLogin(user, pin, role, opId, opId);
         return authorizeResponse(loginTokenBO);
-    }
-
-    @Override
-    @Transactional(noRollbackFor = ScaModuleException.class)
-    public SCALoginResponseTO authoriseForConsent(String login, String pin, String consentId, String authorisationId, OpTypeTO opType) {
-        OpTypeBO opTypeBO = OpTypeBO.valueOf(opType.name());
-        UserBO user = getUserByLoginOrEmail(login);
-        scaOperationService.checkIfExistsOrNew(new AuthCodeDataBO(user.getLogin(), null, consentId, NO_USER_MESSAGE, defaultLoginTokenExpireInSeconds, opTypeBO, authorisationId, 0));
-        try {
-            BearerTokenBO loginTokenBO = proceedToLogin(user, pin, UserRoleTO.CUSTOMER, consentId, authorisationId);
-            return resolveLoginResponseForConsentLogin(consentId, authorisationId, opTypeBO, user, loginTokenBO);
-        } catch (MiddlewareModuleException e) {
-            throw scaOperationService.updateFailedCount(authorisationId, true);
-        }
     }
 
     @Override
@@ -122,7 +107,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
 
     @Override
     public SCALoginResponseTO generateLoginAuthCode(ScaInfoTO scaInfoTO, String userMessage, int validitySeconds) {
-        UserBO user = scaUtils.userBO(scaInfoTO.getUserId());
+        UserBO user = scaUtils.userBO(scaInfoTO.getUserLogin());
         SCAOperationBO scaOperationBO = scaOperationService.loadAuthCode(scaInfoTO.getAuthorisationId());
         LoginKeyDataTO keyData = LoginKeyDataTO.fromOpId(scaOperationBO.getOpId());
         String opId = scaOperationBO.getOpId();
@@ -138,7 +123,7 @@ public class MiddlewareOnlineBankingServiceImpl implements MiddlewareOnlineBanki
 
     @Override
     public SCALoginResponseTO authenticateForLogin(ScaInfoTO scaInfoTO) {
-        UserBO user = scaUtils.userBO(scaInfoTO.getUserId());
+        UserBO user = scaUtils.userBO(scaInfoTO.getUserLogin());
         SCAOperationBO scaOperationBO = scaOperationService.loadAuthCode(scaInfoTO.getAuthorisationId());
         LoginKeyDataTO keyData = LoginKeyDataTO.fromOpId(scaOperationBO.getOpId());
         String authorisationId = scaInfoTO.getAuthorisationId();

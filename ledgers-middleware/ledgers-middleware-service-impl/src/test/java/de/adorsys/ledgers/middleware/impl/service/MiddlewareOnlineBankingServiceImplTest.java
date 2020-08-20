@@ -90,60 +90,6 @@ class MiddlewareOnlineBankingServiceImplTest {
     }
 
     @Test
-    void authoriseForConsent() {
-        // Given
-        when(userService.findByLoginOrEmail(any())).thenReturn(getUserBO());
-        when(scaOperationService.checkIfExistsOrNew(any())).thenReturn(getSCAOperationBO(ScaStatusBO.EXEMPTED));
-        when(authorizationService.authorise(any(), any(), any(), any(), any())).thenReturn(getBearerTokenBO());
-        when(scaUtils.hasSCA(any())).thenReturn(false);
-        when(authorizationService.scaToken(any())).thenReturn(getBearerTokenBO());
-        when(bearerTokenMapper.toBearerTokenTO(any())).thenReturn(getBearerTokenTO());
-
-        // When
-        SCALoginResponseTO response = onlineBankingService.authoriseForConsent(USER_LOGIN, USER_PIN, CONSENT_ID, AUTHORIZATION_ID, OpTypeTO.CONSENT);
-
-        // Then
-        assertThat(response).isNotNull();
-        assertEquals(getBearerTokenTO(), response.getBearerToken());
-        verify(bearerTokenMapper, times(1)).toBearerTokenTO(getBearerTokenBO());
-    }
-
-    @Test
-    void authoriseForConsent_failed_authorization() {
-        //given
-        when(userService.findByLoginOrEmail(any())).thenReturn(getUserBO());
-        when(scaOperationService.checkIfExistsOrNew(any())).thenReturn(getSCAOperationBO(ScaStatusBO.FAILED));
-        when(scaOperationService.updateFailedCount(any(),anyBoolean())).thenReturn(ScaModuleException.builder().build());
-
-        // Then
-        assertThrows(ScaModuleException.class, () -> {
-            SCALoginResponseTO response = onlineBankingService.authoriseForConsent(USER_LOGIN, USER_PIN, CONSENT_ID, AUTHORIZATION_ID, OpTypeTO.CONSENT);
-            assertThat(response).isNotNull();
-            assertEquals(getBearerTokenTO(), response.getBearerToken());
-            verify(bearerTokenMapper, times(1)).toBearerTokenTO(getBearerTokenBO());
-        });
-    }
-
-    @Test
-    void authoriseForConsent_failed_cred_validation() {
-        //given
-        when(userService.findByLoginOrEmail(any())).thenReturn(getUserBO());
-        when(scaOperationService.checkIfExistsOrNew(any())).thenReturn(getSCAOperationBO(ScaStatusBO.EXEMPTED));
-        when(authorizationService.authorise(any(), any(), any(), any(), any())).thenReturn(null);
-        when(scaOperationService.updateFailedCount(any(),anyBoolean())).thenReturn(ScaModuleException.builder().build());
-
-        // Then
-        assertThrows(ScaModuleException.class, () -> {
-            SCALoginResponseTO response = onlineBankingService.authoriseForConsent(USER_LOGIN, USER_PIN, CONSENT_ID, AUTHORIZATION_ID, OpTypeTO.CONSENT);
-
-            //then
-            assertThat(response).isNotNull();
-            assertEquals(getBearerTokenTO(), response.getBearerToken());
-            verify(bearerTokenMapper, times(1)).toBearerTokenTO(getBearerTokenBO());
-        });
-    }
-
-    @Test
     void authoriseForConsentWithToken() {
         // Given
         when(userService.findByLoginOrEmail(any())).thenReturn(getUserBO());

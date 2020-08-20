@@ -59,17 +59,17 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
     }
 
     @Override
-    public boolean validate(BearerTokenBO token) {
+    public boolean validate(String token, String login) {
         MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<>();
-        formParams.add("username", token.getAccessTokenObject().getLogin());
-        formParams.add("token", token.getAccess_token());
+        formParams.add("username", login);
+        formParams.add("token", token);
         formParams.add("client_id", clientId);
         formParams.add("client_secret", clientSecret);
         ResponseEntity<Map<String, ?>> resp = keycloakTokenRestClient.validate(formParams);
 
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
-            log.error("Could not validate token for user [{}]", token.getAccessTokenObject().getLogin()); //todo: throw specific exception
+            log.error("Could not validate token for user {}", login); //todo: throw specific exception
         }
         Map<String, ?> body = Objects.requireNonNull(resp).getBody();
         return BooleanUtils.isTrue((Boolean) Objects.requireNonNull(body).get("active"));

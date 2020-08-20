@@ -63,7 +63,7 @@ class SCAUtilsTest {
 
     @Test
     public void user() {
-        when(userService.findById(anyString())).thenReturn(new UserBO());
+        when(userService.findByLogin(anyString())).thenReturn(new UserBO());
         when(userMapper.toUserTO(any())).thenReturn(getUserTO());
         UserTO result = utils.user("id");
         assertThat(result).isEqualToComparingFieldByFieldRecursively(getUserTO());
@@ -88,6 +88,6 @@ class SCAUtilsTest {
     }
 
     private ScaInfoTO getScaInfo() {
-        return new ScaInfoTO("userId", "scaId", "authId", UserRoleTO.CUSTOMER, "methodId", "authCode", TokenUsageTO.LOGIN, "login");
+        return new ScaInfoTO("userId", "scaId", "authId", UserRoleTO.CUSTOMER, "methodId", "authCode", TokenUsageTO.LOGIN, "login",null);
     }
 }

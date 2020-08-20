@@ -39,17 +39,6 @@ public interface MiddlewareOnlineBankingService {
      */
     SCALoginResponseTO authorise(String login, String pin, UserRoleTO role);
 
-    /**
-     * Special login associated with a account information, a payment or a payment cancellation consent.
-     *
-     * @param login           the login of the customer
-     * @param pin             the password of the customer
-     * @param consentId       the consentId or paymentId
-     * @param authorisationId the authorisationId
-     * @param opType          the operation type
-     * @return login response
-     */
-    SCALoginResponseTO authoriseForConsent(String login, String pin, String consentId, String authorisationId, OpTypeTO opType);
 
     /**
      * Special login associated with a account information, a payment or a payment cancellation consent.

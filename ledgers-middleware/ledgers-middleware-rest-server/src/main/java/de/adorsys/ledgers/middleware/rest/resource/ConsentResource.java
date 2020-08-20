@@ -57,7 +57,7 @@ public class ConsentResource implements ConsentRestAPI {
     // TODO: Bearer token must contain autorization id
     @Override
     public ResponseEntity<SCAConsentResponseTO> authorizeConsent(String consentId, String authorisationId, String authCode) {
-        return ResponseEntity.ok(middlewareAccountService.authorizeConsent(scaInfoHolder.getScaInfoWithAuthCode(authCode), consentId));
+        return ResponseEntity.ok(middlewareAccountService.authorizeConsent(scaInfoHolder.getScaInfoWithAuthCodeAndAuthorisationId(authCode, authorisationId), consentId));
     }
 
     @Override

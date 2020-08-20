@@ -283,7 +283,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
     public SCAConsentResponseTO startSCA(ScaInfoTO scaInfoTO, String consentId, AisConsentTO aisConsent) {
         BearerTokenBO bearerToken = checkAisConsent(scaInfoMapper.toScaInfoBO(scaInfoTO), aisConsent);
         ConsentKeyDataTO consentKeyData = new ConsentKeyDataTO(aisConsent);
-        SCAConsentResponseTO response = prepareSCA(scaInfoTO, scaUtils.userBO(scaInfoTO.getUserId()), aisConsent, consentKeyData);
+        SCAConsentResponseTO response = prepareSCA(scaInfoTO, scaUtils.userBO(scaInfoTO.getUserLogin()), aisConsent, consentKeyData);
         if (ScaStatusTO.EXEMPTED.equals(response.getScaStatus())) {
             response.setBearerToken(bearerTokenMapper.toBearerTokenTO(bearerToken));
         }
@@ -330,7 +330,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         AisConsentTO aisConsentTO = aisConsentMapper.toAisConsentTO(consent);
         ConsentKeyDataTO consentKeyData = new ConsentKeyDataTO(aisConsentTO);
 
-        UserBO userBO = scaUtils.userBO(scaInfoTO.getUserId());
+        UserBO userBO = scaUtils.userBO(scaInfoTO.getUserLogin());
         int scaWeight = accessService.resolveMinimalScaWeightForConsent(consent.getAccess(), userBO.getAccountAccesses());
         ScaValidationBO scaValidationBO = scaOperationService.validateAuthCode(scaInfoTO.getAuthorisationId(), consentId, scaInfoTO.getAuthCode(), scaWeight);
 
