@@ -24,7 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +60,6 @@ public interface PaymentRestAPI {
     @Operation(summary = "Executes a Payment", description = "Confirms payment execution")
     @SecurityRequirement(name = "apiKey")
     @SecurityRequirement(name = "oAuth2")
-    @PreAuthorize("hasFullAccessScope()")
     ResponseEntity<SCAPaymentResponseTO> executePayment(@PathVariable("paymentId") String paymentId);
 
     // =======
@@ -75,6 +73,5 @@ public interface PaymentRestAPI {
     @Operation(summary = "Executes a Payment Cancellation", description = "Confirms payment cancellation execution")
     @SecurityRequirement(name = "apiKey")
     @SecurityRequirement(name = "oAuth2")
-    @PreAuthorize("hasFullAccessScope()")
     ResponseEntity<SCAPaymentResponseTO> executeCancelPayment(@PathVariable("paymentId") String paymentId);
 }

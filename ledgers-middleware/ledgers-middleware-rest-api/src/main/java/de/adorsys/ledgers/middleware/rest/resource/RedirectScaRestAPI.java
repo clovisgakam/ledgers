@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static de.adorsys.ledgers.middleware.api.domain.Constants.SCOPE_FULL_ACCESS;
@@ -36,22 +35,18 @@ public interface RedirectScaRestAPI {
     @Operation(summary = "Start SCA")
     @SecurityRequirement(name = "apiKey", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
     @SecurityRequirement(name = "oAuth2", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
-    @PreAuthorize("hasScaScope()")
     ResponseEntity<GlobalScaResponseTO> startSca(@RequestBody StartScaOprTO loginOpr);
-
 
     @GetMapping(value = "/authorisations/{authorisationId}")
     @Operation(summary = "Get SCA", description = "Get the authorization response object eventually containing the list of selected sca methods.")
     @SecurityRequirement(name = "apiKey", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
     @SecurityRequirement(name = "oAuth2", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
-    @PreAuthorize("hasScaScope()")
     ResponseEntity<GlobalScaResponseTO> getSCA(@PathVariable("authorisationId") String authorisationId);
 
     @PutMapping(value = "/authorisations/{authorisationId}/scaMethods/{scaMethodId}")
     @Operation(summary = "Select SCA Method", description = "Select teh given sca method and request for authentication code generation.")
     @SecurityRequirement(name = "apiKey", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
     @SecurityRequirement(name = "oAuth2", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
-    @PreAuthorize("hasScaScope()")
     ResponseEntity<GlobalScaResponseTO> selectMethod(@PathVariable("authorisationId") String authorisationId,
                                                      @PathVariable("scaMethodId") String scaMethodId);
 
@@ -59,7 +54,6 @@ public interface RedirectScaRestAPI {
     @Operation(summary = "Validate authorization code", description = "Validate an authentication code and returns the token")
     @SecurityRequirement(name = "apiKey", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
     @SecurityRequirement(name = "oAuth2", scopes = {SCOPE_SCA, SCOPE_FULL_ACCESS})
-    @PreAuthorize("hasScaScope()")
     ResponseEntity<GlobalScaResponseTO> validateScaCode(@PathVariable("authorisationId") String authorisationId,
                                                         @RequestParam(name = "authCode") String authCode);
 }

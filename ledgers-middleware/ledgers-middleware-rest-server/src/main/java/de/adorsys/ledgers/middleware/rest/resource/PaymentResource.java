@@ -65,6 +65,7 @@ public class PaymentResource implements PaymentRestAPI {
     }
 
     @Override
+    @PreAuthorize("hasFullAccessScope()")
     public ResponseEntity<SCAPaymentResponseTO> executePayment(String paymentId) {
         return ResponseEntity.accepted().body(paymentService.executePayment(scaInfoHolder.getScaInfo(), paymentId));
     }
@@ -76,7 +77,7 @@ public class PaymentResource implements PaymentRestAPI {
     }
 
     @Override
-    @PreAuthorize("paymentInfoById(#paymentId)")
+    @PreAuthorize("paymentInfoById(#paymentId)&&hasFullAccessScope()")
     public ResponseEntity<SCAPaymentResponseTO> executeCancelPayment(String paymentId) {
         return ResponseEntity.ok(paymentService.authorizeCancelPayment(scaInfoHolder.getScaInfo(), paymentId));
     }
