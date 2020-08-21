@@ -12,7 +12,7 @@
     <artifactId>keycloak-token-exchange</artifactId>
 
     <properties>
-        <ruleset.basedir>..</ruleset.basedir>
+        <ruleset.basedir>../..</ruleset.basedir>
     </properties>
 
     <dependencies>
