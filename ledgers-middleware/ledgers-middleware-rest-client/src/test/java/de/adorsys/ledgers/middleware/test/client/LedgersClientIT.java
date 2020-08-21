@@ -9,10 +9,7 @@ import de.adorsys.ledgers.middleware.api.domain.sca.SCALoginResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.um.*;
 import de.adorsys.ledgers.middleware.client.rest.*;
 import de.adorsys.ledgers.util.domain.CustomPageImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,6 +34,7 @@ import static org.springframework.http.HttpStatus.OK;
 @SpringBootTest(classes = LedgersClientApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("h2")
 @TestMethodOrder(MethodOrderer.Alphanumeric.class)
+@Disabled("Use WebSecurityConfigKeycloak")
 class LedgersClientIT {
 
     @Autowired
