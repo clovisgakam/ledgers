@@ -1,16 +1,25 @@
 package de.adorsys.ledgers.keycloak.client.api;
 
+import de.adorsys.ledgers.keycloak.client.model.KeycloakClient;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakUser;
+
+import java.util.Optional;
 
 public interface KeycloakDataService {
 
-//    void createRealm();
+    void createRealm(String realmName);
 
-//    void createClient(String clientName, String clientSecret);
+    void createClient(KeycloakClient client);
 
-    void createUser(KeycloakUser user);
+    boolean clientExists(String realm, String clientId);
 
-    void updateUser(KeycloakUser user);
+    Optional<KeycloakUser> getUser(String realm, String login);
 
-    void deleteUser(String login);
+    void createUser(String realm, KeycloakUser user);
+
+    void updateUser(String realm, KeycloakUser user);
+
+    void deleteUser(String realm, String login);
+
+    boolean userExists(String realm, String login);
 }

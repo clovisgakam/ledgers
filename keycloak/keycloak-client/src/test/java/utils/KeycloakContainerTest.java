@@ -1,6 +1,8 @@
 package utils;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -25,5 +27,15 @@ public class KeycloakContainerTest {
                     "keycloak.auth-server-url=" + keycloakContainer.getAuthServerUrl()
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
+    }
+
+    public Keycloak getKeycloakClient() {
+        return KeycloakBuilder.builder()
+                       .serverUrl(keycloakContainer.getAuthServerUrl())
+                       .realm("master")
+                       .clientId("admin-cli")
+                       .username(keycloakContainer.getAdminUsername())
+                       .password(keycloakContainer.getAdminPassword())
+                       .build();
     }
 }

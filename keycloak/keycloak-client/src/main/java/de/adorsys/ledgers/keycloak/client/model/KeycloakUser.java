@@ -1,6 +1,6 @@
 package de.adorsys.ledgers.keycloak.client.model;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
 public class KeycloakUser {
@@ -10,4 +10,5 @@ public class KeycloakUser {
     private final String firstName;
     private final String lastName;
     private final String email;
+    private final Boolean emailVerified;
 }

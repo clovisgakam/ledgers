@@ -122,6 +122,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>pro.javatar.commons</groupId>
+            <artifactId>javatar-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>
