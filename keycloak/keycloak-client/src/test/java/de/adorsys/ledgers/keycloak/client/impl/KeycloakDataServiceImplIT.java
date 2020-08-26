@@ -20,8 +20,9 @@ import pro.javatar.commons.reader.ResourceReader;
 import utils.KeycloakContainerTest;
 import utils.TestConfiguration;
 
-import javax.ws.rs.ClientErrorException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,11 +43,17 @@ public class KeycloakDataServiceImplIT extends KeycloakContainerTest {
     private KeycloakDataMapper keycloakDataMapper;
 
     private KeycloakDataService keycloakDataService;
-    private ResourceReader jsonReader = JsonReader.getInstance();
+    private final ResourceReader jsonReader = JsonReader.getInstance();
 
     @Before
     public void setUp() {
         keycloakDataService = new KeycloakDataServiceImpl(getKeycloakClient(), keycloakDataMapper);
+
+        keycloakDataService.createRealmWithRolesAndScopes(
+                REALM,
+                Arrays.asList("STAFF", "CUSTOMER"),
+                Arrays.asList("partial_access", "sca")
+        );
     }
 
     @AfterClass
@@ -55,15 +62,10 @@ public class KeycloakDataServiceImplIT extends KeycloakContainerTest {
     }
 
     @Test
-    public void createRealm() {
-        keycloakDataService.createRealm(REALM);
-        //error when realm with same name has already existed
-        assertThrows(ClientErrorException.class, () -> keycloakDataService.createRealm(REALM));
-    }
-
-    @Test
     public void createClient() {
-        keycloakDataService.createClient(new KeycloakClient(REALM, CLIENT_ID, CLIENT_SECRET));
+        keycloakDataService.createClient(REALM, new KeycloakClient(CLIENT_ID, CLIENT_SECRET,
+                                                                   Collections.singletonList("adorsys.de"),
+                                                                   Arrays.asList("sca", "partial_access")));
         assertTrue(keycloakDataService.clientExists(REALM, CLIENT_ID));
     }
 
@@ -83,6 +85,8 @@ public class KeycloakDataServiceImplIT extends KeycloakContainerTest {
         Optional<KeycloakUser> userOptional = keycloakDataService.getUser(REALM, USERNAME);
         assertTrue(userOptional.isPresent());
         assertEquals("Semen", userOptional.get().getFirstName());
+
+        keycloakDataService.removeRealmRoleFromUser(REALM, USERNAME, Collections.singletonList("STAFF"));
 
         //delete user from keycloak
         keycloakDataService.deleteUser(REALM, USERNAME);

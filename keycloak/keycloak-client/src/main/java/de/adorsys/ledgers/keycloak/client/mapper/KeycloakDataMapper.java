@@ -1,14 +1,12 @@
 package de.adorsys.ledgers.keycloak.client.mapper;
 
+import de.adorsys.ledgers.keycloak.client.model.KeycloakClient;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakUser;
-import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RealmRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
+import org.apache.commons.collections4.CollectionUtils;
+import org.keycloak.representations.idm.*;
 import org.mapstruct.Mapper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 @Mapper(componentModel = "spring")
 public interface KeycloakDataMapper {
@@ -21,7 +19,8 @@ public interface KeycloakDataMapper {
                 userRepresentation.getFirstName(),
                 userRepresentation.getLastName(),
                 userRepresentation.getEmail(),
-                userRepresentation.isEmailVerified()
+                userRepresentation.isEmailVerified(),
+                userRepresentation.getRealmRoles()
         );
     }
 
@@ -31,6 +30,8 @@ public interface KeycloakDataMapper {
         userRepresentation.setLastName(user.getLastName());
         userRepresentation.setEnabled(user.getEnabled());
         userRepresentation.setEmailVerified(user.getEmailVerified());
+        List<String> realmRoles = user.getRealmRoles();
+        userRepresentation.setRealmRoles(CollectionUtils.isNotEmpty(realmRoles) ? realmRoles : Collections.emptyList());
         return userRepresentation;
     }
 
@@ -42,13 +43,23 @@ public interface KeycloakDataMapper {
         return rr;
     }
 
-    default ClientRepresentation createClientRepresentation(String clientName, String clientSecret) {
-        ClientRepresentation client = new ClientRepresentation();
-        client.setId(clientName);
-        client.setName(clientName);
-        client.setDirectAccessGrantsEnabled(true);
-        client.setSecret(clientSecret);
-        return client;
+    default RoleRepresentation createRoleRepresentation(String realmRole) {
+        RoleRepresentation rr = new RoleRepresentation();
+        rr.setName(realmRole);
+        rr.setComposite(false);
+        return rr;
+    }
+
+    default ClientRepresentation createClientRepresentation(KeycloakClient client) {
+        ClientRepresentation clientRepresentation = new ClientRepresentation();
+        clientRepresentation.setClientId(client.getClientId());
+        clientRepresentation.setName(client.getClientId());
+        clientRepresentation.setDirectAccessGrantsEnabled(true);
+        clientRepresentation.setSecret(client.getClientSecret());
+
+        List<String> redirectUrls = client.getRedirectUrls();
+        clientRepresentation.setRedirectUris(CollectionUtils.isNotEmpty(redirectUrls) ? redirectUrls : Collections.emptyList());
+        return clientRepresentation;
     }
 
     default UserRepresentation createUserRepresentation(KeycloakUser user) {
@@ -59,6 +70,8 @@ public interface KeycloakDataMapper {
         userRepresentation.setEmail(user.getEmail());
         userRepresentation.setEnabled(user.getEnabled());
         userRepresentation.setClientRoles(new HashMap<>());
+        List<String> realmRoles = user.getRealmRoles();
+        userRepresentation.setRealmRoles(CollectionUtils.isNotEmpty(realmRoles) ? realmRoles : Collections.emptyList());
         userRepresentation.setEmailVerified(user.getEmailVerified());
 
         userRepresentation.setCredentials(new ArrayList<>());
@@ -69,5 +82,16 @@ public interface KeycloakDataMapper {
 
         userRepresentation.getCredentials().add(credential);
         return userRepresentation;
+    }
+
+    default ClientScopeRepresentation createClientScopeRepresentation(String name) {
+        ClientScopeRepresentation clientScopeRepresentation = new ClientScopeRepresentation();
+        clientScopeRepresentation.setName(name);
+        clientScopeRepresentation.setProtocol("openid-connect");
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("display.on.consent.screen", "true");
+        attributes.put("include.in.token.scope", "true");
+        clientScopeRepresentation.setAttributes(attributes);
+        return clientScopeRepresentation;
     }
 }

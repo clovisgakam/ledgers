@@ -2,6 +2,8 @@ package de.adorsys.ledgers.keycloak.client.model;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 public class KeycloakUser {
     private final String login;
@@ -11,4 +13,5 @@ public class KeycloakUser {
     private final String lastName;
     private final String email;
     private final Boolean emailVerified;
+    private final List<String> realmRoles;
 }

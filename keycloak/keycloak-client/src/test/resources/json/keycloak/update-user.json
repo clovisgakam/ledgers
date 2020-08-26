@@ -4,5 +4,8 @@
   "lastName": "Babyuk",
   "email": "babyuk@email.net",
   "enabled": true,
-  "emailVerified": true
+  "emailVerified": true,
+  "realmRoles": [
+    "STAFF"
+  ]
 }
