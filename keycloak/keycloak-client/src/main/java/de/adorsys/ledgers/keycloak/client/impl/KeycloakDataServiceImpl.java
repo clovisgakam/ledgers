@@ -3,6 +3,7 @@ package de.adorsys.ledgers.keycloak.client.impl;
 import de.adorsys.ledgers.keycloak.client.api.KeycloakDataService;
 import de.adorsys.ledgers.keycloak.client.mapper.KeycloakDataMapper;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakClient;
+import de.adorsys.ledgers.keycloak.client.model.KeycloakDefaultSchema;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,9 +54,11 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
     }
 
     @Override
-    public void createRealmWithRolesAndScopes(String realm, List<String> realmRoles, List<String> clientScopes) {
-        createRealm(realm, clientScopes);
-        createRealmRoles(realm, realmRoles);
+    public void createDefaultSchema(KeycloakDefaultSchema defaultSchema) {
+        String realm = defaultSchema.getRealm();
+        createRealm(realm, defaultSchema.getScopes());
+        createRealmRoles(realm, defaultSchema.getRealmRoles());
+        createClient(realm, defaultSchema.getClient());
     }
 
     @Override
@@ -65,7 +68,7 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
         realmRoles.forEach(r -> {
             if (roleRepresentationList.stream().map(RoleRepresentation::getName).noneMatch(r::equals)) {
                 rolesResource.create(mapper.createRoleRepresentation(r));
-                log.info("Realm role {} was created in realm {}", r, realm);
+                log.info("Realm role [{}] was created in realm [{}]", r, realm);
             }
         });
     }
@@ -75,19 +78,18 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
         ClientsResource clientsResource = keycloak.realm(realm).clients();
         List<ClientRepresentation> allClients = clientsResource.findAll();
         if (allClients.stream().map(ClientRepresentation::getName).noneMatch(client.getClientId()::equals)) {
-            clientsResource.create(mapper.createClientRepresentation(client));
+            Response response = clientsResource.create(mapper.createClientRepresentation(client));
             log.info("Client [{}] was created in realm [{}]", client.getClientId(), realm);
-        }
 
-        //// TODO: assign scopes
-        if (CollectionUtils.isNotEmpty(client.getScopes())) {
-            List<ClientRepresentation> byClientId = clientsResource.findByClientId(client.getClientId());
-            if (CollectionUtils.isNotEmpty(byClientId)) {
-                ClientRepresentation clientRepresentation = byClientId.get(0);
-                clientRepresentation.getDefaultClientScopes().addAll(client.getScopes());
-                clientsResource.get(clientRepresentation.getId()).update(clientRepresentation);
-                log.info("Client  scopes [{}] were assigned to client [{}] in realm [{}]", client.getScopes(), client.getClientId(), realm);
-            }
+            String createdId = CreatedResponseUtil.getCreatedId(response);
+            ClientResource clientResource = clientsResource.get(createdId);
+            client.getScopes().forEach(scope -> {
+                String clientScopeId = getClientScopeId(realm, scope);
+                if (clientScopeId != null) {
+                    clientResource.addDefaultClientScope(clientScopeId);
+                    log.info("Client scope [{}] were assigned to client [{}] in realm [{}]", scope, client.getClientId(), realm);
+                }
+            });
         }
     }
 
@@ -112,7 +114,7 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
         Response response = usersResource.create(mapper.createUserRepresentation(user));
         if (HttpStatus.CREATED.value() == response.getStatus()) {
             String userId = CreatedResponseUtil.getCreatedId(response);
-            log.info("User[login: {}] is created with id: ", userId);
+            log.info("User[login: {}] is created with id: {}", user.getLogin(), userId);
 
             assignUserRoles(realm, userId, user.getRealmRoles());
         }
@@ -180,7 +182,7 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
             String userId = search.get(0).getId();
 
             assignUserRoles(realm, userId, realmRoles);
-            log.info("Realm roles [{}] were assigned to User[realm: {}, login: {}] ", realmRoles, realm, login);
+            log.info("Realm roles {} were assigned to User[realm: {}, login: {}] ", realmRoles, realm, login);
             return;
         }
         log.info("User[login: {}] was not found in keycloak.", login);
@@ -195,7 +197,7 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
 
             UserResource userResource = usersResource.get(userId);
             realmRoles.forEach(r -> userResource.roles().realmLevel().remove(Collections.singletonList(getRealmRole(realm, r))));
-            log.info("Realm roles [{}] were assigned to User[realm: {}, login: {}] ", realmRoles, realm, login);
+            log.info("Realm roles {} were assigned to User[realm: {}, login: {}] ", realmRoles, realm, login);
             return;
         }
         log.info("User[login: {}] was not found in keycloak.", login);
@@ -203,6 +205,16 @@ public class KeycloakDataServiceImpl implements KeycloakDataService {
 
     private RoleRepresentation getRealmRole(String realm, String realmRole) {
         return keycloak.realm(realm).roles().get(realmRole).toRepresentation();
+    }
+
+    private String getClientScopeId(String realm, String clientScope) {
+        List<ClientScopeRepresentation> all = keycloak.realm(realm).clientScopes().findAll();
+        for (ClientScopeRepresentation clientScopeRepresentation : all) {
+            if (clientScopeRepresentation.getName().equals(clientScope)) {
+                return clientScopeRepresentation.getId();
+            }
+        }
+        return null;
     }
 
     private void assignUserRoles(String realm, String userId, List<String> realmRoles) {

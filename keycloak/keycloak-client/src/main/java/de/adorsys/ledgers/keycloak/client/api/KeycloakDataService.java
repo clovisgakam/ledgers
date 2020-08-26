@@ -1,6 +1,7 @@
 package de.adorsys.ledgers.keycloak.client.api;
 
 import de.adorsys.ledgers.keycloak.client.model.KeycloakClient;
+import de.adorsys.ledgers.keycloak.client.model.KeycloakDefaultSchema;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakUser;
 
 import java.util.List;
@@ -8,13 +9,13 @@ import java.util.Optional;
 
 public interface KeycloakDataService {
 
+    void createDefaultSchema(KeycloakDefaultSchema defaultSchema);
+
     void createRealm(String realm);
 
     void createRealm(String realm, List<String> scopes);
 
     void createRealmRoles(String realm, List<String> realmRoles);
-
-    void createRealmWithRolesAndScopes(String realm, List<String> realmRoles, List<String> clientScopes);
 
     void createClient(String realm, KeycloakClient client);
 

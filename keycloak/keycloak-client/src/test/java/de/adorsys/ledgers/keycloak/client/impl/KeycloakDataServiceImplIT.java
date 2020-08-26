@@ -3,7 +3,7 @@ package de.adorsys.ledgers.keycloak.client.impl;
 import de.adorsys.ledgers.keycloak.client.api.KeycloakDataService;
 import de.adorsys.ledgers.keycloak.client.mapper.KeycloakDataMapper;
 import de.adorsys.ledgers.keycloak.client.mapper.KeycloakDataMapperImpl;
-import de.adorsys.ledgers.keycloak.client.model.KeycloakClient;
+import de.adorsys.ledgers.keycloak.client.model.KeycloakDefaultSchema;
 import de.adorsys.ledgers.keycloak.client.model.KeycloakUser;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,7 +21,6 @@ import utils.KeycloakContainerTest;
 import utils.TestConfiguration;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -35,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class KeycloakDataServiceImplIT extends KeycloakContainerTest {
 
     private static final String REALM = "test-realm";
-    private static final String CLIENT_ID = "ledgers-client";
-    private static final String CLIENT_SECRET = "279976b2-1794-437f-9467-8ad8401f1c51";
     private static final String USERNAME = "babyuk";
 
     @Autowired
@@ -46,27 +43,16 @@ public class KeycloakDataServiceImplIT extends KeycloakContainerTest {
     private final ResourceReader jsonReader = JsonReader.getInstance();
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         keycloakDataService = new KeycloakDataServiceImpl(getKeycloakClient(), keycloakDataMapper);
 
-        keycloakDataService.createRealmWithRolesAndScopes(
-                REALM,
-                Arrays.asList("STAFF", "CUSTOMER"),
-                Arrays.asList("partial_access", "sca")
-        );
+        KeycloakDefaultSchema defaultSchema = jsonReader.getObjectFromFile("json/keycloak/keycloak-default-schema.json", KeycloakDefaultSchema.class);
+        keycloakDataService.createDefaultSchema(defaultSchema);
     }
 
     @AfterClass
     public static void afterClass() {
         keycloakContainer.stop();
-    }
-
-    @Test
-    public void createClient() {
-        keycloakDataService.createClient(REALM, new KeycloakClient(CLIENT_ID, CLIENT_SECRET,
-                                                                   Collections.singletonList("adorsys.de"),
-                                                                   Arrays.asList("sca", "partial_access")));
-        assertTrue(keycloakDataService.clientExists(REALM, CLIENT_ID));
     }
 
     @Test
