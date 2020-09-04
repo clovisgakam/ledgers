@@ -436,7 +436,7 @@ class MiddlewarePaymentServiceImplTest {
         info.setScaMethodId(SCA_METHOD_ID);
         info.setUserLogin(USER_LOGIN);
         BearerTokenTO token = new BearerTokenTO();
-        token.setScopes(Collections.singleton("SCA"));
+        token.setScopes(Collections.singleton("full_access"));
         info.setBearerToken(token);
         return info;
     }
