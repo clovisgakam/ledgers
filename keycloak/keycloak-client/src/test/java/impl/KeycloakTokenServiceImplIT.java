@@ -1,8 +1,8 @@
 package impl;
 
 import de.adorsys.ledgers.keycloak.client.api.KeycloakTokenService;
-import de.adorsys.ledgers.um.api.domain.AccessTokenBO;
-import de.adorsys.ledgers.um.api.domain.BearerTokenBO;
+import de.adorsys.ledgers.middleware.api.domain.um.AccessTokenTO;
+import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import utils.TestConfiguration;
 import utils.TestKeycloakService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -56,13 +55,13 @@ class KeycloakTokenServiceImplIT extends KeycloakContainerTest {
 
     @Test
     void loginAndValidate() {
-        BearerTokenBO bearerTokenBO = keycloakTokenService.login(USERNAME, USER_PASSWORD);
+        BearerTokenTO bearerTokenBO = keycloakTokenService.login(USERNAME, USER_PASSWORD);
         assertNotNull(bearerTokenBO);
         assertNotNull(bearerTokenBO.getAccess_token());
 
-        AccessTokenBO accessTokenObject = new AccessTokenBO();
+        AccessTokenTO accessTokenObject = new AccessTokenTO();
         accessTokenObject.setLogin(USERNAME);
         bearerTokenBO.setAccessTokenObject(accessTokenObject);
-        assertTrue(keycloakTokenService.validate(bearerTokenBO.getAccess_token(),bearerTokenBO.getAccessTokenObject().getLogin()));
+        assertNotNull(keycloakTokenService.validate(bearerTokenBO.getAccess_token()));
     }
 }

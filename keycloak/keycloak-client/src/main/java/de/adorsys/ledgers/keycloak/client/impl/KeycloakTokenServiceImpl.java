@@ -7,8 +7,8 @@ import de.adorsys.ledgers.keycloak.client.rest.KeycloakTokenRestClient;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
-import org.keycloak.OAuth2Constants;
+import org.keycloak.representations.AccessToken;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +23,22 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class KeycloakTokenServiceImpl implements KeycloakTokenService {
-
     @Value("${keycloak.resource:}")
     private String clientId;
     @Value("${keycloak.credentials.secret:}")
     private String clientSecret;
-
     private final KeycloakTokenRestClient keycloakTokenRestClient;
     private final KeycloakAuthMapper authMapper;
 
     @Override
     public BearerTokenTO login(String username, String password) {
         MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<>();
-        formParams.add(OAuth2Constants.GRANT_TYPE, "password");
-        formParams.add(OAuth2Constants.USERNAME, username);
-        formParams.add(OAuth2Constants.PASSWORD, password);
-        formParams.add(OAuth2Constants.CLIENT_ID, clientId);
-        formParams.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
-        formParams.add(OAuth2Constants.SCOPE, "offline_access openid partial_access");
+        formParams.add("grant_type", "password");
+        formParams.add("username", username);
+        formParams.add("password", password);
+        formParams.add("client_id", clientId);
+        formParams.add("client_secret", clientSecret);
         ResponseEntity<Map<String, ?>> resp = keycloakTokenRestClient.login(formParams);
-
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
             log.error("Could not obtain token by user credentials [{}]", username); //todo: throw specific exception
@@ -55,25 +51,21 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
 
     @Override
     public BearerTokenTO exchangeToken(String oldToken, Integer timeToLive, String scope) {
-        return authMapper.toBearerTokenTO(
-                keycloakTokenRestClient.exchangeToken("Bearer " + oldToken, new TokenConfiguration(timeToLive, scope)).getBody()
-        );
+        AccessTokenResponse response = keycloakTokenRestClient.exchangeToken("Bearer " + oldToken, new TokenConfiguration(timeToLive, scope)).getBody();
+        return validate(response.getToken());
     }
 
     @Override
-    public boolean validate(BearerTokenBO token) {
+    public BearerTokenTO validate(String token) {
         MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<>();
-        formParams.add(OAuth2Constants.USERNAME, token.getAccessTokenObject().getLogin());
-        formParams.add("token", token.getAccess_token());
-        formParams.add(OAuth2Constants.CLIENT_ID, clientId);
-        formParams.add(OAuth2Constants.CLIENT_SECRET, clientSecret);
-        ResponseEntity<Map<String, ?>> resp = keycloakTokenRestClient.validate(formParams);
-
+        formParams.add("token", token);
+        formParams.add("client_id", clientId);
+        formParams.add("client_secret", clientSecret);
+        ResponseEntity<AccessToken> resp = keycloakTokenRestClient.validate(formParams);
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
-            log.error("Could not validate token for user [{}]", token.getAccessTokenObject().getLogin()); //todo: throw specific exception
+            log.error("Could not validate token"); //todo: throw specific exception
         }
-        Map<String, ?> body = Objects.requireNonNull(resp).getBody();
-        return BooleanUtils.isTrue((Boolean) Objects.requireNonNull(body).get("active"));
+        return authMapper.toBearer(resp.getBody(), token);
     }
 }

@@ -124,7 +124,7 @@ public class MiddlewarePaymentServiceImpl implements MiddlewarePaymentService {
     public SCAPaymentResponseTO executePayment(ScaInfoTO scaInfoTO, String paymentId) {
         PaymentBO paymentBO = paymentService.getPaymentById(paymentId);
         UserBO user = scaUtils.userBO(scaInfoTO.getUserLogin());
-        TransactionStatusBO status = paymentService.updatePaymentStatus(paymentId, scaInfoTO.hasScope(SCOPE_PARTIAL_ACCESS) ? PATC : ACTC);
+        TransactionStatusBO status = paymentService.updatePaymentStatus(paymentId, scaInfoTO.hasScope(SCOPE_FULL_ACCESS) ? ACTC : PATC);
         if (status == ACTC) {
             status = paymentService.executePayment(paymentBO.getPaymentId(), user.getLogin());
         }
