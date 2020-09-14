@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import java.util.function.Function;
 
 @UtilityClass
+@SuppressWarnings("PMD.FinalFieldCouldBeStatic")
 public class ExecutionTimeHolder {
     private final EnumMap<FrequencyCode, Function<Payment, LocalDate>> holder = new EnumMap<>(FrequencyCode.class);
     private final int ONE = 1;
