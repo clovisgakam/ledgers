@@ -69,7 +69,7 @@ public class AccountAccessMethodSecurityExpressionRoot extends SecurityExpressio
         UserTO user = user();
         return user.getUserRoles().contains(SYSTEM)
                        || user.getUserRoles().contains(STAFF) && user.hasAccessToAccountsWithIbans(ibans)
-                       || user.hasAccessToAccountsWithIbans(ibans) && ibans.stream().allMatch(this::isEnabledAccount);
+                       || user.hasAccessToAccountsWithIbans(ibans) && ibans.stream().allMatch(this::isEnabledAccountIban);
     }
 
     //System retrieves regardless of status, STAFF & CUSTOMER if has access, CUSTOMER if accountEnabled
