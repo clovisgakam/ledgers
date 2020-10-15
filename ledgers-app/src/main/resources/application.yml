@@ -28,6 +28,15 @@ keycloak:
   principal-attribute: preferred_username
   credentials:
     secret: a61a81cd-7178-40d8-8386-ed02791e6592 #Here should be personal generated secret for client (swap public to 'private?' generate secret, swap to public again)
+  email:
+    server:
+      auth: true
+      ssl: true
+      host:
+      port: 465
+      user:
+      password:
+      from:
 
 keycloak-sync:
   admin:
