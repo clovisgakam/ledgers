@@ -18,4 +18,4 @@ to clean all caches in the browser (or use incognito tab, for example).
 ## Sources?
 
 You may find the sources of the Dynamic Sandbox theme in the 'sandbox' directory. The 'sandbox.jar' is ready to use archive with
-this theme. Is is also possible to create your own theme and deploy it to your Keycloak instance.
+this theme. It is also possible to create your own theme and deploy it to your Keycloak instance.
