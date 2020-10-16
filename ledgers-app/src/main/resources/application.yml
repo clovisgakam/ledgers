@@ -21,27 +21,18 @@ springdoc.swagger-ui.oauth.clientId: ${keycloak.resource}
 springdoc.swagger-ui.oauth.clientSecret: ${keycloak.credentials.secret}
 
 keycloak:
-  auth-server-url: http://localhost:8080/auth
+  auth-server-url: http://localhost:8081/auth
   realm: ledgers
   resource: ledgers-client
   public-client: false
   principal-attribute: preferred_username
   credentials:
     secret: a61a81cd-7178-40d8-8386-ed02791e6592 #Here should be personal generated secret for client (swap public to 'private?' generate secret, swap to public again)
-  email:
-    server:
-      auth: true
-      ssl: true
-      host:
-      port: 465
-      user:
-      password:
-      from:
 
 keycloak-sync:
   admin:
     username: admin
-    password: admin
+    password: 12345
 
 springdoc:
   api-docs:
@@ -80,10 +71,14 @@ spring:
     default-encoding: UTF-8
     host: localhost
     port: 2500
-#    properties:
-#      mail:
-#        smtp:
-#          auth: false
+    username: login
+    password: pass
+    properties:
+      mail:
+        smtp:
+          auth: false
+          ssl: true
+          from: changeme
 
 logging:
   level:

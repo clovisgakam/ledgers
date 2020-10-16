@@ -3,15 +3,6 @@ keycloak:
   realm: test-realm
   resource: test-client
   public-client: true
-  email:
-    server:
-      auth: true
-      ssl: true
-      host: mailhost
-      port: 465
-      user:
-      password:
-      from:
 
 keycloak-sync:
   admin:

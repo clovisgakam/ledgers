@@ -39,28 +39,28 @@ public class KeycloakClientConfig {
     @Value("${keycloak.public-client}")
     private boolean publicClient;
 
-    @Value("${keycloak.email.server.host:}")
+    @Value("${spring.mail.host:}")
     private String emailHost;
 
-    @Value("${keycloak.email.server.port:}")
+    @Value("${spring.mail.port:}")
     private String emailPort;
 
-    @Value("${keycloak.email.server.ssl:false}")
+    @Value("${spring.mail.properties.mail.ssl:false}")
     private String emailSsl;
 
-    @Value("${keycloak.email.server.auth:false}")
+    @Value("${spring.mail.properties.mail.auth:false}")
     private String emailAuth;
 
-    @Value("${keycloak.email.server.user:}")
+    @Value("${spring.mail.username:}")
     private String emailUser;
 
-    @Value("${keycloak.email.server.password:}")
+    @Value("${spring.mail.password:}")
     private String emailPassword;
 
-    @Value("${keycloak.email.server.from:}")
+    @Value("${spring.mail.properties.mail.from:}")
     private String emailFrom;
 
-    @Value("${keycloak.email.server.fromDisplayName:}")
+    @Value("${spring.mail.properties.mail.fromDisplayName:}")
     private String emailFromDisplayName;
 
     @Getter
