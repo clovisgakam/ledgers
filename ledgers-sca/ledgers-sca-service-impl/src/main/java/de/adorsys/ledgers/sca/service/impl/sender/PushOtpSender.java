@@ -52,7 +52,7 @@ public class PushOtpSender implements SCASender {
         try {
             HttpEntity<String> httpEntity = new HttpEntity<>(String.format(MESSAGE_PATTERN, from, subject, authCode));
             ResponseEntity<Void> exchange = template.exchange(getUri(split), getHttpMethod(split), httpEntity, Void.class);
-            return (exchange.getStatusCode().is2xxSuccessful());
+            return exchange.getStatusCode().is2xxSuccessful();
         } catch (RestClientException e) {
             throw ScaModuleException.buildScaSenderException(String.format(ERROR_REASON_2_MATCHERS, e.getMessage(), "\nWe will try to re-send the message later."));
         }
