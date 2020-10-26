@@ -121,7 +121,7 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
                                                  ? data.getUserMessage()
                                                  : authCodeEmailBody;
             String message = String.format(userMessageTemplate, tan);
-            senders.get(scaUserData.getScaMethod()).send(scaUserData.getMethodValue(), message);
+            senders.get(scaUserData.getScaMethod()).send(scaUserData.getMethodValue(), message); //TODO Implement a queue to be able to deliver messages failed for some reason!
         }
         SCAOperationBO scaOperationBO = scaOperationMapper.toBO(scaOperation);
         scaOperationBO.setTan(tan);
