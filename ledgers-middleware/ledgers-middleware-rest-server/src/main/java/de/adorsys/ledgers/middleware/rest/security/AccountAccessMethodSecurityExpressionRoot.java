@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.middleware.api.domain.Constants.*;
+import static de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO.PSUAUTHENTICATED;
+import static de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO.PSUIDENTIFIED;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.STAFF;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.SYSTEM;
 
@@ -127,7 +129,7 @@ public class AccountAccessMethodSecurityExpressionRoot extends SecurityExpressio
     }
 
     public boolean hasAccessToAccountByScaOperation(StartScaOprTO opr) { //TODO Used
-        return opr.getOpType() == OpTypeTO.PAYMENT
+        return EnumSet.of(OpTypeTO.PAYMENT, OpTypeTO.CANCEL_PAYMENT).contains(opr.getOpType())
                        ? hasAccessToAccountByPaymentId(opr.getOprId())
                        : hasAccessToAccountsWithIbans(accountService.getAccountsFromConsent(opr.getOprId()));
     }
