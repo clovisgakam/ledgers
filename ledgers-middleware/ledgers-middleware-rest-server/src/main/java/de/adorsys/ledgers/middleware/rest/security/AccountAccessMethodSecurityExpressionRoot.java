@@ -21,8 +21,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.middleware.api.domain.Constants.*;
-import static de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO.PSUAUTHENTICATED;
-import static de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO.PSUIDENTIFIED;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.STAFF;
 import static de.adorsys.ledgers.middleware.api.domain.um.UserRoleTO.SYSTEM;
 
