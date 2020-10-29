@@ -4,6 +4,7 @@ import de.adorsys.ledgers.sca.service.SCASender;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO.PUSH_OTP;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PushOtpSender implements SCASender {
@@ -47,6 +49,7 @@ public class PushOtpSender implements SCASender {
                                      .map(String::trim)
                                      .collect(Collectors.toList());
         if (split.size() != 2) {
+            log.error("Malformed PUSH_OTP methodValue: {}, should consist of 2 parts (HttpMethod and URL separated with coma)",value);
             throw ScaModuleException.buildScaSenderException(String.format(ERROR_REASON_1_MATCHER, INVALID_PATTERN_MSG));
         }
         try {
@@ -54,6 +57,7 @@ public class PushOtpSender implements SCASender {
             ResponseEntity<Void> exchange = template.exchange(getUri(split), getHttpMethod(split), httpEntity, Void.class);
             return exchange.getStatusCode().is2xxSuccessful();
         } catch (RestClientException e) {
+            log.error("Could not deliver PUSH_OTP message, reason: {}",e.getMessage());
             throw ScaModuleException.buildScaSenderException(String.format(ERROR_REASON_2_MATCHERS, e.getMessage(), "\nWe will try to re-send the message later."));
         }
     }

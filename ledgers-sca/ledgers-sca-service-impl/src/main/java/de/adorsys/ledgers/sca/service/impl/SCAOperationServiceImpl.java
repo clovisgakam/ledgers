@@ -117,7 +117,7 @@ public class SCAOperationServiceImpl implements SCAOperationService, Initializin
         repository.save(scaOperation);
         if (scaUserData.isEmailValid()) {
             String message = messageResolver.resolveMessage(data, tan, scaUserData.getScaMethod());
-            senders.get(scaUserData.getScaMethod()).send(scaUserData.getMethodValue(), message); //TODO Implement a queue to be able to deliver messages failed for some reason!
+            senders.get(scaUserData.getScaMethod()).send(scaUserData.getMethodValue(), message); //TODO Implement a queue to be able to deliver messages failed for some reason! https://git.adorsys.de/adorsys/xs2a/psd2-dynamic-sandbox/-/issues/837
         }
         SCAOperationBO scaOperationBO = scaOperationMapper.toBO(scaOperation);
         scaOperationBO.setTan(tan);
