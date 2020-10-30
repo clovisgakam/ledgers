@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class GlobalScaResponseTO {
+public class GlobalScaResponseTO implements AspspConsentDataSerial{
     private OpTypeTO opType;
     private String operationObjectId;
     private String authorisationId;
@@ -29,5 +29,12 @@ public class GlobalScaResponseTO {
     }
 
     public GlobalScaResponseTO() {
+    }
+
+    private String objectType;
+
+    @Override
+    public String getObjectType() {
+        return this.getClass().getSimpleName();
     }
 }
