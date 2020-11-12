@@ -16,9 +16,10 @@
 
 package de.adorsys.ledgers.sca.service.impl.sender;
 
-import de.adorsys.ledgers.util.exception.ScaModuleException;
+import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.sca.service.SCASender;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
+import de.adorsys.ledgers.util.exception.ScaModuleException;
 import org.springframework.stereotype.Service;
 
 import static de.adorsys.ledgers.util.exception.SCAErrorCode.SCA_METHOD_NOT_SUPPORTED;
@@ -26,11 +27,11 @@ import static de.adorsys.ledgers.util.exception.SCAErrorCode.SCA_METHOD_NOT_SUPP
 @Service
 public class MobileSCASender implements SCASender {
     @Override
-    public boolean send(String value, String authCode) {
+    public <T extends ScaMessage> boolean send(T message) {
         throw ScaModuleException.builder()
-        .errorCode(SCA_METHOD_NOT_SUPPORTED)
-                .devMsg(String.format("Sending SCA via %s not implemented yet","PHONE"))
-                .build();
+                      .errorCode(SCA_METHOD_NOT_SUPPORTED)
+                      .devMsg(String.format("Sending SCA via %s not implemented yet", "PHONE"))
+                      .build();
     }
 
     @Override

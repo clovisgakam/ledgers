@@ -1,10 +1,12 @@
 package de.adorsys.ledgers.sca.service.impl;
 
 import de.adorsys.ledgers.sca.domain.AuthCodeDataBO;
+import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.sca.service.ScaMessageResolver;
 import de.adorsys.ledgers.sca.service.impl.message.EmailOtpMessageHandler;
 import de.adorsys.ledgers.sca.service.impl.message.OtpMessageHandler;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
+import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,9 @@ public class ScaMessageResolverImpl implements ScaMessageResolver {
     private final EmailOtpMessageHandler defaultOtpMessageHandler;
 
     @Override
-    public String resolveMessage(AuthCodeDataBO data, String tan, ScaMethodTypeBO methodType) {
-        return getOtpMessageHandler(methodType)
-                       .getMessage(data, tan);
+    public <T extends ScaMessage> T resolveMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
+        return getOtpMessageHandler(scaData.getScaMethod())
+                       .getMessage(data, scaData, tan);
     }
 
     private OtpMessageHandler getOtpMessageHandler(ScaMethodTypeBO methodType) {

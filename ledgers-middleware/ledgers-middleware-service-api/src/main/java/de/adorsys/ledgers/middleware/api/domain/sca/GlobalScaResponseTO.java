@@ -11,6 +11,7 @@ import java.util.List;
 public class GlobalScaResponseTO implements AspspConsentDataSerial {
     private OpTypeTO opType;
     private String operationObjectId;
+    private String externalId;
     private String authorisationId;
     private ScaStatusTO scaStatus;
     private List<ScaUserDataTO> scaMethods;
@@ -24,10 +25,6 @@ public class GlobalScaResponseTO implements AspspConsentDataSerial {
     private boolean partiallyAuthorised;
     private BearerTokenTO bearerToken;
     private String objectType;
-
-    public GlobalScaResponseTO(BearerTokenTO bearerToken) {
-        this.bearerToken = bearerToken;
-    }
 
     public GlobalScaResponseTO() {
     }
