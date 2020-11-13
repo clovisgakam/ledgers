@@ -14,17 +14,17 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ScaMessageResolverImpl implements ScaMessageResolver {
-    private final List<OtpMessageHandler> otpMessageHandlers;
+public class ScaMessageResolverImpl implements ScaMessageResolver<ScaMessage> {
+    private final List<OtpMessageHandler<ScaMessage>> otpMessageHandlers;
     private final EmailOtpMessageHandler defaultOtpMessageHandler;
 
     @Override
-    public <T extends ScaMessage> T resolveMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
+    public ScaMessage resolveMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
         return getOtpMessageHandler(scaData.getScaMethod())
                        .getMessage(data, scaData, tan);
     }
 
-    private OtpMessageHandler getOtpMessageHandler(ScaMethodTypeBO methodType) {
+    private OtpMessageHandler<ScaMessage> getOtpMessageHandler(ScaMethodTypeBO methodType) {
         return otpMessageHandlers.stream()
                        .filter(h -> h.getType() == methodType)
                        .findFirst()
