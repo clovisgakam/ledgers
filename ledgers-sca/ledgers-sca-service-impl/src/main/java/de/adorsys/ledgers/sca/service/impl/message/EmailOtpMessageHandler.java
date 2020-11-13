@@ -2,7 +2,6 @@ package de.adorsys.ledgers.sca.service.impl.message;
 
 import de.adorsys.ledgers.sca.domain.AuthCodeDataBO;
 import de.adorsys.ledgers.sca.domain.sca.message.MailScaMessage;
-import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,7 @@ public class EmailOtpMessageHandler implements OtpMessageHandler {
     }
 
     @Override
-    public <T extends ScaMessage> T getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
+    public MailScaMessage getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
         MailScaMessage message = new MailScaMessage();
         message.setFrom(from);
         message.setTo(scaData.getMethodValue());
@@ -36,6 +35,6 @@ public class EmailOtpMessageHandler implements OtpMessageHandler {
                                              ? data.getUserMessage()
                                              : authCodeEmailBody;
         message.setMessage(String.format(userMessageTemplate, tan));
-        return (T) message;
+        return message;
     }
 }

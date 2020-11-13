@@ -2,7 +2,6 @@ package de.adorsys.ledgers.sca.service.impl.message;
 
 import de.adorsys.ledgers.sca.domain.AuthCodeDataBO;
 import de.adorsys.ledgers.sca.domain.sca.message.AppScaMessage;
-import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,7 @@ public class AppOtpMessageHandler implements OtpMessageHandler {
     }
 
     @Override
-    public <T extends ScaMessage> T getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
+    public AppScaMessage getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
         AppScaMessage msg = new AppScaMessage();
 
         msg.setMessage(String.format(messageTemplate, data.getOpType().name(), data.getOpId()));
@@ -37,6 +36,6 @@ public class AppOtpMessageHandler implements OtpMessageHandler {
         msg.setAuthCode(tan);
         msg.setSocketServiceHttpMethod(socketServiceHttpMethod);
         msg.setSocketServicePath(socketServiceUrl);
-        return (T) msg;
+        return msg;
     }
 }

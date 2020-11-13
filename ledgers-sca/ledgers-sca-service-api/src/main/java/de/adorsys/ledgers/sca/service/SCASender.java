@@ -18,7 +18,7 @@ package de.adorsys.ledgers.sca.service;
 
 import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 
-public interface SCASender extends SCAMethodType {
+public interface SCASender<T extends ScaMessage> extends SCAMethodType {
 
-    <T extends ScaMessage> boolean send(T message);
+    boolean send(T message);
 }

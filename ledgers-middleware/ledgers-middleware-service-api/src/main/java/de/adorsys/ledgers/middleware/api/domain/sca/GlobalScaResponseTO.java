@@ -26,6 +26,10 @@ public class GlobalScaResponseTO implements AspspConsentDataSerial {
     private BearerTokenTO bearerToken;
     private String objectType;
 
+    public GlobalScaResponseTO(BearerTokenTO bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
     public GlobalScaResponseTO() {
     }
 

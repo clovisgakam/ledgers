@@ -2,7 +2,6 @@ package de.adorsys.ledgers.sca.service.impl.message;
 
 import de.adorsys.ledgers.sca.domain.AuthCodeDataBO;
 import de.adorsys.ledgers.sca.domain.sca.message.PushScaMessage;
-import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
 import de.adorsys.ledgers.um.api.domain.ScaUserDataBO;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
@@ -36,7 +35,7 @@ public class PushOtpMessageHandler implements OtpMessageHandler {
     }
 
     @Override
-    public <T extends ScaMessage> T getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
+    public PushScaMessage getMessage(AuthCodeDataBO data, ScaUserDataBO scaData, String tan) {
         PushScaMessage message = new PushScaMessage();
         message.setUserLogin(data.getUserLogin());
 
@@ -50,7 +49,7 @@ public class PushOtpMessageHandler implements OtpMessageHandler {
                              ? String.format(data.getUserMessage(), tan)
                              : String.format(authCodePushBody, data.getUserLogin(), data.getOpId(), tan);
         message.setMessage(msg);
-        return (T) message;
+        return message;
     }
 
     private List<String> getSendProperties(ScaUserDataBO scaData) {

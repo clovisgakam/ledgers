@@ -1,7 +1,6 @@
 package de.adorsys.ledgers.sca.service.impl.sender;
 
 import de.adorsys.ledgers.sca.domain.sca.message.PushScaMessage;
-import de.adorsys.ledgers.sca.domain.sca.message.ScaMessage;
 import de.adorsys.ledgers.sca.service.SCASender;
 import de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO;
 import de.adorsys.ledgers.util.exception.ScaModuleException;
@@ -21,20 +20,19 @@ import static de.adorsys.ledgers.um.api.domain.ScaMethodTypeBO.PUSH_OTP;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PushOtpSender implements SCASender {
+public class PushOtpSender implements SCASender<PushScaMessage> {
     private static final String ERROR_REASON_2_MATCHERS = "Could not PUSH TAN for Sca, reason: %s %s";
 
     private final RestTemplate template;
 
     @Override
-    public <T extends ScaMessage> boolean send(T message) {
-        PushScaMessage scaMessage = (PushScaMessage) message;
+    public boolean send(PushScaMessage message) {
 
         try {
-            HttpEntity<String> httpEntity = new HttpEntity<>(scaMessage.getMessage());
-            HttpMethod httpMethod = Optional.ofNullable(HttpMethod.resolve(scaMessage.getHttpMethod()))
-                                            .orElseThrow(() -> ScaModuleException.buildScaSenderException("Could not resolve HttpMethod for PsuhOTP Sender " + scaMessage.getHttpMethod()));
-            ResponseEntity<Void> exchange = template.exchange(scaMessage.getUrl(), httpMethod, httpEntity, Void.class);
+            HttpEntity<String> httpEntity = new HttpEntity<>(message.getMessage());
+            HttpMethod httpMethod = Optional.ofNullable(HttpMethod.resolve(message.getHttpMethod()))
+                                            .orElseThrow(() -> ScaModuleException.buildScaSenderException("Could not resolve HttpMethod for PsuhOTP Sender " + message.getHttpMethod()));
+            ResponseEntity<Void> exchange = template.exchange(message.getUrl(), httpMethod, httpEntity, Void.class);
             return exchange.getStatusCode().is2xxSuccessful();
         } catch (RestClientException e) {
             log.error("Could not deliver PUSH_OTP message, reason: {}", e.getMessage());
