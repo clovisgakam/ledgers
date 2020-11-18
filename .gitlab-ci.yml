@@ -22,7 +22,7 @@ stages:
 # ------------------------------------------------------------------
 
 variables: &variables
-  SONAR_HOST: "https://psd2-quality.cloud.adorsys.de"
+
 
   ############################
   # Private Openshift Images #
