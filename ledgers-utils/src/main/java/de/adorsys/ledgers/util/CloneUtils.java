@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CloneUtils {
+    private static final ObjectMapper objectMapper;
 
     private CloneUtils() {
     }
-
-    private static final ObjectMapper objectMapper;
 
     static {
         objectMapper = new ObjectMapper();
