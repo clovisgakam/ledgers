@@ -51,12 +51,14 @@ class PostingMapperTest {
         //assert Coa mapped
         ChartOfAccountBO coa = postingBO.getLedger().getCoa();
         ChartOfAccount resultCoa = result.getLedger().getCoa();
-        assertEquals(coa.getId(), resultCoa.getId());
-        assertEquals(coa.getCreated(), resultCoa.getCreated());
-        assertEquals(coa.getName(), resultCoa.getName());
-        assertEquals(coa.getLongDesc(), resultCoa.getLongDesc());
-        assertEquals(coa.getShortDesc(), resultCoa.getShortDesc());
-        assertEquals(coa.getUserDetails(), resultCoa.getUserDetails());
+        if (coa != null && resultCoa != null) {
+            assertEquals(coa.getId(), resultCoa.getId());
+            assertEquals(coa.getCreated(), resultCoa.getCreated());
+            assertEquals(coa.getName(), resultCoa.getName());
+            assertEquals(coa.getLongDesc(), resultCoa.getLongDesc());
+            assertEquals(coa.getShortDesc(), resultCoa.getShortDesc());
+            assertEquals(coa.getUserDetails(), resultCoa.getUserDetails());
+        }
     }
 
     @Test
@@ -87,12 +89,14 @@ class PostingMapperTest {
         //assert Coa mapped
         ChartOfAccount coa = posting.getLedger().getCoa();
         ChartOfAccountBO resultCoa = result.getLedger().getCoa();
-        assertEquals(coa.getId(), resultCoa.getId());
-        assertEquals(coa.getCreated(), resultCoa.getCreated());
-        assertEquals(coa.getName(), resultCoa.getName());
-        assertEquals(coa.getLongDesc(), resultCoa.getLongDesc());
-        assertEquals(coa.getShortDesc(), resultCoa.getShortDesc());
-        assertEquals(coa.getUserDetails(), resultCoa.getUserDetails());
+        if (coa != null && resultCoa != null) {
+            assertEquals(coa.getId(), resultCoa.getId());
+            assertEquals(coa.getCreated(), resultCoa.getCreated());
+            assertEquals(coa.getName(), resultCoa.getName());
+            assertEquals(coa.getLongDesc(), resultCoa.getLongDesc());
+            assertEquals(coa.getShortDesc(), resultCoa.getShortDesc());
+            assertEquals(coa.getUserDetails(), resultCoa.getUserDetails());
+        }
     }
 
     @Test
