@@ -169,7 +169,7 @@ Build:Ledgers:
     - schedules
   <<: *build_java
   variables:
-    BUILD_JAVA_VERSION: system@1.8
+    BUILD_JAVA_VERSION: system@1.11
   artifacts:
     paths:
       - "ledgers-app/target/ledgers-app*jar"
@@ -232,7 +232,7 @@ Sonarcube Tests:
     - schedules
     - develop
   script:
-    - jabba use system@1.8
+    - jabba use system@1.11
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
     - mvn -ntp --fail-at-end clean install
