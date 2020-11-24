@@ -98,7 +98,7 @@ variables: &variables
 #-------------------------------------------------------------------
 
 Lint:Docker_compose:
-  image: maven:3.6-jdk-8-slim
+  image: maven:3.6-jdk-11-slim
   stage: "Lint"
   except:
     - schedules
@@ -140,7 +140,7 @@ Lint:Ledgers_yaml_json_xml:
     - docker run --rm -i hadolint/hadolint < Dockerfile
 
 Lint:PMD_CPD_Report:
-  image: maven:3.6-jdk-8-slim
+  image: maven:3.6-jdk-11-slim
   stage: "Lint"
   except:
     - schedules
