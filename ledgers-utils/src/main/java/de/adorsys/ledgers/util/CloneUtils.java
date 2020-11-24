@@ -1,13 +1,17 @@
 package de.adorsys.ledgers.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class CloneUtils {
-    private static ObjectMapper objectMapper;
+
+    private CloneUtils() {
+    }
+
+    private static final ObjectMapper objectMapper;
 
     static {
         objectMapper = new ObjectMapper();
