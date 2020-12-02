@@ -424,7 +424,7 @@ class MiddlewareUserManagementServiceImplTest {
         when(recoveryService.getPointById(any(), anyLong())).thenReturn(new RecoveryPointTO());
         when(userService.findUsersByBranchAndCreatedAfter(any(), any())).thenReturn(List.of(userBO));
         middlewareUserService.revertDatabase(USER_ID, 1);
-        verify(userService, times(2)).setBranchBlockedStatus(any(), anyBoolean(), anyBoolean());
+        verify(userService, atLeastOnce()).setBranchBlockedStatus(any(), anyBoolean(), anyBoolean());
         verify(dataService, times(1)).deleteUser(any());
         verify(depositAccountService, times(1)).rollBackBranch(any(), any());
     }
