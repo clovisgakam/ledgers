@@ -49,7 +49,8 @@ class PostingsMockServiceImplTest {
         when(ledgerAccountRepository.findById(any())).thenReturn(Optional.of(new LedgerAccount()));
         List<PostingBO> postings = getPostings(true);
         service.addPostingsAsBatch(postings);
-        verify(postingRepository, times(1)).saveAll(any());
+
+        verify(postingRepository, timeout(1000).times(1)).saveAll(any());
     }
 
     @Test
@@ -58,7 +59,6 @@ class PostingsMockServiceImplTest {
         List<PostingBO> postings = getPostings(false);
         PostingModuleException exception = assertThrows(PostingModuleException.class, () -> service.addPostingsAsBatch(postings));
         assertEquals(DOBLE_ENTRY_ERROR, exception.getErrorCode());
-        //verify(postingRepository, times(1)).saveAll(any());
     }
 
     private List<PostingBO> getPostings(boolean valid) {
