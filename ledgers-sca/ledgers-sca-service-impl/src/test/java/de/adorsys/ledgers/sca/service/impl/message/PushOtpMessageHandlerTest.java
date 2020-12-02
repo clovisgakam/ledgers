@@ -36,7 +36,7 @@ class PushOtpMessageHandlerTest {
         ScaUserDataBO scaData = getScaData(PUSH_OTP, false);
         ScaModuleException exception = assertThrows(ScaModuleException.class, () -> handler.getMessage(authData, scaData, "TAN"));
         assertEquals(SCA_SENDER_ERROR, exception.getErrorCode());
-        assertTrue(exception.getDevMsg().contains("Malformed PUSH_OTP methodValue"));
+        assertTrue(exception.getDevMsg().contains("Invalid Sca method pattern!"));
     }
 
     @Test
