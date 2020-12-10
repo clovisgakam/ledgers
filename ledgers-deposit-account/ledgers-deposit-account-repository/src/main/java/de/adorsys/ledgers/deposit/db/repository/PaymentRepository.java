@@ -18,12 +18,6 @@ public interface PaymentRepository extends PagingAndSortingRepository<Payment, S
     @Query(value = "select p from Payment as p where p.transactionStatus = 'ACSP' and p.nextScheduledExecution <= current_timestamp")
     List<Payment> getAllDuePayments();
 
-   /* @Query(value = "select p from Payment as p where p.debtorAccount.iban=?1 and p.debtorAccount.currency=?2 and p.paymentType=?3 and p.transactionStatus=?4")
-    List<Payment> findAllByDebtorAccount(String iban, String currency, PaymentType type, TransactionStatus status);*/ //TODO REMOVE ME AFTER TEST!!!
-
-    /*@Query(value = "select p from Payment as p where p.debtorAccount.iban=?1 and p.debtorAccount.currency=?2 and p.paymentType=?3 and p.transactionStatus=?4")
-    Page<Payment> findAllByDebtorAccountPaged(String string, String currency, PaymentType type, TransactionStatus status, Pageable pageable);*/
-
     List<Payment> findAllByAccountIdInAndPaymentTypeAndTransactionStatus(Set<String> accountId, PaymentType type, TransactionStatus status);
 
     Page<Payment> findAllByAccountIdInAndPaymentTypeAndTransactionStatus(Set<String> accountId, PaymentType type, TransactionStatus status, Pageable pageable);
