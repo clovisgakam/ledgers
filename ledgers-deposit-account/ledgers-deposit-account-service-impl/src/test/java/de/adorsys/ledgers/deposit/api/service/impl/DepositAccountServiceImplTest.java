@@ -240,8 +240,8 @@ class DepositAccountServiceImplTest {
 
     @Test
     void confirmationOfFunds_more_than_necessary_available() throws NoSuchFieldException {
-        confirmationOfFunds_more_than_necessary_available(100, null);
-        confirmationOfFunds_more_than_necessary_available(101, null);
+        confirmationOfFunds_more_than_necessary_available(100, BigDecimal.ZERO);
+        confirmationOfFunds_more_than_necessary_available(101, BigDecimal.ZERO);
     }
 
     @Test
@@ -273,7 +273,7 @@ class DepositAccountServiceImplTest {
 
     @Test
     void getAccountsByIbanAndParamCurrency() {
-        when(depositAccountRepository.findAllByIbanAndCurrencyContaining(anyString(), anyString())).thenReturn(Collections.singletonList(getDepositAccount(false, null)));
+        when(depositAccountRepository.findAllByIbanAndCurrencyContaining(anyString(), anyString())).thenReturn(Collections.singletonList(getDepositAccount(false, BigDecimal.ZERO)));
         List<DepositAccountBO> result = depositAccountService.getAccountsByIbanAndParamCurrency("iban", "EUR");
         assertEquals(Collections.singletonList(getDepositAccountBO()), result);
     }
@@ -281,7 +281,7 @@ class DepositAccountServiceImplTest {
     @Test
     void getAccountByIbanAndCurrency() {
         // Given
-        when(depositAccountRepository.findByIbanAndCurrency(anyString(), anyString())).thenReturn(Optional.of(getDepositAccount(false, null)));
+        when(depositAccountRepository.findByIbanAndCurrency(anyString(), anyString())).thenReturn(Optional.of(getDepositAccount(false, BigDecimal.ZERO)));
         // When
         DepositAccountBO result = depositAccountService.getAccountByIbanAndCurrency("iban", EUR);
 
@@ -301,7 +301,7 @@ class DepositAccountServiceImplTest {
     @Test
     void getAccountById() {
         // Given
-        when(depositAccountRepository.findById(anyString())).thenReturn(Optional.of(getDepositAccount(false, null)));
+        when(depositAccountRepository.findById(anyString())).thenReturn(Optional.of(getDepositAccount(false, BigDecimal.ZERO)));
         // When
         DepositAccountBO result = depositAccountService.getAccountById("accountId");
 
@@ -339,7 +339,8 @@ class DepositAccountServiceImplTest {
         Page<DepositAccountDetailsBO> result = depositAccountService.findDetailsByBranchPaged("branchId", "someParam", Pageable.unpaged());
 
         // Then
-        assertEquals(new PageImpl<>(Collections.singletonList(new DepositAccountDetailsBO(getDepositAccountBO(), Collections.emptyList()))), result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
     }
 
     @Test
@@ -464,21 +465,4 @@ class DepositAccountServiceImplTest {
         assertEquals(0, depositAccount.getCreditLimit().compareTo(BigDecimal.ONE));
     }
 
-    @Test
-    void changeCreditLimit_defaultAmount() {
-        DepositAccount depositAccount = getDepositAccount(true, BigDecimal.TEN);
-        when(depositAccountRepository.findById(any())).thenReturn(Optional.of(depositAccount));
-        depositAccountService.changeCreditLimit(ACCOUNT_ID, BigDecimal.valueOf(100));
-
-        assertEquals(0, depositAccount.getCreditLimit().compareTo(BigDecimal.ONE));
-    }
-
-    @Test
-    void changeCreditLimit_defaultAmount_disabled() {
-        DepositAccount depositAccount = getDepositAccount(true, BigDecimal.TEN);
-        when(depositAccountRepository.findById(any())).thenReturn(Optional.of(depositAccount));
-        BigDecimal value = BigDecimal.valueOf(100);
-        DepositModuleException exception = assertThrows(DepositModuleException.class, () -> depositAccountService.changeCreditLimit(ACCOUNT_ID, value));
-        assertEquals(DepositErrorCode.UNSUPPORTED_CREDIT_LIMIT, exception.getErrorCode());
-    }
 }
