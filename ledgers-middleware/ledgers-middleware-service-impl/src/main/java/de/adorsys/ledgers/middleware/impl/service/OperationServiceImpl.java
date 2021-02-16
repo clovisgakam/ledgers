@@ -40,7 +40,7 @@ import static de.adorsys.ledgers.middleware.api.domain.sca.OpTypeTO.PAYMENT;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class OperationServiceImpl implements OperationService { //TODO Requires a new messageResolver
+public class OperationServiceImpl implements OperationService { //TODO Requires a new messageResolver https://git.adorsys.de/adorsys/xs2a/psd2-dynamic-sandbox/-/issues/893
     private final DepositAccountPaymentService paymentService;
     private final PaymentConverter paymentConverter;
     private final SCAUtils scaUtils;
@@ -126,7 +126,7 @@ public class OperationServiceImpl implements OperationService { //TODO Requires 
     @SuppressWarnings("java:S3358")
     private GlobalScaResponseTO resolveBasicResponse(boolean isFinal, OpTypeTO opType, UserBO user, ScaInfoTO scaInfo) {
         boolean isScaRequired = !isFinal && user.hasSCA();
-        String psuMessage = null; //new messageResolver
+        String psuMessage = null; //TODO new messageResolver
         BearerTokenTO token = isFinal ? null
                                       : accessService.exchangeTokenStartSca(isScaRequired, scaInfo.getAccessToken());
         ScaStatusTO scaStatus = isFinal ? ScaStatusTO.FINALISED
