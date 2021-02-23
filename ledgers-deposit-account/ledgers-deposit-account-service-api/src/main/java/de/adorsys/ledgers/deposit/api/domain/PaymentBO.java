@@ -69,10 +69,10 @@ public class PaymentBO {
 
     @JsonIgnore
     public boolean isInvalidRequestedExecutionDateTime(boolean allowDatesInThePast) {
-        boolean datePresent = this.requestedExecutionDate != null;
         if (allowDatesInThePast) {
             return false;
         }
+        boolean datePresent = this.requestedExecutionDate != null;
         return datePresent && this.requestedExecutionDate.isBefore(LocalDate.now()) ||
                        this.requestedExecutionTime != null
                                && LocalDateTime.of(datePresent ? this.requestedExecutionDate : LocalDate.now(),
