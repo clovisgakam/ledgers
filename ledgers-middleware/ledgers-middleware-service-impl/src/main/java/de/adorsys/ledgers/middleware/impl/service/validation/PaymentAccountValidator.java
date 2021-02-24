@@ -26,7 +26,7 @@ import static de.adorsys.ledgers.middleware.api.exception.MiddlewareModuleExcept
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentAccountValidator extends PaymentValidatorChain {
+public class PaymentAccountValidator extends AbstractPaymentValidator {
     private final DepositAccountService accountService;
 
     @Override

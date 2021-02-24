@@ -3,10 +3,10 @@ package de.adorsys.ledgers.middleware.impl.service.validation;
 import de.adorsys.ledgers.deposit.api.domain.PaymentBO;
 import de.adorsys.ledgers.um.api.domain.UserBO;
 
-public abstract class PaymentValidatorChain {
-    private PaymentValidatorChain next;
+public abstract class AbstractPaymentValidator {
+    private AbstractPaymentValidator next;
 
-    public PaymentValidatorChain next(PaymentValidatorChain next) {
+    public AbstractPaymentValidator next(AbstractPaymentValidator next) {
         this.next = next;
         return next;
     }

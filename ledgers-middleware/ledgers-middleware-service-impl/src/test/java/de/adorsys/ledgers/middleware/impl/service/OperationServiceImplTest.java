@@ -20,7 +20,6 @@ import de.adorsys.ledgers.middleware.impl.config.PaymentValidatorService;
 import de.adorsys.ledgers.middleware.impl.converter.AisConsentBOMapper;
 import de.adorsys.ledgers.middleware.impl.converter.PaymentConverter;
 import de.adorsys.ledgers.middleware.impl.converter.UserMapper;
-import de.adorsys.ledgers.middleware.impl.service.validation.PaymentValidatorChain;
 import de.adorsys.ledgers.sca.service.SCAOperationService;
 import de.adorsys.ledgers.um.api.domain.*;
 import de.adorsys.ledgers.um.api.service.UserService;

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentIdValidator extends PaymentValidatorChain {
+public class PaymentIdValidator extends AbstractPaymentValidator {
     private final DepositAccountPaymentService paymentService;
 
     @Override

@@ -34,7 +34,7 @@ class PaymentSyntacticalValidatorTest {
     }
 
     private void test(PaymentBO payment, boolean valid, boolean allowed) {
-        assertEquals(!valid, payment.isInvalidRequestedExecutionDateTime(allowed));
+        assertEquals(!valid, PaymentFieldValidator.isInvalidRequestedExecutionDateTime(payment, allowed));
     }
 
 
@@ -46,11 +46,11 @@ class PaymentSyntacticalValidatorTest {
     }
 
     void tst(PaymentBO payment, boolean allowedPastDates, boolean valid) {
-        assertEquals(valid, !payment.isInvalidStartDate(allowedPastDates));
+        assertEquals(valid, !PaymentFieldValidator.isInvalidStartDate(payment, allowedPastDates));
     }
 
     void tst(PaymentBO payment, boolean valid) {
-        assertEquals(valid, !payment.isInvalidEndDate());
+        assertEquals(valid, !PaymentFieldValidator.isInvalidEndDate(payment));
     }
 
     @Test
