@@ -10,7 +10,6 @@ import de.adorsys.ledgers.middleware.api.domain.account.AccountReferenceTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.AmountTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTO;
 import de.adorsys.ledgers.middleware.api.domain.payment.PaymentTargetTO;
-import de.adorsys.ledgers.middleware.api.domain.um.AccountAccessTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
 import de.adorsys.ledgers.util.exception.DepositModuleException;
 import de.adorsys.ledgers.util.exception.UserManagementModuleException;
@@ -115,14 +114,10 @@ public class RestTransactionService {
 
     private UserTO getUserByIban(List<UserTO> users, String iban) {
         return users.stream()
-                       .filter(user -> isAccountContainedInAccess(user.getAccountAccesses(), iban))
+                       .filter(u -> u.hasAccessToAccountWithIban(iban))
                        .findFirst()
                        .orElseThrow(() -> UserManagementModuleException.builder().build());
     }
 
-    //TODO do something with me!!!
-    private boolean isAccountContainedInAccess(List<AccountAccessTO> access, String iban) {
-        return access.stream()
-                       .anyMatch(a -> a.getIban().equals(iban));
-    }
+
 }
