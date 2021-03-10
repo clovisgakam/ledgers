@@ -53,12 +53,6 @@ public class RestTransactionService {
                     restInitiationService.executePayment(user, payment);
                 } else {
                     logPaymentPresentInfo(payment);
-                   /* Currency currency = payment.getTargets().iterator().next().getInstructedAmount().getCurrency();
-                    BigDecimal amount = payment.getTargets().stream()
-                                                .map(PaymentTargetTO::getInstructedAmount)
-                                                .map(AmountTO::getAmount)
-                                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    log.info("Payment from {} for {} {} is already present", payment.getDebtorName(), amount, currency);*/
                 }
             } catch (DepositModuleException e) {
                 log.error(ACCOUNT_NOT_FOUND_MSG, payment.getDebtorAccount().getIban());
