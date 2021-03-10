@@ -320,7 +320,6 @@ public class DepositAccountServiceImpl extends AbstractServiceImpl implements De
         if (isExistingAccount) {
             String message = format("Deposit account already exists. IBAN %s. Currency %s",
                                     depositAccountBO.getIban(), depositAccountBO.getCurrency().getCurrencyCode());
-            //log.error(message);
             throw DepositModuleException.builder()
                           .errorCode(DEPOSIT_ACCOUNT_EXISTS)
                           .devMsg(message)
