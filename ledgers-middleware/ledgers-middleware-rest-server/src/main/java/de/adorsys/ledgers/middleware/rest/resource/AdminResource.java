@@ -71,8 +71,8 @@ public class AdminResource implements AdminResourceAPI {
 
     @Override
     @PreAuthorize("hasRole('SYSTEM')")
-    public ResponseEntity<Void> updatePassword(String login, String password) {
-        middlewareUserService.updatePasswordIfRequired(login, password);
+    public ResponseEntity<Void> updatePassword(String branchId, String password) {
+        middlewareUserService.updatePasswordIfRequired(branchId, password);
         return ResponseEntity.accepted().build();
     }
 
