@@ -60,12 +60,12 @@ public interface AdminResourceAPI {
                                                                       @RequestParam(PAGE) int page,
                                                                       @RequestParam(SIZE) int size);
 
-    @Operation(summary = "Set password for Branch",
-            description = "Changes password for given Branch")
+    @Operation(summary = "Set password for given user",
+            description = "Changes password for given user")
     @SecurityRequirement(name = API_KEY)
     @SecurityRequirement(name = OAUTH2)
     @PutMapping("/password")
-    ResponseEntity<Void> updatePassword(@RequestParam(value = BRANCH_ID) String branchId,
+    ResponseEntity<Void> updatePassword(@RequestParam(value = LOGIN) String login,
                                         @RequestParam(PASSWORD) String password);
 
     @Operation(summary = "Block/Unblock user",
