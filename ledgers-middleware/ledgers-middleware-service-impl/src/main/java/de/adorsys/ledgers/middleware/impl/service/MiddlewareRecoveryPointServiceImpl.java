@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +56,7 @@ public class MiddlewareRecoveryPointServiceImpl implements MiddlewareRecoverySer
     }
 
     @Override
+    @Transactional
     public void revertDatabase(String userId, long recoveryPointId) {
         // First, all users for this branch should be technically blocked.
         long start = System.nanoTime();
