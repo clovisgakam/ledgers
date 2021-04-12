@@ -14,6 +14,7 @@ import de.adorsys.ledgers.middleware.api.domain.payment.ConsentKeyDataTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.SCAConsentResponseTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaInfoTO;
 import de.adorsys.ledgers.middleware.api.domain.sca.ScaStatusTO;
+import de.adorsys.ledgers.middleware.api.domain.um.AccessTypeTO;
 import de.adorsys.ledgers.middleware.api.domain.um.AisConsentTO;
 import de.adorsys.ledgers.middleware.api.domain.um.BearerTokenTO;
 import de.adorsys.ledgers.middleware.api.domain.um.UserTO;
@@ -26,6 +27,7 @@ import de.adorsys.ledgers.util.domain.CustomPageImpl;
 import de.adorsys.ledgers.util.domain.CustomPageableImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.modifier.Ownership;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -92,7 +94,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
 
         checkPresentAccountsAndOwner(depositAccount.getIban(), user);//TODO Consider moving to Filter
         DepositAccountBO createdAccount = depositAccountService.createNewAccount(accountDetailsMapper.toDepositAccountBO(depositAccount), user.getLogin(), user.getBranch());
-        accessService.updateAccountAccessNewAccount(createdAccount, user, finalWeight);
+        accessService.updateAccountAccessNewAccount(createdAccount, user, finalWeight, AccessTypeTO.OWNER);
     }
 
     @Override

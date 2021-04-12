@@ -30,8 +30,8 @@ public class AccountAccessBO {
         this.accessType = accessType;
     }
 
-    public AccountAccessBO(String accNbr, Currency currency, String accountId, int scaWeight) {
-        this.accessType = OWNER;
+    public AccountAccessBO(String accNbr, Currency currency, String accountId, int scaWeight, @NotNull AccessTypeBO accessType) {
+        this.accessType = accessType;
         this.iban = accNbr;
         this.currency = currency;
         this.accountId = accountId;
