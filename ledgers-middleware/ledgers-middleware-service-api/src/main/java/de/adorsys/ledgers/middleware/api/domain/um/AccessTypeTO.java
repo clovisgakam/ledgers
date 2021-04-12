@@ -3,5 +3,4 @@ public enum AccessTypeTO {
     OWNER,
     READ,
     DISPOSE;
-
 }

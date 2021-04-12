@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static de.adorsys.ledgers.middleware.api.domain.Constants.*;
-import static de.adorsys.ledgers.um.api.domain.AccessTypeBO.OWNER;
 
 @Service
 @RequiredArgsConstructor
