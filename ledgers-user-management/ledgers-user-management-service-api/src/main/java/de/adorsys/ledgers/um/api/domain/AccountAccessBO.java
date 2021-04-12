@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import java.util.Currency;
 
-import static de.adorsys.ledgers.um.api.domain.AccessTypeBO.OWNER;
-
 @Getter
 @Setter
 @EqualsAndHashCode
