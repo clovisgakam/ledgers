@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,6 +51,7 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
         Map<String, ?> body = Objects.requireNonNull(resp).getBody();
         BearerTokenTO bearerTokenTO = new BearerTokenTO();
         bearerTokenTO.setAccess_token((String) Objects.requireNonNull(body).get("access_token"));
+        bearerTokenTO.setRefresh_token((String) Objects.requireNonNull(body).get("refresh_token"));
         return bearerTokenTO;
     }
 
@@ -73,11 +75,31 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
             log.error("Could not validate token"); //todo: throw specific exception
         }
         Map<String, Object> claimsMap = Optional.ofNullable(resp.getBody())
-                                                .map(JsonWebToken::getOtherClaims)
-                                                .orElse(new HashMap<>());
+                .map(JsonWebToken::getOtherClaims)
+                .orElse(new HashMap<>());
         if (claimsMap.get("active").equals(false)) {
             throw new AccessDeniedException("Token Expired!");
         }
         return authMapper.toBearer(resp.getBody(), token);
+    }
+
+    @Override
+    public BearerTokenTO refreshToken(String refreshToken) {
+        MultiValueMap<String, Object> formParams = new LinkedMultiValueMap<>();
+        formParams.add("grant_type", "refresh_token");
+        formParams.add("client_id", clientId);
+        formParams.add("client_secret", clientSecret);
+        formParams.add("refresh_token", refreshToken);
+        ResponseEntity<Map<String, ?>> resp = keycloakTokenRestClient.login(formParams);
+        HttpStatus statusCode = resp.getStatusCode();
+        if (HttpStatus.OK != statusCode) {
+            log.error("Could not obtain token by refresh token  [{}]", refreshToken); //todo: throw specific exception
+        }
+        Map<String, ?> body = Objects.requireNonNull(resp).getBody();
+        BearerTokenTO bearerTokenTO = new BearerTokenTO();
+        bearerTokenTO.setAccess_token((String) Objects.requireNonNull(body).get("access_token"));
+        bearerTokenTO.setRefresh_token((String) Objects.requireNonNull(body).get("refresh_token"));
+
+        return bearerTokenTO;
     }
 }
