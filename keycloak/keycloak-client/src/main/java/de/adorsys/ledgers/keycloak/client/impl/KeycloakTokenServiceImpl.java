@@ -93,7 +93,8 @@ public class KeycloakTokenServiceImpl implements KeycloakTokenService {
         ResponseEntity<Map<String, ?>> resp = keycloakTokenRestClient.login(formParams);
         HttpStatus statusCode = resp.getStatusCode();
         if (HttpStatus.OK != statusCode) {
-            log.error("Could not obtain token by refresh token  [{}]", refreshToken); //todo: throw specific exception
+            log.error("Could not obtain token by refresh token  [{}]", refreshToken);
+            throw new AccessDeniedException("Invalid Refresh token");
         }
         Map<String, ?> body = Objects.requireNonNull(resp).getBody();
         BearerTokenTO bearerTokenTO = new BearerTokenTO();
