@@ -46,6 +46,6 @@ public class ConsentResource implements ConsentRestAPI {
     @Override
     @PreAuthorize("hasAnyRole('STAFF','CUSTOMER') and hasAccessToAccountsWithIbans(#aisConsent.access.listedAccountsIbans)")
     public ResponseEntity<SCAConsentResponseTO> grantPIISConsent(AisConsentTO aisConsent) {
-        return ResponseEntity.ok(middlewareAccountService.grantPIISConsent(scaInfoHolder.getScaInfo(), aisConsent));
+        return ResponseEntity.ok(middlewareAccountService.startPiisConsent(scaInfoHolder.getScaInfo(), aisConsent));
     }
 }
