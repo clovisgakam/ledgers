@@ -3,6 +3,8 @@ package de.adorsys.ledgers.middleware.impl.service.message.step;
 import de.adorsys.ledgers.um.api.domain.AisAccountAccessInfoBO;
 import de.adorsys.ledgers.um.api.domain.AisConsentBO;
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -35,60 +37,51 @@ public class ConsentMessageHelper {
             return String.format("No account access to tpp with id: %s", consent.getTppId());
         }
 
-        StringBuilder b = prepareTemplate(access);
-
-        b.append("This access has been granted. No TAN entry needed.");
-        return b.toString();
+        return template() + "This access has been granted. No TAN entry needed.";
     }
 
     private StringBuilder prepareTemplate(AisAccountAccessInfoBO access) {
-        var b = new StringBuilder(String.format("Account access for TPP with id %s:%n", consent.getTppId()));
+        var builder = new StringBuilder(String.format("Account access for TPP with id %s:%n", consent.getTppId()));
         if (consent.getFrequencyPerDay() <= 1) {
             if (consent.isRecurringIndicator()) {
-                b.append("- Up to to 1 access per day.\n");
+                builder.append("- Up to 1 access per day.\n");
             } else {
-                b.append("- For one time access.\n");
+                builder.append("- For one time access.\n");
             }
         } else {
-            b.append(String.format("- Up to %s accesses per day.%n", consent.getFrequencyPerDay()));
+            builder.append(String.format("- Up to %s accesses per day.%n", consent.getFrequencyPerDay()));
         }
         if (consent.getValidUntil() != null) {
-            b.append(String.format("- Access valid until %s.%n", formatter.format(consent.getValidUntil())));
+            builder.append(String.format("- Access valid until %s.%n", formatter.format(consent.getValidUntil())));
         }
-        b.append("Access to following accounts:\n");
+        builder.append("Access to following accounts:\n");
         if (ALL_ACCOUNTS.equals(access.getAllPsd2())) {
-            b.append("All payments accounts without balances.\n");
+            builder.append("All payments accounts without balances.\n");
         } else if (ALL_ACCOUNTS_WITH_BALANCES.equals(access.getAllPsd2())) {
-            b.append("All payments accounts with balances and transactions.\n");
+            builder.append("All payments accounts with balances and transactions.\n");
         }
         if (ALL_ACCOUNTS.equals(access.getAvailableAccounts())) {
-            b.append("All available accounts without balances.\n");
+            builder.append("All available accounts without balances.\n");
         } else if (ALL_ACCOUNTS_WITH_BALANCES.equals(access.getAvailableAccounts())) {
-            b.append("All available accounts with balances and transactions.\n");
+            builder.append("All available accounts with balances and transactions.\n");
         }
-        format(b, access.getAccounts(), "Without balances: %s.\n");
-        format(b, access.getBalances(), "With balances: %s.\n");
-        format(b, access.getTransactions(), "With balances and transactions: %s.\n");
-        return b;
+        format(builder, access.getAccounts(), "Without balances: %s.\n");
+        format(builder, access.getBalances(), "With balances: %s.\n");
+        format(builder, access.getTransactions(), "With balances and transactions: %s.\n");
+        return builder;
     }
 
-    private void format(StringBuilder b, List<String> accounts, String templ) {
-        if (accounts != null && !accounts.isEmpty()) {
-            b.append(String.format(templ, accountList(accounts)));
+    private void format(StringBuilder b, List<String> list, String template) {
+        if (CollectionUtils.isNotEmpty(list)) {
+            b.append(String.format(template, String.join(" ", list)));
         }
-    }
-
-    private String accountList(List<String> accounts) {
-        var sb = new StringBuilder();
-        accounts.forEach(a -> sb.append(a).append(" "));
-        return sb.toString();
     }
 
     private void checkNullConsent() { //TODO Get rid of internal validations! Should be done on request level!
-        if(consent==null) {
+        if (consent == null) {
             throw new IllegalStateException("Not expecting consent to be null.");
         }
-        if(consent.getTppId()==null) {
+        if (StringUtils.isEmpty(consent.getTppId())) {
             throw new IllegalStateException("Not expecting tppId to be null.");
         }
     }

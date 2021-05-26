@@ -5,13 +5,13 @@ import de.adorsys.ledgers.middleware.impl.service.message.step.StepMessageHandle
 import de.adorsys.ledgers.middleware.impl.service.message.step.StepMessageHandlerRequest;
 import de.adorsys.ledgers.sca.domain.OpTypeBO;
 import de.adorsys.ledgers.sca.domain.SCAOperationBO;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PsuMessageResolverImpl implements PsuMessageResolver {
 
     private final List<StepMessageHandler> stepMessageHandlers;
