@@ -187,7 +187,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
         UserBO user = scaUtils.userBO(scaInfoTO.getUserLogin());
 
         boolean isScaRequired = user.hasSCA();
-        String psuMessage = messageResolver.message(StepOperation.INITIATE_OPERATION_OBJECT, OpTypeBO.CONSENT, isScaRequired, aisConsent);
+        String psuMessage = messageResolver.message(StepOperation.INITIATE_OPERATION_OBJECT, OpTypeBO.CONSENT, isScaRequired, aisConsentMapper.toAisConsentBO(aisConsent));
         BearerTokenTO token = isScaRequired
                                       ? tokenService.exchangeToken(scaInfoTO.getAccessToken(), scaTokenLifeTime, Constants.SCOPE_SCA)
                                       : tokenService.exchangeToken(scaInfoTO.getAccessToken(), fullTokenLifeTime, Constants.SCOPE_FULL_ACCESS);
@@ -209,7 +209,7 @@ public class MiddlewareAccountManagementServiceImpl implements MiddlewareAccount
     @Override
     public SCAConsentResponseTO startPiisConsent(ScaInfoTO scaInfoTO, AisConsentTO aisConsent) {
         aisConsent.cleanupForPIIS();
-        String psuMessage = messageResolver.message(StepOperation.INITIATE_OPERATION_OBJECT, OpTypeBO.PIIS_CONSENT, false, aisConsent);
+        String psuMessage = messageResolver.message(StepOperation.INITIATE_OPERATION_OBJECT, OpTypeBO.PIIS_CONSENT, false, aisConsentMapper.toAisConsentBO(aisConsent));
         BearerTokenTO consentToken = tokenService.exchangeToken(scaInfoTO.getAccessToken(), fullTokenLifeTime, Constants.SCOPE_PARTIAL_ACCESS);
         return new SCAConsentResponseTO(consentToken, aisConsent.getId(), psuMessage);
     }
