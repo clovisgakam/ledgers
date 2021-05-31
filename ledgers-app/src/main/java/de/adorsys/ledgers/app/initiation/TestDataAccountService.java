@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.function.PredicMockbankInitDataate;
+import java.util.function.Predicate;
 
 @Slf4j
 @Service
