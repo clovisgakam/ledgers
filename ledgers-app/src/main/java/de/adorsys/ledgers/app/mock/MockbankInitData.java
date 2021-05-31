@@ -8,7 +8,6 @@ import de.adorsys.ledgers.util.exception.UserManagementModuleException;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
